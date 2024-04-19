@@ -1,0 +1,133 @@
+package com.residencia.restaurante.proyecto.controllerImpl;
+
+import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.controller.IMateriaPrimaController;
+import com.residencia.restaurante.proyecto.entity.MateriaPrima;
+import com.residencia.restaurante.proyecto.service.IMateriaPrimaService;
+import com.residencia.restaurante.security.utils.Utils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+/**
+ * Implementación del controlador para la gestión de materias primas en el restaurante.
+ */
+@RestController
+public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
+
+    @Autowired
+    IMateriaPrimaService materiaPrimaService;
+
+    /**
+     * Obtiene la lista de materias primas activas.
+     *
+     * @return ResponseEntity con la lista de materias primas activas y el estado HTTP correspondiente.
+     */
+    @Override
+    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasActivas() {
+        try {
+            return materiaPrimaService.obtenerMateriasPrimasActivas();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Obtiene la lista de materias primas no activas.
+     *
+     * @return ResponseEntity con la lista de materias primas no activas y el estado HTTP correspondiente.
+     */
+    @Override
+    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasNoActivas() {
+        try {
+            return materiaPrimaService.obtenerMateriasPrimasNoActivas();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Obtiene la lista completa de materias primas.
+     *
+     * @return ResponseEntity con la lista completa de materias primas y el estado HTTP correspondiente.
+     */
+    @Override
+    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimas() {
+        try {
+            return materiaPrimaService.obtenerMateriasPrimas();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Cambia el estado de una materia prima.
+     *
+     * @param objetoMap Mapa que contiene los datos necesarios para cambiar el estado de la materia prima.
+     * @return ResponseEntity con el resultado de la operación y el estado HTTP correspondiente.
+     */
+    @Override
+    public ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap) {
+        try {
+            return materiaPrimaService.cambiarEstado(objetoMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Agrega una nueva materia prima.
+     *
+     * @param objetoMap Mapa que contiene los datos de la nueva materia prima.
+     * @return ResponseEntity con el resultado de la operación y el estado HTTP correspondiente.
+     */
+    @Override
+    public ResponseEntity<String> agregar(Map<String, String> objetoMap) {
+        try {
+            return materiaPrimaService.agregar(objetoMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Actualiza una materia prima existente.
+     *
+     * @param objetoMap Mapa que contiene los datos actualizados de la materia prima.
+     * @return ResponseEntity con el resultado de la operación y el estado HTTP correspondiente.
+     */
+    @Override
+    public ResponseEntity<String> actualizar(Map<String, String> objetoMap) {
+        try {
+            return materiaPrimaService.actualizar(objetoMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Obtiene una materia prima por su ID.
+     *
+     * @param id El ID único de la materia prima.
+     * @return ResponseEntity con la materia prima solicitada y el estado HTTP correspondiente.
+     */
+    @Override
+    public ResponseEntity<MateriaPrima> obtenerMateriaPrimaId(Integer id) {
+        try {
+            return materiaPrimaService.obtenerMateriaPrimaId(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new MateriaPrima(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}

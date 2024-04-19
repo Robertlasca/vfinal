@@ -1,0 +1,35 @@
+package com.residencia.restaurante.security.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name="usuario")
+@Entity
+public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+
+    @Column(length = 30)
+    private String nombre;
+    @Column(length = 30)
+    private String apellidos;
+    @Column(length = 50)
+    private String email;
+    @Column(length = 30)
+    private String contrasena;
+    @Column(length = 12)
+    private String telefono;
+
+    @Column(nullable = true)
+    private boolean visibilidad=true;
+    @Column(nullable = true)
+    private boolean verificacionEmail;
+    @Column(nullable = true)
+    private String tokenVerificacionEmail;
+}
