@@ -32,6 +32,6 @@ public interface ICocinaRepository extends JpaRepository<Cocina,Integer> {
      */
     boolean existsCocinaByNombreLikeIgnoreCase(String nombre);
 
-    @Query("SELECT c FROM Cocina c WHERE c NOT IN (SELECT a.cocina FROM Almacen a)")
+    @Query("SELECT c FROM Cocina c WHERE c NOT IN (SELECT a.cocina FROM Almacen a) AND c.visibilidad = true")
     List<Cocina> getCocinasNoAsociadas();
 }
