@@ -66,4 +66,6 @@ public interface IAlmacenController {
      */
     @GetMapping(path = "/obtenerAlmacen/{id}")
     ResponseEntity<Almacen> obtenerAlmacenId(@PathVariable Integer id);
+
+
 }

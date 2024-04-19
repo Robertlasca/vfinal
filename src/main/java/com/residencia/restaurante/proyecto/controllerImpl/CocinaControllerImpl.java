@@ -132,4 +132,14 @@ public class CocinaControllerImpl implements ICocinaController {
         }
         return new ResponseEntity<>(new Cocina(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<Cocina>> obtenerCocinasActivasSinAlmacen() {
+        try {
+            return cocinaService.obtenerCocinasActivasSinAlmacen();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

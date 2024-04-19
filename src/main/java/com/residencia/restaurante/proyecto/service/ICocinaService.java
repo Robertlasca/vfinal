@@ -56,4 +56,6 @@ public interface ICocinaService {
      * @return ResponseEntity con la cocina obtenida.
      */
     ResponseEntity<Cocina> obtenerCocinasId(Integer id);
+
+    ResponseEntity<List<Cocina>> obtenerCocinasActivasSinAlmacen();
 }

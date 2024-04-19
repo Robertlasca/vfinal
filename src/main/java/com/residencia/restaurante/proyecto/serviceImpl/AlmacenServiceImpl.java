@@ -193,6 +193,9 @@ public class AlmacenServiceImpl implements IAlmacenService {
 
         return new ResponseEntity<>(new Almacen(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
+
     /**
      * Crea un objeto Almacen a partir de un mapa de propiedades.
      *

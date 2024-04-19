@@ -130,4 +130,6 @@ public class AlmacenControllerImpl implements IAlmacenController {
         }
         return new ResponseEntity<>(new Almacen(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
 }

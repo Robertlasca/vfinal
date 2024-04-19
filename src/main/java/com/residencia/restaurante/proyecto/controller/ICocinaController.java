@@ -77,4 +77,7 @@ public interface ICocinaController {
      */
     @GetMapping(path = "/obtenerCocina/{id}")
     ResponseEntity<Cocina> obtenerCocinaId(@PathVariable Integer id);
+
+    @GetMapping(path = "/cocinasActivasSinAlmacen")
+    ResponseEntity<List<Cocina>> obtenerCocinasActivasSinAlmacen();
 }

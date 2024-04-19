@@ -179,6 +179,16 @@ public class CocinaServiceImpl implements ICocinaService {
         return new ResponseEntity<>(new Cocina(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<Cocina>> obtenerCocinasActivasSinAlmacen() {
+        try {
+            return new ResponseEntity<List<Cocina>>(cocinaRepository.getCocinasNoAsociadas(),HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<Cocina>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
     private Cocina obtenerCocinaDesdeMap(Map<String, String> objetoMap, boolean esAgregado) {
         Cocina cocina= new Cocina();

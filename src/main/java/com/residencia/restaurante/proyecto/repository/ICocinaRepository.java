@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.repository;
 
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,4 +31,7 @@ public interface ICocinaRepository extends JpaRepository<Cocina,Integer> {
      * @return true si existe una cocina con el nombre especificado, false de lo contrario.
      */
     boolean existsCocinaByNombreLikeIgnoreCase(String nombre);
+
+    @Query("SELECT c FROM Cocina c WHERE c NOT IN (SELECT a.cocina FROM Almacen a)")
+    List<Cocina> getCocinasNoAsociadas();
 }

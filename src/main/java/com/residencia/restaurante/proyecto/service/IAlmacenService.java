@@ -56,4 +56,5 @@ public interface IAlmacenService {
      * @return ResponseEntity con el almacén obtenido.
      */
     ResponseEntity<Almacen> obtenerAlmacenId(Integer id);
+
 }
