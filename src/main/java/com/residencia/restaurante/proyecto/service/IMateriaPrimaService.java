@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,19 +17,19 @@ public interface IMateriaPrimaService {
      * Obtiene todas las materias primas activas.
      * @return ResponseEntity con la lista de materias primas activas.
      */
-    ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasActivas();
+    ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasActivas();
 
     /**
      * Obtiene todas las materias primas no activas.
      * @return ResponseEntity con la lista de materias primas no activas.
      */
-    ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasNoActivas();
+    ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasNoActivas();
 
     /**
      * Obtiene todas las materias primas.
      * @return ResponseEntity con la lista de todas las materias primas.
      */
-    ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimas();
+    ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimas();
 
     /**
      * Cambia el estado de una materia prima.

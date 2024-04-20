@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IMateriaPrimaController;
+import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import com.residencia.restaurante.proyecto.service.IMateriaPrimaService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -29,7 +30,7 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
      * @return ResponseEntity con la lista de materias primas activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasActivas() {
+    public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasActivas() {
         try {
             return materiaPrimaService.obtenerMateriasPrimasActivas();
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
      * @return ResponseEntity con la lista de materias primas no activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasNoActivas() {
+    public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasNoActivas() {
         try {
             return materiaPrimaService.obtenerMateriasPrimasNoActivas();
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
      * @return ResponseEntity con la lista completa de materias primas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimas() {
+    public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimas() {
         try {
             return materiaPrimaService.obtenerMateriasPrimas();
         } catch (Exception e) {
@@ -140,6 +141,11 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> actualizarMateria(int id, String nombre, int idCategoria, double costoUnitario, MultipartFile file) {
+        return null;
     }
 
 

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @Service
 public class UsuarioServiceImpl implements IUsuarioService {
@@ -30,16 +31,21 @@ public class UsuarioServiceImpl implements IUsuarioService {
                     Usuario usuario=new Usuario();
                     usuario.setNombre(objetoMap.get("nombre"));
                     usuario.setApellidos(objetoMap.get("apellidos"));
-                    usuario.setContrasena(passwordEncoder.encode(objetoMap.get("contrasena")));
+                    usuario.setContrasena(objetoMap.get("contrasena"));
+                    //usuario.setContrasena(passwordEncoder.encode(objetoMap.get("contrasena")));
                     usuario.setEmail(objetoMap.get("email"));
                     usuario.setTelefono(objetoMap.get("telefono"));
-                    usuario.setVerificacionEmail(false);
 
                     // Generar un token de verificación
                     String verificationToken = UUID.randomUUID().toString();
+                    System.out.println(verificationToken.length());
                     usuario.setTokenVerificacionEmail(verificationToken);
 
+
+
                     usuarioRepository.save(usuario);
+
+
                     return Utils.getResponseEntity("Usuario registrado con exito.",HttpStatus.OK);
                 }
                 return Utils.getResponseEntity("Ya esta registrado este correo.",HttpStatus.BAD_REQUEST);

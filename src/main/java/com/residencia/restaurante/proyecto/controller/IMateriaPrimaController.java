@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public interface IMateriaPrimaController {
      * @return ResponseEntity con la lista de materias primas activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/materiasPrimasActivas")
-    ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasActivas();
+    ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasActivas();
 
     /**
      * Obtiene una lista de todas las materias primas que actualmente no están activas en el sistema.
@@ -31,7 +32,7 @@ public interface IMateriaPrimaController {
      * @return ResponseEntity con la lista de materias primas no activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/materiasPrimasNoActivas")
-    ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasNoActivas();
+    ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasNoActivas();
 
     /**
      * Obtiene una lista de todas las materias primas registradas en el sistema, independientemente de su estado.
@@ -39,7 +40,7 @@ public interface IMateriaPrimaController {
      * @return ResponseEntity con la lista completa de materias primas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerMateriasPrimas")
-    ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimas();
+    ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimas();
 
     /**
      * Cambia el estado de una materia prima específica en el sistema. La información necesaria
@@ -87,4 +88,11 @@ public interface IMateriaPrimaController {
                                    @RequestParam("costoUnitario") double costoUnitario,
                                    @RequestPart("inventario")String inventario,
                                    @RequestParam("img") MultipartFile file);
+
+    @PostMapping(path = "/actualizarMateriaPrima")
+    ResponseEntity<String> actualizarMateria(@RequestParam("id") int id,
+            @RequestParam("nombre") String nombre,
+                                          @RequestParam("idCategoria") int idCategoria,
+                                          @RequestParam("costoUnitario") double costoUnitario,
+                                          @RequestParam("img") MultipartFile file);
 }

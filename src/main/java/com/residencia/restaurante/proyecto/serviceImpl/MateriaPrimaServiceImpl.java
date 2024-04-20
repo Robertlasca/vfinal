@@ -3,10 +3,9 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
-import com.residencia.restaurante.proyecto.entity.Almacen;
-import com.residencia.restaurante.proyecto.entity.CategoriaMateriaPrima;
-import com.residencia.restaurante.proyecto.entity.Inventario;
-import com.residencia.restaurante.proyecto.entity.MateriaPrima;
+import com.residencia.restaurante.proyecto.dto.CajaDTO;
+import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
+import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.IAlmacenRepository;
 import com.residencia.restaurante.proyecto.repository.ICategoriaMateriaPrimaRepository;
 import com.residencia.restaurante.proyecto.repository.IInventarioRepository;
@@ -47,39 +46,69 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
      * @return ResponseEntity<List<MateriaPrima>> Lista de materias primas activas.
      */
     @Override
-    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasActivas() {
+    public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasActivas() {
         try {
-            return new ResponseEntity<List<MateriaPrima>>(materiaPrimaRepository.getAllByVisibilidadTrue(),HttpStatus.OK);
+            List<MateriaPrimaDTO> materiaConEstado = new ArrayList<>();
+            for (MateriaPrima materiaPrima : materiaPrimaRepository.getAllByVisibilidadTrue()) {
+                MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
+                materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
+                materiaPrimaDTO.setEstado("Visible");
+
+
+                materiaConEstado.add(materiaPrimaDTO);
+            }
+            return new ResponseEntity<List<MateriaPrimaDTO>>(materiaConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<MateriaPrima>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<MateriaPrimaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene todas las materias primas no activas.
      * @return ResponseEntity<List<MateriaPrima>> Lista de materias primas no activas.
      */
     @Override
-    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimasNoActivas() {
+    public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasNoActivas() {
         try {
-            return new ResponseEntity<List<MateriaPrima>>(materiaPrimaRepository.getAllByVisibilidadFalse(),HttpStatus.OK);
+            List<MateriaPrimaDTO> materiaConEstado = new ArrayList<>();
+            for (MateriaPrima materiaPrima : materiaPrimaRepository.getAllByVisibilidadFalse()) {
+                MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
+                materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
+                materiaPrimaDTO.setEstado("No visible");
+
+
+                materiaConEstado.add(materiaPrimaDTO);
+            }
+            return new ResponseEntity<List<MateriaPrimaDTO>>(materiaConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<MateriaPrima>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<MateriaPrimaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene todas las materias primas.
      * @return ResponseEntity<List<MateriaPrima>> Lista de todas las materias primas.
      */
     @Override
-    public ResponseEntity<List<MateriaPrima>> obtenerMateriasPrimas() {
+    public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimas() {
         try {
-            return new ResponseEntity<List<MateriaPrima>>(materiaPrimaRepository.findAll(),HttpStatus.OK);
+            List<MateriaPrimaDTO> materiaConEstado = new ArrayList<>();
+            for (MateriaPrima materiaPrima : materiaPrimaRepository.findAll()) {
+                MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
+                materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
+                if(materiaPrima.isVisibilidad()){
+                    materiaPrimaDTO.setEstado("Visible");
+                }else{
+                    materiaPrimaDTO.setEstado("No visible");
+                }
+
+                materiaConEstado.add(materiaPrimaDTO);
+            }
+            return new ResponseEntity<List<MateriaPrimaDTO>>(materiaConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<MateriaPrima>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<MateriaPrimaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de visibilidad de una materia prima.
@@ -288,6 +317,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                             for(InventarioWrapper inventarioWrapper: listaInventario){
                                 Inventario inventario1=new Inventario();
                                 inventario1.setMateriaPrima(materiaPrima);
+                                System.out.println(inventarioWrapper.getAlmacenId()+"id almacen");
                                 Optional<Almacen> optionalAlmacen= almacenRepository.findById(inventarioWrapper.getAlmacenId());
                                 if(!optionalAlmacen.isEmpty()){
                                     Almacen almacen=optionalAlmacen.get();
@@ -301,6 +331,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                                 inventario1.setStockActual(inventarioWrapper.getStockActual());
                                 inventario1.setStockMax(inventarioWrapper.getStockMaximo());
                                 inventario1.setStockMin(inventarioWrapper.getStockMinimo());
+                                System.out.println("Listo");
 
                                 inventarioRepository.save(inventario1);
 

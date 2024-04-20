@@ -136,6 +136,7 @@ com\residencia\restaurante\proyecto\entity\DetalleOrden_ProductoNormal.class
 com\residencia\restaurante\proyecto\repository\IAreaServicio_MesaRepository.class
 com\residencia\restaurante\proyecto\controller\IMovimientosCajaController.class
 com\residencia\restaurante\proyecto\entity\Mesa.class
+com\residencia\restaurante\proyecto\dto\MateriaPrimaDTO.class
 com\residencia\restaurante\proyecto\service\IImpresoraService.class
 com\residencia\restaurante\proyecto\repository\ICategoriaMateriaPrimaRepository.class
 com\residencia\restaurante\proyecto\entity\Caja.class
