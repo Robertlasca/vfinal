@@ -21,7 +21,7 @@ public class Usuario {
     private String apellidos;
     @Column(length = 50)
     private String email;
-    @Column(length = 30)
+    @Column(length = 100)
     private String contrasena;
     @Column(length = 12)
     private String telefono;
@@ -29,7 +29,7 @@ public class Usuario {
     @Column(nullable = true)
     private boolean visibilidad=true;
     @Column(nullable = true)
-    private boolean verificacionEmail;
-    @Column(nullable = true)
+    private boolean verificacionEmail=false;
+    @Column(nullable = true,length = 100)
     private String tokenVerificacionEmail;
 }
