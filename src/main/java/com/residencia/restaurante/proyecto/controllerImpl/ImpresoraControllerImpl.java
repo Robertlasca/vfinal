@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IImpresoraController;
+import com.residencia.restaurante.proyecto.dto.ImpresoraDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.service.IImpresoraService;
@@ -29,7 +30,7 @@ public class ImpresoraControllerImpl implements IImpresoraController {
      * @return ResponseEntity con la lista de impresoras activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Impresora>> obtenerImpresoraActivas() {
+    public ResponseEntity<List<ImpresoraDTO>> obtenerImpresoraActivas() {
         try {
             return iImpresoraService.obtenerImpresorasActivas();
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public class ImpresoraControllerImpl implements IImpresoraController {
      * @return ResponseEntity con la lista de impresoras no activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Impresora>> obtenerImpresoraNoActivas() {
+    public ResponseEntity<List<ImpresoraDTO>> obtenerImpresoraNoActivas() {
         try {
             return iImpresoraService.obtenerImpresorasNoActivas();
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class ImpresoraControllerImpl implements IImpresoraController {
      * @return ResponseEntity con la lista de todas las impresoras y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Impresora>> obtenerImpresora() {
+    public ResponseEntity<List<ImpresoraDTO>> obtenerImpresora() {
         try {
             return iImpresoraService.obtenerImpresoras();
         } catch (Exception e) {

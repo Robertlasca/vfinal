@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.entity.Almacen;
 import org.springframework.http.ResponseEntity;
 
@@ -15,19 +16,19 @@ public interface IAlmacenService {
      * Obtiene todos los almacenes activos.
      * @return ResponseEntity con la lista de almacenes activos.
      */
-    ResponseEntity<List<Almacen>> obtenerAlmacenActivos();
+    ResponseEntity<List<AlmacenDTO>> obtenerAlmacenActivos();
 
     /**
      * Obtiene todos los almacenes no activos.
      * @return ResponseEntity con la lista de almacenes no activos.
      */
-    ResponseEntity<List<Almacen>> obtenerAlmacenNoActivos();
+    ResponseEntity<List<AlmacenDTO>> obtenerAlmacenNoActivos();
 
     /**
      * Obtiene todos los almacenes.
      * @return ResponseEntity con la lista de todos los almacenes.
      */
-    ResponseEntity<List<Almacen>> obtenerAlmacen();
+    ResponseEntity<List<AlmacenDTO>> obtenerAlmacen();
 
     /**
      * Cambia el estado de un almacén.

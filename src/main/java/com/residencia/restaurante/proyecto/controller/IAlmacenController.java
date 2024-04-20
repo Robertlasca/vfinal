@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import org.springframework.http.ResponseEntity;
@@ -19,21 +20,21 @@ public interface IAlmacenController {
      * @return ResponseEntity con la lista de almacenes activos y el estado HTTP.
      */
     @GetMapping(path = "/almacenesActivos")
-    ResponseEntity<List<Almacen>> obtenerAlmacenActivos();
+    ResponseEntity<List<AlmacenDTO>> obtenerAlmacenActivos();
     /**
      * Obtiene una lista de todos los almacenes no activos.
      *
      * @return ResponseEntity con la lista de almacenes no activos y el estado HTTP.
      */
     @GetMapping(path = "/almacenesNoActivos")
-    ResponseEntity<List<Almacen>> obtenerAlmacenNoActivos();
+    ResponseEntity<List<AlmacenDTO>> obtenerAlmacenNoActivos();
     /**
      * Obtiene una lista de todos los almacenes, independientemente de su estado.
      *
      * @return ResponseEntity con la lista completa de almacenes y el estado HTTP.
      */
     @GetMapping(path = "/obtenerAlmacenes")
-    ResponseEntity<List<Almacen>> obtenerAlmacen();
+    ResponseEntity<List<AlmacenDTO>> obtenerAlmacen();
     /**
      * Cambia el estado de un almacén específico, activándolo o desactivándolo.
      *

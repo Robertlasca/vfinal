@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.ImpresoraDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.Impresora;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public interface IImpresoraController {
      * @return ResponseEntity con la lista de impresoras activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/impresoraActivas")
-    ResponseEntity<List<Impresora>> obtenerImpresoraActivas();
+    ResponseEntity<List<ImpresoraDTO>> obtenerImpresoraActivas();
 
     /**
      * Obtiene una lista de todas las impresoras que actualmente no están activas en el sistema.
@@ -30,7 +31,7 @@ public interface IImpresoraController {
      * @return ResponseEntity con la lista de impresoras no activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/impresoraNoActivas")
-    ResponseEntity<List<Impresora>> obtenerImpresoraNoActivas();
+    ResponseEntity<List<ImpresoraDTO>> obtenerImpresoraNoActivas();
 
     /**
      * Obtiene una lista de todas las impresoras registradas en el sistema, independientemente de su estado.
@@ -38,7 +39,7 @@ public interface IImpresoraController {
      * @return ResponseEntity con la lista completa de impresoras y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerImpresoras")
-    ResponseEntity<List<Impresora>> obtenerImpresora();
+    ResponseEntity<List<ImpresoraDTO>> obtenerImpresora();
 
     /**
      * Cambia el estado de una impresora específica en el sistema. La información necesaria

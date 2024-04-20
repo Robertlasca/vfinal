@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.ImpresoraDTO;
 import com.residencia.restaurante.proyecto.entity.Impresora;
 import org.springframework.http.ResponseEntity;
 
@@ -15,19 +16,19 @@ public interface IImpresoraService {
      * Obtiene todas las impresoras activas.
      * @return ResponseEntity con la lista de impresoras activas.
      */
-    ResponseEntity<List<Impresora>> obtenerImpresorasActivas();
+    ResponseEntity<List<ImpresoraDTO>> obtenerImpresorasActivas();
 
     /**
      * Obtiene todas las impresoras no activas.
      * @return ResponseEntity con la lista de impresoras no activas.
      */
-    ResponseEntity<List<Impresora>> obtenerImpresorasNoActivas();
+    ResponseEntity<List<ImpresoraDTO>> obtenerImpresorasNoActivas();
 
     /**
      * Obtiene todas las impresoras registradas.
      * @return ResponseEntity con la lista de impresoras.
      */
-    ResponseEntity<List<Impresora>> obtenerImpresoras();
+    ResponseEntity<List<ImpresoraDTO>> obtenerImpresoras();
 
     /**
      * Cambia el estado de una impresora.

@@ -1,8 +1,11 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
+import com.residencia.restaurante.proyecto.dto.MedioPagoDTO;
 import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.Cocina;
+import com.residencia.restaurante.proyecto.entity.MedioPago;
 import com.residencia.restaurante.proyecto.repository.IAlmacenRepository;
 import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
 import com.residencia.restaurante.proyecto.service.IAlmacenService;
@@ -34,13 +37,21 @@ public class AlmacenServiceImpl implements IAlmacenService {
      * @return ResponseEntity con la lista de almacenes activos.
      */
     @Override
-    public ResponseEntity<List<Almacen>> obtenerAlmacenActivos() {
+    public ResponseEntity<List<AlmacenDTO>> obtenerAlmacenActivos() {
         try {
-            return new ResponseEntity<List<Almacen>>(almacenRepository.getAllByVisibilidadTrue(),HttpStatus.OK);
+            List<AlmacenDTO> almacenConEstado = new ArrayList<>();
+            for (Almacen almacen : almacenRepository.getAllByVisibilidadTrue()) {
+                AlmacenDTO almacenDTO= new AlmacenDTO();
+                almacenDTO.setAlmacen(almacen);
+                almacenDTO.setEstado("Visible");
+
+                almacenConEstado.add(almacenDTO);
+            }
+            return new ResponseEntity<List<AlmacenDTO>>(almacenConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<Almacen>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<AlmacenDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todos los almacenes no activos.
@@ -48,13 +59,21 @@ public class AlmacenServiceImpl implements IAlmacenService {
      * @return ResponseEntity con la lista de almacenes no activos.
      */
     @Override
-    public ResponseEntity<List<Almacen>> obtenerAlmacenNoActivos() {
+    public ResponseEntity<List<AlmacenDTO>> obtenerAlmacenNoActivos() {
         try {
-            return new ResponseEntity<List<Almacen>>(almacenRepository.getAllByVisibilidadFalse(),HttpStatus.OK);
+            List<AlmacenDTO> almacenConEstado = new ArrayList<>();
+            for (Almacen almacen : almacenRepository.getAllByVisibilidadFalse()) {
+                AlmacenDTO almacenDTO= new AlmacenDTO();
+                almacenDTO.setAlmacen(almacen);
+               almacenDTO.setEstado("No visible");
+
+                almacenConEstado.add(almacenDTO);
+            }
+            return new ResponseEntity<List<AlmacenDTO>>(almacenConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<Almacen>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<AlmacenDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todos los almacenes.
@@ -62,13 +81,25 @@ public class AlmacenServiceImpl implements IAlmacenService {
      * @return ResponseEntity con la lista de todos los almacenes.
      */
     @Override
-    public ResponseEntity<List<Almacen>> obtenerAlmacen() {
+    public ResponseEntity<List<AlmacenDTO>> obtenerAlmacen() {
         try {
-            return new ResponseEntity<List<Almacen>>(almacenRepository.findAll(),HttpStatus.OK);
+            List<AlmacenDTO> almacenConEstado = new ArrayList<>();
+            for (Almacen almacen : almacenRepository.findAll()) {
+                AlmacenDTO almacenDTO= new AlmacenDTO();
+                almacenDTO.setAlmacen(almacen);
+                if(almacen.isVisibilidad()){
+                    almacenDTO.setEstado("Visible");
+                }else{
+                    almacenDTO.setEstado("No visible");
+                }
+
+                almacenConEstado.add(almacenDTO);
+            }
+            return new ResponseEntity<List<AlmacenDTO>>(almacenConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<Almacen>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<AlmacenDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de visibilidad de un almacén basado en su ID.

@@ -9,6 +9,7 @@ com\residencia\restaurante\RestauranteApplication$Myconfiguration$1.class
 com\residencia\restaurante\proyecto\dto\ProductoNormalDTO.class
 com\residencia\restaurante\proyecto\controllerImpl\MateriaPrimaControllerImpl.class
 com\residencia\restaurante\proyecto\controllerImpl\CajaControllerImpl.class
+com\residencia\restaurante\proyecto\dto\ImpresoraDTO.class
 com\residencia\restaurante\security\repository\IConfirmationTokenRepository.class
 com\residencia\restaurante\proyecto\controllerImpl\MovimientoCajaControllerImpl.class
 com\residencia\restaurante\proyecto\service\IUsuarioService.class
@@ -82,6 +83,7 @@ com\residencia\restaurante\proyecto\repository\IAreaServicioRepository.class
 com\residencia\restaurante\proyecto\repository\IVentaRepository.class
 com\residencia\restaurante\proyecto\entity\MedioPago.class
 com\residencia\restaurante\proyecto\controllerImpl\MedioPagoControllerImpl.class
+com\residencia\restaurante\proyecto\dto\AlmacenDTO.class
 com\residencia\restaurante\proyecto\service\ICategoriaService.class
 com\residencia\restaurante\proyecto\service\ICocinaService.class
 com\residencia\restaurante\RestauranteApplication$Myconfiguration.class

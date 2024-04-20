@@ -33,7 +33,7 @@ public class CajaServiceImpl implements ICajaService {
             for (Caja caja : cajaRepository.getAllByVisibilidadTrue()) {
                 CajaDTO cajaDTO= new CajaDTO();
                 cajaDTO.setCaja(caja);
-                cajaDTO.setEstado("No visible");
+                cajaDTO.setEstado("Visible");
                 cajaConEstado.add(cajaDTO);
             }
             return new ResponseEntity<List<CajaDTO>>(cajaConEstado, HttpStatus.OK);

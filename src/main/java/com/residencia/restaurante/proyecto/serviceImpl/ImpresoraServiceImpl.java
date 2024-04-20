@@ -1,6 +1,9 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
+import com.residencia.restaurante.proyecto.dto.ImpresoraDTO;
+import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
@@ -27,45 +30,77 @@ public class ImpresoraServiceImpl implements IImpresoraService {
      * @return Lista de impresoras activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Impresora>> obtenerImpresorasActivas() {
+    public ResponseEntity<List<ImpresoraDTO>> obtenerImpresorasActivas() {
         try {
-            return new ResponseEntity<List<Impresora>>(iImpresoraRepository.getAllByEstadoTrue(),HttpStatus.OK);
+            List<ImpresoraDTO> impresoraConEstado = new ArrayList<>();
+            for (Impresora impresora : iImpresoraRepository.getAllByEstadoTrue()) {
+                ImpresoraDTO impresoraDTO= new ImpresoraDTO();
+                impresoraDTO.setImpresora(impresora);
+
+                impresoraDTO.setEstado("Visible");
+
+
+                impresoraConEstado.add(impresoraDTO);
+            }
+            return new ResponseEntity<List<ImpresoraDTO>>(impresoraConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Impresora>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<ImpresoraDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las impresoras no activas.
      * @return Lista de impresoras no activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Impresora>> obtenerImpresorasNoActivas() {
+    public ResponseEntity<List<ImpresoraDTO>> obtenerImpresorasNoActivas() {
         try {
-            return new ResponseEntity<List<Impresora>>(iImpresoraRepository.getAllByEstadoFalse(),HttpStatus.OK);
+            List<ImpresoraDTO> impresoraConEstado = new ArrayList<>();
+            for (Impresora impresora : iImpresoraRepository.getAllByEstadoFalse()) {
+                ImpresoraDTO impresoraDTO= new ImpresoraDTO();
+                impresoraDTO.setImpresora(impresora);
+
+                    impresoraDTO.setEstado("No visible");
+
+
+                impresoraConEstado.add(impresoraDTO);
+            }
+            return new ResponseEntity<List<ImpresoraDTO>>(impresoraConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Impresora>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<ImpresoraDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las impresoras registradas.
      * @return Lista de impresoras con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Impresora>> obtenerImpresoras() {
+    public ResponseEntity<List<ImpresoraDTO>> obtenerImpresoras() {
         try {
-            return new ResponseEntity<List<Impresora>>(iImpresoraRepository.findAll(),HttpStatus.OK);
+            List<ImpresoraDTO> impresoraConEstado = new ArrayList<>();
+            for (Impresora impresora : iImpresoraRepository.findAll()) {
+                ImpresoraDTO impresoraDTO= new ImpresoraDTO();
+                impresoraDTO.setImpresora(impresora);
+                if(impresora.isEstado()){
+                    impresoraDTO.setEstado("Visible");
+                }else{
+                    impresoraDTO.setEstado("No visible");
+                }
+
+                impresoraConEstado.add(impresoraDTO);
+            }
+            return new ResponseEntity<List<ImpresoraDTO>>(impresoraConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Impresora>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<ImpresoraDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de una impresora (activo/inactivo) según el ID proporcionado en el mapa de datos.

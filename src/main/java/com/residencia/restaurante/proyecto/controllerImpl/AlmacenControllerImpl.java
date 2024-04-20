@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IAlmacenController;
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.service.IAlmacenService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -28,7 +29,7 @@ public class AlmacenControllerImpl implements IAlmacenController {
      * @return ResponseEntity con la lista de almacenes activos y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Almacen>> obtenerAlmacenActivos() {
+    public ResponseEntity<List<AlmacenDTO>> obtenerAlmacenActivos() {
         try {
             return almacenService.obtenerAlmacenActivos();
         } catch (Exception e) {
@@ -43,7 +44,7 @@ public class AlmacenControllerImpl implements IAlmacenController {
      * @return ResponseEntity con la lista de almacenes no activos y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Almacen>> obtenerAlmacenNoActivos() {
+    public ResponseEntity<List<AlmacenDTO>> obtenerAlmacenNoActivos() {
         try {
             return almacenService.obtenerAlmacenNoActivos();
         } catch (Exception e) {
@@ -58,7 +59,7 @@ public class AlmacenControllerImpl implements IAlmacenController {
      * @return ResponseEntity con la lista completa de almacenes y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Almacen>> obtenerAlmacen() {
+    public ResponseEntity<List<AlmacenDTO>> obtenerAlmacen() {
         try {
             return almacenService.obtenerAlmacen();
         } catch (Exception e) {
