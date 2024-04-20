@@ -154,8 +154,6 @@ public class CajaServiceImpl implements ICajaService {
 
     private Caja obtenerCajaDesdeMap(Map<String, String> objetoMap, boolean esAgregado) {
         Caja caja= new Caja();
-        boolean disponibidad=true;
-        boolean estado=true;
 
         if(esAgregado){
             Optional<Caja>cajaOptional=cajaRepository.findById(Integer.parseInt(objetoMap.get("id")));

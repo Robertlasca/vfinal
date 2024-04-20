@@ -71,6 +71,7 @@ com\residencia\restaurante\proyecto\repository\IAlmacenRepository.class
 com\residencia\restaurante\proyecto\repository\IMenuRepository.class
 com\residencia\restaurante\proyecto\controllerImpl\UtensilioControllerImpl.class
 com\residencia\restaurante\proyecto\repository\IArqueoRepository.class
+com\residencia\restaurante\proyecto\dto\AreaServicioDTO.class
 com\residencia\restaurante\proyecto\service\IArqueoSaldosService.class
 com\residencia\restaurante\proyecto\entity\Venta.class
 com\residencia\restaurante\proyecto\repository\IMesaRepository.class
@@ -80,6 +81,7 @@ com\residencia\restaurante\security\model\Rol$RolBuilder.class
 com\residencia\restaurante\proyecto\serviceImpl\UploadFileService.class
 com\residencia\restaurante\security\model\Rol.class
 com\residencia\restaurante\security\utils\Utils.class
+com\residencia\restaurante\proyecto\controllerImpl\AreaServicioControllerImpl.class
 com\residencia\restaurante\proyecto\repository\IUtensilioRepository.class
 com\residencia\restaurante\proyecto\dto\CategoriaDTO.class
 com\residencia\restaurante\proyecto\repository\IAreaServicioRepository.class
@@ -87,6 +89,7 @@ com\residencia\restaurante\proyecto\repository\IVentaRepository.class
 com\residencia\restaurante\proyecto\entity\MedioPago.class
 com\residencia\restaurante\proyecto\controllerImpl\MedioPagoControllerImpl.class
 com\residencia\restaurante\proyecto\dto\AlmacenDTO.class
+com\residencia\restaurante\proyecto\serviceImpl\AreaServicioServiceImpl.class
 com\residencia\restaurante\proyecto\service\ICategoriaService.class
 com\residencia\restaurante\proyecto\service\ICocinaService.class
 com\residencia\restaurante\RestauranteApplication$Myconfiguration.class
@@ -116,6 +119,7 @@ com\residencia\restaurante\proyecto\serviceImpl\CocinaServiceImpl.class
 com\residencia\restaurante\proyecto\entity\Utensilio.class
 com\residencia\restaurante\proyecto\repository\ICategoriaRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\UsuarioParametrosServiceImpl.class
+com\residencia\restaurante\proyecto\service\IAreaServicioService.class
 com\residencia\restaurante\proyecto\serviceImpl\MateriaPrimaServiceImpl$2.class
 com\residencia\restaurante\proyecto\repository\IVenta_MedioPagoRepository.class
 com\residencia\restaurante\proyecto\service\IInventarioService.class

@@ -8,12 +8,14 @@ D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IAlmacenRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IMedioPagoController.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IArqueoSaldosService.java
+D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\AreaServicioDTO.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IProductoNormalService.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\Venta_MedioPago.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IMovimiento_InventarioRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IArqueoSaldosRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\security\repository\IUsuarioRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\MateriaPrima_Menu.java
+D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IAreaServicioService.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\security\model\Usuario_Rol.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\ArqueoSaldos.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IMateriaPrimaService.java
@@ -24,6 +26,7 @@ D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IOrdenRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\EmailService.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\ArqueoSaldosControllerImpl.java
+D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\AreaServicioControllerImpl.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IDetalleOrden_MenuRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\UtensilioControllerImpl.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\UtensilioServiceImpl.java
@@ -116,6 +119,7 @@ D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\security\model\ConfirmationToken.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\ImpresoraControllerImpl.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\DetalleOrdenMenu.java
+D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\AreaServicioServiceImpl.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\MovimientoCajaServiceImpl.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IImpresoraRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\ICategoriaMateriaPrimaController.java
