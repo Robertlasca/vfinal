@@ -35,6 +35,7 @@ com\residencia\restaurante\proyecto\controller\IInventarioController.class
 com\residencia\restaurante\proyecto\serviceImpl\MateriaPrimaServiceImpl$1.class
 com\residencia\restaurante\proyecto\entity\MateriaPrima_Menu.class
 com\residencia\restaurante\proyecto\repository\IArqueoSaldosRepository.class
+com\residencia\restaurante\proyecto\dto\MedioPagoDTO.class
 com\residencia\restaurante\proyecto\entity\CategoriaMateriaPrima.class
 com\residencia\restaurante\proyecto\repository\IProductoTerminadoRepository.class
 com\residencia\restaurante\security\model\Usuario.class
@@ -142,4 +143,5 @@ com\residencia\restaurante\proyecto\service\IMedioPagoService.class
 com\residencia\restaurante\proyecto\controllerImpl\AlmacenControllerImpl.class
 com\residencia\restaurante\proyecto\entity\ProductoTerminado.class
 com\residencia\restaurante\proyecto\controller\IArqueoSaldosController.class
+com\residencia\restaurante\proyecto\dto\CajaDTO.class
 com\residencia\restaurante\proyecto\entity\Movimientos_Inventario.class

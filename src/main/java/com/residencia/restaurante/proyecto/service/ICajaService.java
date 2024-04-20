@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.CajaDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import org.springframework.http.ResponseEntity;
 
@@ -15,19 +16,19 @@ public interface ICajaService {
      * Obtiene todas las cajas activas.
      * @return ResponseEntity con la lista de cajas activas.
      */
-    ResponseEntity<List<Caja>> obtenerCajasActivas();
+    ResponseEntity<List<CajaDTO>> obtenerCajasActivas();
 
     /**
      * Obtiene todas las cajas no activas.
      * @return ResponseEntity con la lista de cajas no activas.
      */
-    ResponseEntity<List<Caja>> obtenerCajasNoActivas();
+    ResponseEntity<List<CajaDTO>> obtenerCajasNoActivas();
 
     /**
      * Obtiene todas las cajas registradas.
      * @return ResponseEntity con la lista de cajas.
      */
-    ResponseEntity<List<Caja>> obtenerCajas();
+    ResponseEntity<List<CajaDTO>> obtenerCajas();
 
     /**
      * Cambia el estado de una caja.

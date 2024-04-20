@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.CajaDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,21 +20,21 @@ public interface ICajaController {
      * @return ResponseEntity con la lista de cajas activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/cajasActivas")
-    ResponseEntity<List<Caja>> obtenerCajasActivas();
+    ResponseEntity<List<CajaDTO>> obtenerCajasActivas();
     /**
      * Obtiene una lista de todas las cajas que actualmente no están activas en el sistema.
      *
      * @return ResponseEntity con la lista de cajas no activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/cajasNoActivas")
-    ResponseEntity<List<Caja>> obtenerCajasNoActivas();
+    ResponseEntity<List<CajaDTO>> obtenerCajasNoActivas();
     /**
      * Obtiene una lista de todas las cajas registradas en el sistema, independientemente de su estado.
      *
      * @return ResponseEntity con la lista completa de cajas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerCajas")
-    ResponseEntity<List<Caja>> obtenerCajas();
+    ResponseEntity<List<CajaDTO>> obtenerCajas();
     /**
      * Cambia el estado de una caja específica en el sistema.
      *

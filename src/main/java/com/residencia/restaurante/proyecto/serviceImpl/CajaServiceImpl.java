@@ -1,7 +1,10 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.CajaDTO;
+import com.residencia.restaurante.proyecto.dto.MedioPagoDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
+import com.residencia.restaurante.proyecto.entity.MedioPago;
 import com.residencia.restaurante.proyecto.repository.ICajaRepository;
 import com.residencia.restaurante.proyecto.service.ICajaService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -24,45 +27,70 @@ public class CajaServiceImpl implements ICajaService {
      * @return Lista de cajas activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Caja>> obtenerCajasActivas() {
+    public ResponseEntity<List<CajaDTO>> obtenerCajasActivas() {
         try {
-            return new ResponseEntity<List<Caja>>(cajaRepository.getAllByVisibilidadTrue(), HttpStatus.OK);
+            List<CajaDTO> cajaConEstado = new ArrayList<>();
+            for (Caja caja : cajaRepository.getAllByVisibilidadTrue()) {
+                CajaDTO cajaDTO= new CajaDTO();
+                cajaDTO.setCaja(caja);
+                cajaDTO.setEstado("No visible");
+                cajaConEstado.add(cajaDTO);
+            }
+            return new ResponseEntity<List<CajaDTO>>(cajaConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Caja>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CajaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las cajas no activas.
      * @return Lista de cajas no activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Caja>> obtenerCajasNoActivas() {
+    public ResponseEntity<List<CajaDTO>> obtenerCajasNoActivas() {
         try {
-            return new ResponseEntity<List<Caja>>(cajaRepository.getAllByVisibilidadFalse(), HttpStatus.OK);
+            List<CajaDTO> cajaConEstado = new ArrayList<>();
+            for (Caja caja : cajaRepository.getAllByVisibilidadFalse()) {
+                CajaDTO cajaDTO= new CajaDTO();
+                cajaDTO.setCaja(caja);
+                cajaDTO.setEstado("No visible");
+                cajaConEstado.add(cajaDTO);
+            }
+            return new ResponseEntity<List<CajaDTO>>(cajaConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Caja>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CajaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las cajas registradas.
      * @return Lista de cajas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Caja>> obtenerCajas() {
+    public ResponseEntity<List<CajaDTO>> obtenerCajas() {
         try {
-            return new ResponseEntity<List<Caja>>(cajaRepository.findAll(), HttpStatus.OK);
+            List<CajaDTO> cajaConEstado = new ArrayList<>();
+            for (Caja caja : cajaRepository.findAll()) {
+                CajaDTO cajaDTO= new CajaDTO();
+                cajaDTO.setCaja(caja);
+                if(caja.getVisibilidad()){
+                    cajaDTO.setEstado("Visible");
+                }else{
+                    cajaDTO.setEstado("No visible");
+                }
 
+                cajaConEstado.add(cajaDTO);
+            }
+            return new ResponseEntity<List<CajaDTO>>(cajaConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Caja>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CajaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de una caja (activo/inactivo) según el ID proporcionado en el mapa de datos.

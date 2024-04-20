@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IMedioPagoController;
+import com.residencia.restaurante.proyecto.dto.MedioPagoDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
 import com.residencia.restaurante.proyecto.service.IMedioPagoService;
@@ -29,7 +30,7 @@ public class MedioPagoControllerImpl implements IMedioPagoController {
      * @return ResponseEntity con la lista de medios de pago activos y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<MedioPago>> obtenerMedioPagoActivos() {
+    public ResponseEntity<List<MedioPagoDTO>> obtenerMedioPagoActivos() {
         try {
             return medioPagoService.obtenerMedioPagoActivas();
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public class MedioPagoControllerImpl implements IMedioPagoController {
      * @return ResponseEntity con la lista de medios de pago no activos y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<MedioPago>> obtenerMedioPagoNoActivos() {
+    public ResponseEntity<List<MedioPagoDTO>> obtenerMedioPagoNoActivos() {
         try {
             return medioPagoService.obtenerMedioPagoNoActivas();
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class MedioPagoControllerImpl implements IMedioPagoController {
      * @return ResponseEntity con la lista completa de medios de pago y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<MedioPago>> obtenerMedioPago() {
+    public ResponseEntity<List<MedioPagoDTO>> obtenerMedioPago() {
         try {
             return medioPagoService.obtenerMedioPago();
         } catch (Exception e) {

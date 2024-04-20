@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.ICajaController;
+import com.residencia.restaurante.proyecto.dto.CajaDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.service.ICajaService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -29,7 +30,7 @@ public class CajaControllerImpl implements ICajaController {
      * @return ResponseEntity con la lista de cajas activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Caja>> obtenerCajasActivas() {
+    public ResponseEntity<List<CajaDTO>> obtenerCajasActivas() {
         try {
             return cajaService.obtenerCajasActivas();
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public class CajaControllerImpl implements ICajaController {
      * @return ResponseEntity con la lista de cajas no activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Caja>> obtenerCajasNoActivas() {
+    public ResponseEntity<List<CajaDTO>> obtenerCajasNoActivas() {
         try {
             return cajaService.obtenerCajasNoActivas();
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class CajaControllerImpl implements ICajaController {
      * @return ResponseEntity con la lista de todas las cajas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Caja>> obtenerCajas() {
+    public ResponseEntity<List<CajaDTO>> obtenerCajas() {
         try {
             return cajaService.obtenerCajas();
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.MedioPagoDTO;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
 import org.springframework.http.ResponseEntity;
 
@@ -15,19 +16,19 @@ public interface IMedioPagoService {
      * Obtiene todos los medios de pago activos.
      * @return ResponseEntity con la lista de medios de pago activos.
      */
-    ResponseEntity<List<MedioPago>> obtenerMedioPagoActivas();
+    ResponseEntity<List<MedioPagoDTO>> obtenerMedioPagoActivas();
 
     /**
      * Obtiene todos los medios de pago no activos.
      * @return ResponseEntity con la lista de medios de pago no activos.
      */
-    ResponseEntity<List<MedioPago>> obtenerMedioPagoNoActivas();
+    ResponseEntity<List<MedioPagoDTO>> obtenerMedioPagoNoActivas();
 
     /**
      * Obtiene todos los medios de pago.
      * @return ResponseEntity con la lista de todos los medios de pago.
      */
-    ResponseEntity<List<MedioPago>> obtenerMedioPago();
+    ResponseEntity<List<MedioPagoDTO>> obtenerMedioPago();
 
     /**
      * Cambia el estado de un medio de pago.

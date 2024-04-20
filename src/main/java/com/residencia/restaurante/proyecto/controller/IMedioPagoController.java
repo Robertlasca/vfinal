@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.MedioPagoDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public interface IMedioPagoController {
      * @return ResponseEntity con la lista de medios de pago activos y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/medioPagoActivos")
-    ResponseEntity<List<MedioPago>> obtenerMedioPagoActivos();
+    ResponseEntity<List<MedioPagoDTO>> obtenerMedioPagoActivos();
 
     /**
      * Obtiene una lista de todos los medios de pago que actualmente no están activos en el sistema.
@@ -30,7 +31,7 @@ public interface IMedioPagoController {
      * @return ResponseEntity con la lista de medios de pago no activos y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/medioPagoNoActivos")
-    ResponseEntity<List<MedioPago>> obtenerMedioPagoNoActivos();
+    ResponseEntity<List<MedioPagoDTO>> obtenerMedioPagoNoActivos();
 
     /**
      * Obtiene una lista de todos los medios de pago registrados en el sistema, independientemente de su estado.
@@ -38,7 +39,7 @@ public interface IMedioPagoController {
      * @return ResponseEntity con la lista completa de medios de pago y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerMedioPago")
-    ResponseEntity<List<MedioPago>> obtenerMedioPago();
+    ResponseEntity<List<MedioPagoDTO>> obtenerMedioPago();
 
     /**
      * Cambia el estado de un medio de pago específico en el sistema.

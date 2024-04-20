@@ -1,7 +1,10 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
+import com.residencia.restaurante.proyecto.dto.MedioPagoDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
+import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
 import com.residencia.restaurante.proyecto.repository.IMedioPagoRepository;
 import com.residencia.restaurante.proyecto.service.IMedioPagoService;
@@ -25,42 +28,74 @@ public class MedioPagoServiceImpl implements IMedioPagoService {
      * @return ResponseEntity<List<MedioPago>> Lista de medios de pago activos.
      */
     @Override
-    public ResponseEntity<List<MedioPago>> obtenerMedioPagoActivas() {
+    public ResponseEntity<List<MedioPagoDTO>> obtenerMedioPagoActivas() {
         try {
-            return new ResponseEntity<List<MedioPago>>(medioPagoRepository.getAllByDisponibilidadTrue(), HttpStatus.OK);
+            List<MedioPagoDTO> mediosPagoConEstado = new ArrayList<>();
+            for (MedioPago medioPago : medioPagoRepository.getAllByDisponibilidadTrue()) {
+                MedioPagoDTO medioPagoDTO= new MedioPagoDTO();
+                medioPagoDTO.setMedioPago(medioPago);
+                medioPagoDTO.setEstado("Visible");
+
+
+
+                mediosPagoConEstado.add(medioPagoDTO);
+            }
+            return new ResponseEntity<List<MedioPagoDTO>>(mediosPagoConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<MedioPago>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<MedioPagoDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene todos los medios de pago no activos.
      * @return ResponseEntity<List<MedioPago>> Lista de medios de pago no activos.
      */
     @Override
-    public ResponseEntity<List<MedioPago>> obtenerMedioPagoNoActivas() {
+    public ResponseEntity<List<MedioPagoDTO>> obtenerMedioPagoNoActivas() {
         try {
-            return new ResponseEntity<List<MedioPago>>(medioPagoRepository.getAllByDisponibilidadFalse(), HttpStatus.OK);
+            List<MedioPagoDTO> mediosPagoConEstado = new ArrayList<>();
+            for (MedioPago medioPago : medioPagoRepository.getAllByDisponibilidadFalse()) {
+                MedioPagoDTO medioPagoDTO= new MedioPagoDTO();
+                medioPagoDTO.setMedioPago(medioPago);
+                medioPagoDTO.setEstado("No visible");
+
+
+                mediosPagoConEstado.add(medioPagoDTO);
+            }
+            return new ResponseEntity<List<MedioPagoDTO>>(mediosPagoConEstado, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<MedioPago>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<MedioPagoDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene todos los medios de pago.
      * @return ResponseEntity<List<MedioPago>> Lista de todos los medios de pago.
      */
     @Override
-    public ResponseEntity<List<MedioPago>> obtenerMedioPago() {
+    public ResponseEntity<List<MedioPagoDTO>> obtenerMedioPago() {
         try {
-            return new ResponseEntity<List<MedioPago>>(medioPagoRepository.findAll(), HttpStatus.OK);
+            List<MedioPagoDTO> mediosPagoConEstado = new ArrayList<>();
+            for (MedioPago medioPago : medioPagoRepository.findAll()) {
+                MedioPagoDTO medioPagoDTO= new MedioPagoDTO();
+                medioPagoDTO.setMedioPago(medioPago);
+                if(medioPago.isDisponibilidad()){
+                    medioPagoDTO.setEstado("Visible");
+                }else{
+                    medioPagoDTO.setEstado("No visible");
+                }
+
+                mediosPagoConEstado.add(medioPagoDTO);
+            }
+            return new ResponseEntity<List<MedioPagoDTO>>(mediosPagoConEstado, HttpStatus.OK);
+
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<MedioPago>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<MedioPagoDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de disponibilidad de un medio de pago.
