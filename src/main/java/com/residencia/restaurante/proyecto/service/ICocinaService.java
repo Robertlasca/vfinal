@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import org.springframework.http.ResponseEntity;
 
@@ -15,19 +16,19 @@ public interface ICocinaService {
      * Obtiene todas las cocinas activas.
      * @return ResponseEntity con la lista de cocinas activas.
      */
-    ResponseEntity<List<Cocina>> obtenerCocinasActivas();
+    ResponseEntity<List<EstacionDTO>> obtenerCocinasActivas();
 
     /**
      * Obtiene todas las cocinas no activas.
      * @return ResponseEntity con la lista de cocinas no activas.
      */
-    ResponseEntity<List<Cocina>> obtenerCocinasNoActivas();
+    ResponseEntity<List<EstacionDTO>> obtenerCocinasNoActivas();
 
     /**
      * Obtiene todas las cocinas registradas.
      * @return ResponseEntity con la lista de cocinas.
      */
-    ResponseEntity<List<Cocina>> obtenerCocinas();
+    ResponseEntity<List<EstacionDTO>> obtenerCocinas();
 
     /**
      * Cambia el estado de una cocina.

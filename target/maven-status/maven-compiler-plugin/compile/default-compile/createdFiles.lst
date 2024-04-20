@@ -97,6 +97,7 @@ com\residencia\restaurante\proyecto\constantes\Constantes.class
 com\residencia\restaurante\proyecto\entity\MateriaPrima_ProductoTerminado.class
 com\residencia\restaurante\proyecto\serviceImpl\InventarioServiceImpl.class
 com\residencia\restaurante\proyecto\entity\Cocina_Utensilio.class
+com\residencia\restaurante\proyecto\dto\EstacionDTO.class
 com\residencia\restaurante\proyecto\service\IAlmacenService.class
 com\residencia\restaurante\proyecto\entity\Almacen.class
 com\residencia\restaurante\proyecto\entity\Venta_MedioPago.class

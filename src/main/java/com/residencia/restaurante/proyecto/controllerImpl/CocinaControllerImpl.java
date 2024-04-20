@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.ICocinaController;
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
 import com.residencia.restaurante.proyecto.service.ICocinaService;
@@ -30,7 +31,7 @@ public class CocinaControllerImpl implements ICocinaController {
      * @return ResponseEntity con la lista de cocinas activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Cocina>> obtenerCocinaActivas() {
+    public ResponseEntity<List<EstacionDTO>> obtenerCocinaActivas() {
         try {
             return cocinaService.obtenerCocinasActivas();
         } catch (Exception e) {
@@ -45,7 +46,7 @@ public class CocinaControllerImpl implements ICocinaController {
      * @return ResponseEntity con la lista de cocinas no activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Cocina>> obtenerCocinaNoActivas() {
+    public ResponseEntity<List<EstacionDTO>> obtenerCocinaNoActivas() {
         try {
             return cocinaService.obtenerCocinasNoActivas();
         } catch (Exception e) {
@@ -60,7 +61,7 @@ public class CocinaControllerImpl implements ICocinaController {
      * @return ResponseEntity con la lista de todas las cocinas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Cocina>> obtenerCocina() {
+    public ResponseEntity<List<EstacionDTO>> obtenerCocina() {
         try {
             return cocinaService.obtenerCocinas();
         } catch (Exception e) {

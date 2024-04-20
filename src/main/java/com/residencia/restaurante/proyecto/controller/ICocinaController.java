@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public interface ICocinaController {
      * @return ResponseEntity con la lista de estaciones de cocina activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/cocinaActivas")
-    ResponseEntity<List<Cocina>> obtenerCocinaActivas();
+    ResponseEntity<List<EstacionDTO>> obtenerCocinaActivas();
 
     /**
      * Obtiene una lista de todas las estaciones de cocina que actualmente no están activas en el sistema.
@@ -30,7 +31,7 @@ public interface ICocinaController {
      * @return ResponseEntity con la lista de estaciones de cocina no activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/cocinaNoActivas")
-    ResponseEntity<List<Cocina>> obtenerCocinaNoActivas();
+    ResponseEntity<List<EstacionDTO>> obtenerCocinaNoActivas();
 
     /**
      * Obtiene una lista de todas las estaciones de cocina registradas en el sistema, independientemente de su estado.
@@ -38,7 +39,7 @@ public interface ICocinaController {
      * @return ResponseEntity con la lista completa de estaciones de cocina y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerCocinas")
-    ResponseEntity<List<Cocina>> obtenerCocina();
+    ResponseEntity<List<EstacionDTO>> obtenerCocina();
 
     /**
      * Cambia el estado de una estación de cocina específica en el sistema. La información necesaria

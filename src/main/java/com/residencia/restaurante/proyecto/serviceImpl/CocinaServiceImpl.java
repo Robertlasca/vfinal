@@ -1,8 +1,11 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
+import com.residencia.restaurante.proyecto.dto.InventarioDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.Cocina;
+import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
 import com.residencia.restaurante.proyecto.service.ICocinaService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -25,44 +28,71 @@ public class CocinaServiceImpl implements ICocinaService {
      * @return Lista de cocinas activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Cocina>> obtenerCocinasActivas() {
+    public ResponseEntity<List<EstacionDTO>> obtenerCocinasActivas() {
         try {
-            return new ResponseEntity<List<Cocina>>(cocinaRepository.getAllByVisibilidadTrue(), HttpStatus.OK);
+            List<EstacionDTO> estacionesConEstado = new ArrayList<>();
+            for (Cocina cocina : cocinaRepository.getAllByVisibilidadTrue()) {
+                EstacionDTO estacionDTO= new EstacionDTO();
+                estacionDTO.setCocina(cocina);
+                estacionDTO.setEstado("Visible");
+                estacionesConEstado.add(estacionDTO);
+            }
+            return new ResponseEntity<List<EstacionDTO>>(estacionesConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Cocina>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<EstacionDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las cocinas no activas.
      * @return Lista de cocinas no activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Cocina>> obtenerCocinasNoActivas() {
+    public ResponseEntity<List<EstacionDTO>> obtenerCocinasNoActivas() {
         try {
-            return new ResponseEntity<List<Cocina>>(cocinaRepository.getAllByVisibilidadFalse(), HttpStatus.OK);
+            List<EstacionDTO> estacionesConEstado = new ArrayList<>();
+            for (Cocina cocina : cocinaRepository.getAllByVisibilidadFalse()) {
+                EstacionDTO estacionDTO= new EstacionDTO();
+                estacionDTO.setCocina(cocina);
+                estacionDTO.setEstado("No visible");
+                estacionesConEstado.add(estacionDTO);
+            }
+            return new ResponseEntity<List<EstacionDTO>>(estacionesConEstado, HttpStatus.OK);
+
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Cocina>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<EstacionDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las cocinas registradas.
      * @return Lista de cocinas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Cocina>> obtenerCocinas() {
+    public ResponseEntity<List<EstacionDTO>> obtenerCocinas() {
         try {
-            return new ResponseEntity<List<Cocina>>(cocinaRepository.findAll(), HttpStatus.OK);
+            List<EstacionDTO> estacionesConEstado = new ArrayList<>();
+            for (Cocina cocina : cocinaRepository.findAll()) {
+                EstacionDTO estacionDTO= new EstacionDTO();
+                estacionDTO.setCocina(cocina);
+                if(cocina.isVisibilidad()){
+                    estacionDTO.setEstado("Visible");
+                }else{
+                    estacionDTO.setEstado("No visible");
+                }
+
+                estacionesConEstado.add(estacionDTO);
+            }
+            return new ResponseEntity<List<EstacionDTO>>(estacionesConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Cocina>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<EstacionDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de una cocina (activo/inactivo) según el ID proporcionado en el mapa de datos.

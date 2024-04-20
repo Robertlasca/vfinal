@@ -83,6 +83,7 @@ D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IMovimientoCajaService.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\ICajaService.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\ICategoriaRepository.java
+D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\EstacionDTO.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\MedioPago.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\UploadFileService.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IUsuarioParametrosController.java
