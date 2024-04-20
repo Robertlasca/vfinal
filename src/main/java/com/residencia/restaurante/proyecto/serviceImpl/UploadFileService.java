@@ -13,23 +13,29 @@ import java.nio.file.Paths;
  */
 @Service
 public class UploadFileService {
-    private String folder="images//";
     /**
      * Guarda una imagen en el directorio especificado.
      * @param file Archivo de imagen a guardar.
      * @return String Nombre del archivo guardado.
      * @throws IOException Si ocurre un error de E/S durante la escritura del archivo.
      */
-    public String guardarImagen(MultipartFile file)throws IOException {
-        if(!file.isEmpty()){
-            byte[] bytes=file.getBytes();
-            Path path= Paths.get(folder+file.getOriginalFilename());
-            Files.write(path,bytes);
+    private String folder = "images/";
+
+    public String guardarImagen(MultipartFile file) throws IOException {
+        if (!file.isEmpty()) {
+            // Verificar si el directorio existe, si no existe, crearlo
+            Path directoryPath = Paths.get(folder);
+            if (!Files.exists(directoryPath)) {
+                Files.createDirectories(directoryPath);
+            }
+
+            byte[] bytes = file.getBytes();
+            Path path = Paths.get(folder + file.getOriginalFilename());
+            Files.write(path, bytes);
             return file.getOriginalFilename();
         }
         return "default.jpg";
     }
-
     /**
      * Elimina una imagen del directorio.
      * @param nombre Nombre del archivo a eliminar.
