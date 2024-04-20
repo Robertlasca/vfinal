@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,4 +131,16 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
         }
         return new ResponseEntity<>(new MateriaPrima(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> agregarMateria(String nombre, int idCategoria, int idUsuario, String unidadMedida, double costoUnitario, String inventario, MultipartFile file) {
+        try {
+            return materiaPrimaService.agregarMateria(nombre,idCategoria,idUsuario,unidadMedida,costoUnitario,inventario,file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

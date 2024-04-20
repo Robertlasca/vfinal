@@ -115,6 +115,7 @@ com\residencia\restaurante\proyecto\serviceImpl\CocinaServiceImpl.class
 com\residencia\restaurante\proyecto\entity\Utensilio.class
 com\residencia\restaurante\proyecto\repository\ICategoriaRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\UsuarioParametrosServiceImpl.class
+com\residencia\restaurante\proyecto\serviceImpl\MateriaPrimaServiceImpl$2.class
 com\residencia\restaurante\proyecto\repository\IVenta_MedioPagoRepository.class
 com\residencia\restaurante\proyecto\service\IInventarioService.class
 com\residencia\restaurante\proyecto\repository\IMovimientoCajaRepository.class

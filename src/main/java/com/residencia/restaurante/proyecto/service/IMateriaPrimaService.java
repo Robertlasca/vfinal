@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.service;
 
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -56,4 +57,6 @@ public interface IMateriaPrimaService {
      * @return ResponseEntity con la materia prima correspondiente al ID.
      */
     ResponseEntity<MateriaPrima> obtenerMateriaPrimaId(Integer id);
+
+    ResponseEntity<String> agregarMateria(String nombre, int idCategoria, int idUsuario, String unidadMedida, double costoUnitario, String inventario, MultipartFile file);
 }

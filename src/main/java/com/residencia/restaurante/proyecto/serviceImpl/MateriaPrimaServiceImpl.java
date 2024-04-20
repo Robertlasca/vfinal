@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,8 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
     IUsuarioRepository usuarioRepository;
     @Autowired
     IInventarioRepository inventarioRepository;
+    @Autowired
+    private UploadFileService uploadFileService;
     /**
      * Obtiene todas las materias primas activas.
      * @return ResponseEntity<List<MateriaPrima>> Lista de materias primas activas.
@@ -255,6 +258,75 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
             e.printStackTrace();
         }
         return new ResponseEntity<MateriaPrima>(new MateriaPrima(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> agregarMateria(String nombre, int idCategoria, int idUsuario, String unidadMedida, double costoUnitario, String inventario, MultipartFile file) {
+        try{
+            if(!materiaPrimaExistente1(nombre)){
+                Optional<CategoriaMateriaPrima> optionalCategoriaMateriaPrima= categoriaMateriaPrimaRepository.findById(idCategoria);
+                if(!optionalCategoriaMateriaPrima.isEmpty()){
+                    CategoriaMateriaPrima categoriaMateriaPrima=optionalCategoriaMateriaPrima.get();
+                    MateriaPrima materiaPrima= new MateriaPrima();
+
+                    materiaPrima.setVisibilidad(true);
+                    materiaPrima.setCategoriaMateriaPrima(categoriaMateriaPrima);
+                    materiaPrima.setCostoUnitario(costoUnitario);
+                    materiaPrima.setUnidadMedida(unidadMedida);
+                    materiaPrima.setNombre(nombre);
+
+                    String nombreImagen=uploadFileService.guardarImagen(file);
+                    materiaPrima.setImagen(nombreImagen);
+
+                    materiaPrimaRepository.save(materiaPrima);
+
+                    //Asignar materia prima a los almacenes
+                    ObjectMapper objectMapper= new ObjectMapper();
+                    try {
+                        List<InventarioWrapper> listaInventario=objectMapper.readValue(inventario, new TypeReference<List<InventarioWrapper>>() {});
+                        if(!listaInventario.isEmpty()){
+                            for(InventarioWrapper inventarioWrapper: listaInventario){
+                                Inventario inventario1=new Inventario();
+                                inventario1.setMateriaPrima(materiaPrima);
+                                Optional<Almacen> optionalAlmacen= almacenRepository.findById(inventarioWrapper.getAlmacenId());
+                                if(!optionalAlmacen.isEmpty()){
+                                    Almacen almacen=optionalAlmacen.get();
+                                    inventario1.setAlmacen(almacen);
+                                }
+                                Optional<Usuario> optionalUsuario=usuarioRepository.findById(idUsuario);
+                                if(!optionalUsuario.isEmpty()){
+                                    Usuario usuario=optionalUsuario.get();
+                                    inventario1.setUsuario(usuario);
+                                }
+                                inventario1.setStockActual(inventarioWrapper.getStockActual());
+                                inventario1.setStockMax(inventarioWrapper.getStockMaximo());
+                                inventario1.setStockMin(inventarioWrapper.getStockMinimo());
+
+                                inventarioRepository.save(inventario1);
+
+
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    return Utils.getResponseEntity("Materia prima guardada correctamente.",HttpStatus.OK);
+
+
+                }
+
+            }
+            return Utils.getResponseEntity("La materia prima ya existe.",HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private boolean materiaPrimaExistente1(String nombre) {
+        return materiaPrimaRepository.existsMateriaPrimaByNombreLikeIgnoreCase(nombre);
     }
 
     //Se valida una caja Existente mediante el nombre

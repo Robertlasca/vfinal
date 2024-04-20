@@ -4,6 +4,7 @@ import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -77,4 +78,13 @@ public interface IMateriaPrimaController {
      */
     @GetMapping(path = "/obtenerMateriaPrima/{id}")
     ResponseEntity<MateriaPrima> obtenerMateriaPrimaId(@PathVariable Integer id);
+
+    @PostMapping(path = "/agregarMateriaPrima")
+    ResponseEntity<String> agregarMateria(@RequestParam("nombre") String nombre,
+                                   @RequestParam("idCategoria") int idCategoria,
+                                   @RequestParam("idUsuario") int idUsuario,
+                                   @RequestParam("unidadMedida") String unidadMedida,
+                                   @RequestParam("costoUnitario") double costoUnitario,
+                                   @RequestPart("inventario")String inventario,
+                                   @RequestParam("img") MultipartFile file);
 }

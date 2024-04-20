@@ -19,7 +19,7 @@ public class UploadFileService {
      * @return String Nombre del archivo guardado.
      * @throws IOException Si ocurre un error de E/S durante la escritura del archivo.
      */
-    private String folder = "images/";
+    private String folder = "src/main/resources/static/images/";
 
     public String guardarImagen(MultipartFile file) throws IOException {
         if (!file.isEmpty()) {
@@ -41,7 +41,7 @@ public class UploadFileService {
      * @param nombre Nombre del archivo a eliminar.
      */
     public void  eliminarImagen(String nombre){
-        String ruta="images//";
+        String ruta="src/main/resources/static/images/";
         File file=new File(ruta+nombre);
         file.delete();
     }
