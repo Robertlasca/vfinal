@@ -97,6 +97,7 @@ D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IAlmacenService.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IMateriaPrimaRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IMovimientoCajaRepository.java
+D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IAreaServicioController.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IVenta_MedioPagoRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\ICategoriaMateriaPrimaService.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IUtensilioService.java

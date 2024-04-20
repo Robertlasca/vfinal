@@ -347,8 +347,78 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
 
                 }
 
+                return Utils.getResponseEntity("La categoría no existe.",HttpStatus.BAD_REQUEST);
             }
             return Utils.getResponseEntity("La materia prima ya existe.",HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> actualizarMateria(int id, String nombre, int idCategoria, double costoUnitario, MultipartFile file) {
+        try {
+
+            Optional<MateriaPrima> optional= materiaPrimaRepository.findById(id);
+            if (optional.isPresent()){
+                if(optional.get().getNombre().equalsIgnoreCase(nombre)){
+
+                    MateriaPrima materiaPrima=optional.get();
+                    materiaPrima.setNombre(nombre);
+                    materiaPrima.setCostoUnitario(costoUnitario);
+
+                    Optional<CategoriaMateriaPrima> optionalCategoriaMateriaPrima=categoriaMateriaPrimaRepository.findById(idCategoria);
+                        if(!optionalCategoriaMateriaPrima.isEmpty()){
+                            CategoriaMateriaPrima categoriaMateriaPrima=optionalCategoriaMateriaPrima.get();
+                            materiaPrima.setCategoriaMateriaPrima(categoriaMateriaPrima);
+                        }
+                    if(file.isEmpty()){
+                        materiaPrima.setImagen(materiaPrima.getImagen());
+                    }else{
+                        if(!materiaPrima.getImagen().equalsIgnoreCase("default.jpg")){
+                            uploadFileService.eliminarImagen(materiaPrima.getImagen());
+                        }
+                        String nombreImagen=uploadFileService.guardarImagen(file);
+                        materiaPrima.setImagen(nombreImagen);
+                    }
+
+                    materiaPrimaRepository.save(materiaPrima);
+                    return Utils.getResponseEntity("Materia prima actualizada.",HttpStatus.OK);
+
+
+
+                }else{
+                    if(!materiaPrimaExistente1(nombre)){
+                        MateriaPrima materiaPrima=optional.get();
+                        materiaPrima.setNombre(nombre);
+                        materiaPrima.setCostoUnitario(costoUnitario);
+
+                        Optional<CategoriaMateriaPrima> optionalCategoriaMateriaPrima=categoriaMateriaPrimaRepository.findById(idCategoria);
+                        if(!optionalCategoriaMateriaPrima.isEmpty()){
+                            CategoriaMateriaPrima categoriaMateriaPrima=optionalCategoriaMateriaPrima.get();
+                            materiaPrima.setCategoriaMateriaPrima(categoriaMateriaPrima);
+                        }
+                        if(file.isEmpty()){
+                            materiaPrima.setImagen(materiaPrima.getImagen());
+                        }else{
+                            if(!materiaPrima.getImagen().equalsIgnoreCase("default.jpg")){
+                                uploadFileService.eliminarImagen(materiaPrima.getImagen());
+                            }
+                            String nombreImagen=uploadFileService.guardarImagen(file);
+                            materiaPrima.setImagen(nombreImagen);
+                        }
+                        materiaPrimaRepository.save(materiaPrima);
+                        return Utils.getResponseEntity("Materia prima actualizada.",HttpStatus.OK);
+
+
+
+                    }
+                    return Utils.getResponseEntity("No puedes asignarle este nombre.",HttpStatus.BAD_REQUEST);
+                }
+            }
+            return Utils.getResponseEntity("No existe la materia prima.",HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
             e.printStackTrace();

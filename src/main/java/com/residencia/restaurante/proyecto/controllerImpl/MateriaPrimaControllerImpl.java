@@ -145,7 +145,12 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
 
     @Override
     public ResponseEntity<String> actualizarMateria(int id, String nombre, int idCategoria, double costoUnitario, MultipartFile file) {
-        return null;
+        try {
+            return materiaPrimaService.actualizarMateria(id,nombre,idCategoria,costoUnitario,file);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST);
     }
 
 

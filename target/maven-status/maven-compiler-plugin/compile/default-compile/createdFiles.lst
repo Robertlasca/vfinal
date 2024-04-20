@@ -8,6 +8,7 @@ com\residencia\restaurante\proyecto\repository\IInventarioRepository.class
 com\residencia\restaurante\RestauranteApplication$Myconfiguration$1.class
 com\residencia\restaurante\proyecto\dto\ProductoNormalDTO.class
 com\residencia\restaurante\proyecto\controllerImpl\MateriaPrimaControllerImpl.class
+com\residencia\restaurante\proyecto\controller\IAreaServicioController.class
 com\residencia\restaurante\proyecto\controllerImpl\CajaControllerImpl.class
 com\residencia\restaurante\proyecto\dto\ImpresoraDTO.class
 com\residencia\restaurante\security\repository\IConfirmationTokenRepository.class
