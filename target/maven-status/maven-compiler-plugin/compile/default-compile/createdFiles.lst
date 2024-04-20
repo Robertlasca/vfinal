@@ -17,6 +17,7 @@ com\residencia\restaurante\proyecto\controllerImpl\CategoriaControllerImpl.class
 com\residencia\restaurante\proyecto\controller\ICategoriaMateriaPrimaController.class
 com\residencia\restaurante\proyecto\serviceImpl\UsuarioServiceImpl.class
 com\residencia\restaurante\proyecto\repository\IDetalleOrden_ProductoNormalRepository.class
+com\residencia\restaurante\proyecto\configuracion\WebConfig.class
 com\residencia\restaurante\proyecto\controllerImpl\UsuarioParametrosControllerImpl.class
 com\residencia\restaurante\proyecto\entity\AreaServicio_Mesa.class
 com\residencia\restaurante\proyecto\repository\ICocinaRepository.class
