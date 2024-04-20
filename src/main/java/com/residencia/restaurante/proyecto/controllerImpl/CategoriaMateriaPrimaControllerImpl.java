@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.ICategoriaMateriaPrimaController;
+import com.residencia.restaurante.proyecto.dto.CategoriaMateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.CategoriaMateriaPrima;
 import com.residencia.restaurante.proyecto.service.ICategoriaMateriaPrimaService;
@@ -30,7 +31,7 @@ public class CategoriaMateriaPrimaControllerImpl implements ICategoriaMateriaPri
      * @return ResponseEntity con la lista de categorías activas de materia prima y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoriaActivas() {
+    public ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoriaActivas() {
         try {
             return categoriaMateriaPrimaService.obtenerCategoriasActivas();
         } catch (Exception e) {
@@ -45,7 +46,7 @@ public class CategoriaMateriaPrimaControllerImpl implements ICategoriaMateriaPri
      * @return ResponseEntity con la lista de categorías no activas de materia prima y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoriaNoActivas() {
+    public ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoriaNoActivas() {
         try {
             return categoriaMateriaPrimaService.obtenerCategoriasNoActivas();
         } catch (Exception e) {
@@ -60,7 +61,7 @@ public class CategoriaMateriaPrimaControllerImpl implements ICategoriaMateriaPri
      * @return ResponseEntity con la lista de todas las categorías de materia prima y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoria() {
+    public ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoria() {
         try {
             return categoriaMateriaPrimaService.obtenerCategorias();
         } catch (Exception e) {

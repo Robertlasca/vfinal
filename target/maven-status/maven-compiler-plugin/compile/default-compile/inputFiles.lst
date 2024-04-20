@@ -46,6 +46,7 @@ D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IProductoNormalRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\Orden.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\UsuarioParametrosControllerImpl.java
+D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\CategoriaMateriaPrimaDTO.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\Movimientos_Inventario.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IMateriaPrima_MenuRepository.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\ProductoNormalServiceImpl.java
@@ -109,6 +110,7 @@ D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\CocinaServiceImpl.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\UsuarioControllerImpl.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IProductoNormalController.java
+D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\CategoriaDTO.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\security\model\ConfirmationToken.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\ImpresoraControllerImpl.java
 D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\DetalleOrdenMenu.java

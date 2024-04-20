@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.CategoriaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import org.springframework.http.ResponseEntity;
@@ -20,21 +21,21 @@ public interface ICategoriaController {
      * @return ResponseEntity con la lista de categorías activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/categoriasActivas")
-    ResponseEntity<List<Categoria>> obtenerCategoriaActivas();
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriaActivas();
     /**
      * Obtiene una lista de todas las categorías que actualmente no están activas en el sistema.
      *
      * @return ResponseEntity con la lista de categorías no activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/categoriasNoActivas")
-    ResponseEntity<List<Categoria>> obtenerCategoriaNoActivas();
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriaNoActivas();
     /**
      * Obtiene una lista de todas las categorías registradas en el sistema, independientemente de su estado.
      *
      * @return ResponseEntity con la lista completa de categorías y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerCategorias")
-    ResponseEntity<List<Categoria>> obtenerCategoria();
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoria();
     /**
      * Cambia el estado de una categoría específica en el sistema. La información necesaria
      * para identificar la categoría y el nuevo estado se pasa en el cuerpo de la solicitud.

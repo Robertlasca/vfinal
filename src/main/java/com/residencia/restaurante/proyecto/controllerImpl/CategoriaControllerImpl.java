@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.ICategoriaController;
+import com.residencia.restaurante.proyecto.dto.CategoriaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.service.ICategoriaService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -29,7 +30,7 @@ public class CategoriaControllerImpl implements ICategoriaController {
      * @return ResponseEntity con la lista de categorías activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Categoria>> obtenerCategoriaActivas() {
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriaActivas() {
         try {
             return categoriaService.obtenerCategoriasActivas();
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public class CategoriaControllerImpl implements ICategoriaController {
      * @return ResponseEntity con la lista de categorías no activas y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Categoria>> obtenerCategoriaNoActivas() {
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriaNoActivas() {
         try {
             return categoriaService.obtenerCategoriasNoActivas();
         } catch (Exception e) {
@@ -59,7 +60,7 @@ public class CategoriaControllerImpl implements ICategoriaController {
      * @return ResponseEntity con la lista de todas las categorías y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Categoria>> obtenerCategoria() {
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoria() {
         try {
             return categoriaService.obtenerCategorias();
         } catch (Exception e) {

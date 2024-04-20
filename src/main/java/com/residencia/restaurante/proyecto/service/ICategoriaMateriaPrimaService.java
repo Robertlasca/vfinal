@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.CategoriaMateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.CategoriaMateriaPrima;
 import org.springframework.http.ResponseEntity;
 
@@ -15,19 +16,19 @@ public interface ICategoriaMateriaPrimaService {
      * Obtiene todas las categorías de materia prima activas.
      * @return ResponseEntity con la lista de categorías activas.
      */
-    ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoriasActivas();
+    ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoriasActivas();
 
     /**
      * Obtiene todas las categorías de materia prima no activas.
      * @return ResponseEntity con la lista de categorías no activas.
      */
-    ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoriasNoActivas();
+    ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoriasNoActivas();
 
     /**
      * Obtiene todas las categorías de materia prima registradas.
      * @return ResponseEntity con la lista de categorías.
      */
-    ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategorias();
+    ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategorias();
 
     /**
      * Cambia el estado de una categoría de materia prima.

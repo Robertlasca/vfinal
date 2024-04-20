@@ -1,6 +1,8 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.CategoriaDTO;
+import com.residencia.restaurante.proyecto.dto.CategoriaMateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.CategoriaMateriaPrima;
 import com.residencia.restaurante.proyecto.repository.ICategoriaMateriaPrimaRepository;
@@ -25,45 +27,75 @@ public class CategoriaMateriaPrimaServiceImpl implements ICategoriaMateriaPrimaS
      * @return Lista de categorías activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoriasActivas() {
+    public ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoriasActivas() {
         try {
-            return new ResponseEntity<List<CategoriaMateriaPrima>>(categoriaMateriaPrimaRepository.getAllByVisibilidadTrue(), HttpStatus.OK);
+            List<CategoriaMateriaPrimaDTO> categoriaConEstado = new ArrayList<>();
+            for (CategoriaMateriaPrima categoria : categoriaMateriaPrimaRepository.getAllByVisibilidadTrue()) {
+                CategoriaMateriaPrimaDTO categoriaDTO= new CategoriaMateriaPrimaDTO();
+                categoriaDTO.setCategoriaMateriaPrima(categoria);
+                categoriaDTO.setEstado("No visible");
+
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaMateriaPrimaDTO>>(categoriaConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<CategoriaMateriaPrima>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CategoriaMateriaPrimaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las categorías de materia prima no activas.
      * @return Lista de categorías no activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoriasNoActivas() {
+    public ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoriasNoActivas() {
         try {
-            return new ResponseEntity<List<CategoriaMateriaPrima>>(categoriaMateriaPrimaRepository.getAllByVisibilidadFalse(), HttpStatus.OK);
+            List<CategoriaMateriaPrimaDTO> categoriaConEstado = new ArrayList<>();
+            for (CategoriaMateriaPrima categoria : categoriaMateriaPrimaRepository.getAllByVisibilidadFalse()) {
+                CategoriaMateriaPrimaDTO categoriaDTO= new CategoriaMateriaPrimaDTO();
+                categoriaDTO.setCategoriaMateriaPrima(categoria);
+                categoriaDTO.setEstado("No visible");
+
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaMateriaPrimaDTO>>(categoriaConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<CategoriaMateriaPrima>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CategoriaMateriaPrimaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las categorías de materia prima registradas.
      * @return Lista de categorías con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategorias() {
+    public ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategorias() {
         try {
-            return new ResponseEntity<List<CategoriaMateriaPrima>>(categoriaMateriaPrimaRepository.findAll(), HttpStatus.OK);
+            List<CategoriaMateriaPrimaDTO> categoriaConEstado = new ArrayList<>();
+            for (CategoriaMateriaPrima categoria : categoriaMateriaPrimaRepository.findAll()) {
+                CategoriaMateriaPrimaDTO categoriaDTO= new CategoriaMateriaPrimaDTO();
+                categoriaDTO.setCategoriaMateriaPrima(categoria);
+                if(categoria.isVisibilidad()){
+                    categoriaDTO.setEstado("Visible");
+                }else{
+                    categoriaDTO.setEstado("No visible");
+                }
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaMateriaPrimaDTO>>(categoriaConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<CategoriaMateriaPrima>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CategoriaMateriaPrimaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de una categoría de materia prima (activo/inactivo) según el ID proporcionado en el mapa de datos.

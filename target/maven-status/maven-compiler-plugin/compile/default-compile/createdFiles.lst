@@ -28,6 +28,7 @@ com\residencia\restaurante\proyecto\serviceImpl\CategoriaMateriaPrimaServiceImpl
 com\residencia\restaurante\proyecto\entity\Categoria.class
 com\residencia\restaurante\proyecto\service\ICategoriaMateriaPrimaService.class
 com\residencia\restaurante\proyecto\service\IMovimientoCajaService.class
+com\residencia\restaurante\proyecto\dto\CategoriaMateriaPrimaDTO.class
 com\residencia\restaurante\proyecto\controller\IMedioPagoController.class
 com\residencia\restaurante\proyecto\entity\ProductoTerminado_Menu.class
 com\residencia\restaurante\proyecto\service\IUsuarioParametrosService.class
@@ -79,6 +80,7 @@ com\residencia\restaurante\proyecto\serviceImpl\UploadFileService.class
 com\residencia\restaurante\security\model\Rol.class
 com\residencia\restaurante\security\utils\Utils.class
 com\residencia\restaurante\proyecto\repository\IUtensilioRepository.class
+com\residencia\restaurante\proyecto\dto\CategoriaDTO.class
 com\residencia\restaurante\proyecto\repository\IAreaServicioRepository.class
 com\residencia\restaurante\proyecto\repository\IVentaRepository.class
 com\residencia\restaurante\proyecto\entity\MedioPago.class

@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.CategoriaMateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.CategoriaMateriaPrima;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public interface ICategoriaMateriaPrimaController {
      * @return ResponseEntity con la lista de categorías activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/categoriasActivas")
-    ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoriaActivas();
+    ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoriaActivas();
 
     /**
      * Obtiene una lista de todas las categorías de materia prima que actualmente no están activas en el sistema.
@@ -30,7 +31,7 @@ public interface ICategoriaMateriaPrimaController {
      * @return ResponseEntity con la lista de categorías no activas y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/categoriasNoActivas")
-    ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoriaNoActivas();
+    ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoriaNoActivas();
 
     /**
      * Obtiene una lista de todas las categorías de materia prima registradas en el sistema, independientemente de su estado.
@@ -38,7 +39,7 @@ public interface ICategoriaMateriaPrimaController {
      * @return ResponseEntity con la lista completa de categorías y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerCategorias")
-    ResponseEntity<List<CategoriaMateriaPrima>> obtenerCategoria();
+    ResponseEntity<List<CategoriaMateriaPrimaDTO>> obtenerCategoria();
 
     /**
      * Cambia el estado de una categoría de materia prima específica en el sistema. La información necesaria

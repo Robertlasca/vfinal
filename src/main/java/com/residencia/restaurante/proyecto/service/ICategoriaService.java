@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.CategoriaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import org.springframework.http.ResponseEntity;
 
@@ -15,19 +16,19 @@ public interface ICategoriaService {
      * Obtiene todas las categorías activas.
      * @return ResponseEntity con la lista de categorías activas.
      */
-    ResponseEntity<List<Categoria>> obtenerCategoriasActivas();
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriasActivas();
 
     /**
      * Obtiene todas las categorías no activas.
      * @return ResponseEntity con la lista de categorías no activas.
      */
-    ResponseEntity<List<Categoria>> obtenerCategoriasNoActivas();
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriasNoActivas();
 
     /**
      * Obtiene todas las categorías registradas.
      * @return ResponseEntity con la lista de categorías.
      */
-    ResponseEntity<List<Categoria>> obtenerCategorias();
+    ResponseEntity<List<CategoriaDTO>> obtenerCategorias();
 
     /**
      * Cambia el estado de una categoría.

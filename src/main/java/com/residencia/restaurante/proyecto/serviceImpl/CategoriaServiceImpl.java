@@ -1,6 +1,9 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
+import com.residencia.restaurante.proyecto.dto.CategoriaDTO;
+import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.repository.ICategoriaRepository;
@@ -25,45 +28,75 @@ public class CategoriaServiceImpl implements ICategoriaService {
      * @return Lista de categorías activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Categoria>> obtenerCategoriasActivas() {
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriasActivas() {
         try {
-            return new ResponseEntity<List<Categoria>>(categoriaRepository.getAllByVisibilidadTrue(), HttpStatus.OK);
+            List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
+            for (Categoria categoria : categoriaRepository.getAllByVisibilidadTrue()) {
+                CategoriaDTO categoriaDTO= new CategoriaDTO();
+                categoriaDTO.setCategoria(categoria);
+                categoriaDTO.setEstado("Visible");
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaDTO>>(categoriaConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Categoria>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CategoriaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las categorías no activas.
      * @return Lista de categorías no activas con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Categoria>> obtenerCategoriasNoActivas() {
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriasNoActivas() {
         try {
-            return new ResponseEntity<List<Categoria>>(categoriaRepository.getAllByVisibilidadFalse(), HttpStatus.OK);
+            List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
+            for (Categoria categoria : categoriaRepository.getAllByVisibilidadFalse()) {
+                CategoriaDTO categoriaDTO= new CategoriaDTO();
+                categoriaDTO.setCategoria(categoria);
+
+                    categoriaDTO.setEstado("No visible");
+
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaDTO>>(categoriaConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Categoria>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CategoriaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene una lista de todas las categorías registradas.
      * @return Lista de categorías con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Categoria>> obtenerCategorias() {
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategorias() {
         try {
-            return new ResponseEntity<List<Categoria>>(categoriaRepository.findAll(), HttpStatus.OK);
+            List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
+            for (Categoria categoria : categoriaRepository.findAll()) {
+                CategoriaDTO categoriaDTO= new CategoriaDTO();
+                categoriaDTO.setCategoria(categoria);
+                if(categoria.isVisibilidad()){
+                    categoriaDTO.setEstado("Visible");
+                }else{
+                    categoriaDTO.setEstado("No visible");
+                }
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaDTO>>(categoriaConEstado, HttpStatus.OK);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<List<Categoria>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<CategoriaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de una categoría (activo/inactivo) según el ID proporcionado en el mapa de datos.
