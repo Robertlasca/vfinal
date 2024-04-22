@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +16,11 @@ import java.util.Map;
 @RequestMapping(path = "/utensilio")
 public interface IUtensilioController {
 
-    /**
-     * Agrega un nuevo utensilio al sistema con los datos proporcionados.
-     *
-     * @param objetoMap Un mapa que contiene los datos necesarios para agregar un nuevo utensilio.
-     * @return ResponseEntity con un mensaje indicando el resultado de la operación y el estado HTTP.
-     */
-    @PostMapping(path = "/agregar")
-    ResponseEntity<String> agregar(@RequestBody(required = true) Map<String, String> objetoMap);
 
     @PostMapping(path = "/agregarUtensilio")
     ResponseEntity<String> agregarUtensilio(@RequestParam("nombre") String nombre,
                                             @RequestParam("descripcion") String descripcion,
-                                            @RequestParam("idCocina") int idCocina,
-                                            @RequestParam("cantidad") int cantidad,
+                                            @RequestPart("inventario")String inventario,
                                             @RequestParam("img") MultipartFile file);
 
     @PostMapping(path = "/actualizarUtensilio")
@@ -47,8 +39,6 @@ public interface IUtensilioController {
      * @param objetoMap Un mapa que contiene los datos necesarios para actualizar el utensilio.
      * @return ResponseEntity con un mensaje indicando el resultado de la operación y el estado HTTP.
      */
-    @PostMapping(path = "/actualizar")
-    ResponseEntity<String> actualizar(@RequestBody(required = true) Map<String, String> objetoMap);
 
     /**
      * Elimina un utensilio del sistema según su identificador.
@@ -66,7 +56,7 @@ public interface IUtensilioController {
      * @return ResponseEntity con la lista de utensilios asociados a la cocina y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/XCocina/{id}")
-    ResponseEntity<List<Utensilio>> obtenerUtensiliosXCocina(@PathVariable Integer id);
+    ResponseEntity<List<Cocina_Utensilio>> obtenerUtensiliosXCocina(@PathVariable Integer id);
 
     /**
      * Obtiene una lista de todos los utensilios registrados en el sistema.

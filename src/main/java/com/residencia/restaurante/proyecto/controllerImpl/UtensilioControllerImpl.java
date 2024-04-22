@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IUtensilioController;
+import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
 import com.residencia.restaurante.proyecto.service.IUtensilioService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -24,26 +25,11 @@ public class UtensilioControllerImpl implements IUtensilioController {
     @Autowired
     IUtensilioService utensilioService;
 
-    /**
-     * Agrega un nuevo utensilio.
-     *
-     * @param objetoMap Mapa que contiene los datos del utensilio a agregar.
-     * @return ResponseEntity con el resultado de la operación y el estado HTTP correspondiente.
-     */
-    @Override
-    public ResponseEntity<String> agregar(Map<String, String> objetoMap) {
-        try {
-            return utensilioService.agregar(objetoMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     @Override
-    public ResponseEntity<String> agregarUtensilio(String nombre, String descripcion, int idCocina, int cantidad, MultipartFile file) {
+    public ResponseEntity<String> agregarUtensilio(String nombre, String descripcion,String inventario, MultipartFile file) {
         try {
-            return utensilioService.agregarUtensilio(nombre,descripcion,idCocina,cantidad,file);
+            return utensilioService.agregarUtensilio(nombre,descripcion,inventario,file);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -61,21 +47,6 @@ public class UtensilioControllerImpl implements IUtensilioController {
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /**
-     * Actualiza un utensilio existente.
-     *
-     * @param objetoMap Mapa que contiene los nuevos datos del utensilio a actualizar.
-     * @return ResponseEntity con el resultado de la operación y el estado HTTP correspondiente.
-     */
-    @Override
-    public ResponseEntity<String> actualizar(Map<String, String> objetoMap) {
-        try {
-            return utensilioService.actualizar(objetoMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     /**
      * Elimina un utensilio por su ID.
@@ -100,7 +71,7 @@ public class UtensilioControllerImpl implements IUtensilioController {
      * @return ResponseEntity con la lista de utensilios y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Utensilio>> obtenerUtensiliosXCocina(Integer id) {
+    public ResponseEntity<List<Cocina_Utensilio>> obtenerUtensiliosXCocina(Integer id) {
         try {
             return utensilioService.obtenerUtensiliosXCocina(id);
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,19 +14,6 @@ import java.util.Map;
  */
 public interface IUtensilioService {
 
-    /**
-     * Agrega un nuevo utensilio.
-     * @param objetoMap Mapa que contiene la información del utensilio a agregar.
-     * @return ResponseEntity con el resultado de la operación.
-     */
-    ResponseEntity<String> agregar(Map<String,String> objetoMap);
-
-    /**
-     * Actualiza un utensilio existente.
-     * @param objetoMap Mapa que contiene la información del utensilio a actualizar.
-     * @return ResponseEntity con el resultado de la operación.
-     */
-    ResponseEntity<String> actualizar(Map<String,String> objetoMap);
 
     /**
      * Obtiene un utensilio por su ID.
@@ -52,12 +40,11 @@ public interface IUtensilioService {
      * @param id El ID de la cocina.
      * @return ResponseEntity con la lista de utensilios de la cocina especificada.
      */
-    ResponseEntity<List<Utensilio>> obtenerUtensiliosXCocina(Integer id);
+    ResponseEntity<List<Cocina_Utensilio>> obtenerUtensiliosXCocina(Integer id);
 
     ResponseEntity<String> agregarUtensilio(String nombre,
                                             String descripcion,
-                                            int idCocina,
-                                            int cantidad,
+                                            String inventario,
                                             MultipartFile file);
 
     ResponseEntity<String> actualizarUtensilio(

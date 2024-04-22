@@ -1,12 +1,17 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.Cocina;
+import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
 import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
+import com.residencia.restaurante.proyecto.repository.ICocina_UtensilioRepository;
 import com.residencia.restaurante.proyecto.repository.IUtensilioRepository;
 import com.residencia.restaurante.proyecto.service.IUtensilioService;
+import com.residencia.restaurante.proyecto.wrapper.Cocina_UtensilioWrapper;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,43 +35,12 @@ public class UtensilioServiceImpl implements IUtensilioService {
 
     @Autowired
     private UploadFileService uploadFileService;
-    @Override
-    public ResponseEntity<String> agregar(Map<String, String> objetoMap) {
-        try {
 
-            if(validarUtensilioMap(objetoMap,false)){
-                utensilioRepository.save(obtenerUtensilioDesdeMap(objetoMap,false));
-                return Utils.getResponseEntity("Utensilio guardado correctamente",HttpStatus.OK);
-            }
-            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    @Autowired
+    private ICocina_UtensilioRepository cocinaUtensilioRepository;
 
-        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
-    @Override
-    public ResponseEntity<String> actualizar(Map<String, String> objetoMap) {
-        try {
 
-            if(validarUtensilioMap(objetoMap,false)){
-                Optional<Utensilio> utensilioOptional=utensilioRepository.findById(Integer.parseInt(objetoMap.get("id")));
-                if(!utensilioOptional.isEmpty()){
-                    utensilioRepository.save(obtenerUtensilioDesdeMap(objetoMap,true));
-                    return Utils.getResponseEntity("Utensilio actualizado correctamente",HttpStatus.OK);
-                }
-
-                return Utils.getResponseEntity("No existe el utensilio.",HttpStatus.BAD_REQUEST);
-
-            }
-            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     @Override
     public ResponseEntity<Utensilio> obtenerUtensilioId(Integer id) {
@@ -115,45 +89,57 @@ public class UtensilioServiceImpl implements IUtensilioService {
     }
 
     @Override
-    public ResponseEntity<List<Utensilio>> obtenerUtensiliosXCocina(Integer id) {
+    public ResponseEntity<List<Cocina_Utensilio>> obtenerUtensiliosXCocina(Integer id) {
         try {
-            Optional<Cocina> cocinaOptional= cocinaRepository.findById(id);
-            if(!cocinaOptional.isEmpty()){
-                Cocina cocina= cocinaOptional.get();
-                return new ResponseEntity<List<Utensilio>>(new ArrayList<>(),HttpStatus.OK);
-            }
-            return new ResponseEntity<List<Utensilio>>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
+
+                return new ResponseEntity<List<Cocina_Utensilio>>(cocinaUtensilioRepository.findAllByCocina_Id(id),HttpStatus.OK);
+
 
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<Utensilio>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<Cocina_Utensilio>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public ResponseEntity<String> agregarUtensilio(String nombre, String descripcion, int idCocina, int cantidad, MultipartFile file) {
+    public ResponseEntity<String> agregarUtensilio(String nombre, String descripcion,String inventario, MultipartFile file) {
         try {
+            //Se guarda nombre descripcion e imagen
+            Utensilio utensilio= new Utensilio();
+            utensilio.setNombre(nombre);
+            utensilio.setDescripcion(descripcion);
+            String nombreImagen= uploadFileService.guardarImagen(file);
+            utensilio.setImagen(nombreImagen);
+            utensilioRepository.save(utensilio);
 
-            if(validarCocina(idCocina)){
-                Utensilio utensilio= new Utensilio();
+            ObjectMapper objectMapper=new ObjectMapper();
 
-                utensilio.setNombre(nombre);
-                Optional<Cocina> cocinaOptional= cocinaRepository.findById(idCocina);
-                if(cocinaOptional.isPresent()){
-                    Cocina cocina= cocinaOptional.get();
-                    //utensilio.setCocina(cocina);
+            try {
+                List<Cocina_UtensilioWrapper> cocinaUtensilioWrappers= objectMapper.readValue(inventario, new TypeReference<List<Cocina_UtensilioWrapper>>() {
+                });
+                if(!cocinaUtensilioWrappers.isEmpty()){
+                    for(Cocina_UtensilioWrapper cocinaUtensilioWrapper:cocinaUtensilioWrappers){
+                        Cocina_Utensilio cocinaUtensilio= new Cocina_Utensilio();
+                        cocinaUtensilio.setCantidad(cocinaUtensilioWrapper.getCantidad());
+                        cocinaUtensilio.setUtensilio(utensilio);
 
-
+                        Optional<Cocina> cocinaOptional= cocinaRepository.findById(cocinaUtensilioWrapper.getIdCocina());
+                        if(cocinaOptional.isPresent()){
+                            Cocina cocina= cocinaOptional.get();
+                            cocinaUtensilio.setCocina(cocina);
+                        }
+                        cocinaUtensilioRepository.save(cocinaUtensilio);
+                        System.out.println("si llegue hasta aqui");
+                    }
                 }
-               // utensilio.setCantidad(cantidad);
-                utensilio.setDescripcion(descripcion);
-                String nombreImagen= uploadFileService.guardarImagen(file);
-                utensilio.setImagen(nombreImagen);
-                utensilioRepository.save(utensilio);
-                return Utils.getResponseEntity("Utensilio guardado correctamente.",HttpStatus.OK);
+
+            }catch (Exception e){
+                e.printStackTrace();
 
             }
-            return Utils.getResponseEntity("La cocina no existe.",HttpStatus.BAD_REQUEST);
+            return Utils.getResponseEntity("Utensilio guardado correctamente.",HttpStatus.OK);
+
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -166,17 +152,13 @@ public class UtensilioServiceImpl implements IUtensilioService {
 
             Optional<Utensilio> utensilioOptional=utensilioRepository.findById(id);
             if(utensilioOptional.isPresent()){
-                if(validarCocina(idCocina)){
+
 
                     Utensilio utensilio=utensilioOptional.get();
                     utensilio.setNombre(nombre);
                     utensilio.setDescripcion(descripcion);
                     Optional<Cocina> cocinaOptional= cocinaRepository.findById(idCocina);
-                    if(cocinaOptional.isPresent()) {
-                        Cocina cocina= cocinaOptional.get();
-                        //utensilio.setCocina(cocina);
-                    }
-                    //utensilio.setCantidad(cantidad);
+
 
                     if(file.isEmpty()){
                         utensilio.setImagen(utensilio.getImagen());
@@ -189,8 +171,7 @@ public class UtensilioServiceImpl implements IUtensilioService {
                     }
                     utensilioRepository.save(utensilio);
                     return Utils.getResponseEntity("Utensilio actualizado.",HttpStatus.OK);
-                }
-                return Utils.getResponseEntity("La cocina no existe.",HttpStatus.BAD_REQUEST);
+
             }
 
             return Utils.getResponseEntity("No existe el utensilio.",HttpStatus.BAD_REQUEST);
