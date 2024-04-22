@@ -7,6 +7,7 @@ import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.repository.IAreaServicioRepository;
 import com.residencia.restaurante.proyecto.repository.IImpresoraRepository;
+import com.residencia.restaurante.proyecto.repository.IMesaRepository;
 import com.residencia.restaurante.proyecto.service.IAreaServicioService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
      @Autowired
      private IImpresoraRepository impresoraRepository;
 
+     @Autowired
+     private IMesaRepository mesaRepository;
+
     @Override
     public ResponseEntity<List<AreaServicioDTO>> obtenerAreasActivas() {
         try {
@@ -34,6 +38,7 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
                 AreaServicioDTO areaServicioDTO= new AreaServicioDTO();
                 areaServicioDTO.setAreaServicio(areaServicio);
                 areaServicioDTO.setEstado("Visible");
+                areaServicioDTO.setCantidadMesas(mesaRepository.countByAreaServicio_Id(areaServicio.getId()));
                 areaServicioDTOS.add(areaServicioDTO);
             }
             return new ResponseEntity<List<AreaServicioDTO>>(areaServicioDTOS,HttpStatus.OK);
@@ -52,6 +57,7 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
                 AreaServicioDTO areaServicioDTO= new AreaServicioDTO();
                 areaServicioDTO.setAreaServicio(areaServicio);
                 areaServicioDTO.setEstado("No visible");
+                areaServicioDTO.setCantidadMesas(mesaRepository.countByAreaServicio_Id(areaServicio.getId()));
                 areaServicioDTOS.add(areaServicioDTO);
             }
             return new ResponseEntity<List<AreaServicioDTO>>(areaServicioDTOS,HttpStatus.OK);
@@ -69,6 +75,7 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
             for (AreaServicio areaServicio: areaServicioRepository.findAll()) {
                 AreaServicioDTO areaServicioDTO= new AreaServicioDTO();
                 areaServicioDTO.setAreaServicio(areaServicio);
+                areaServicioDTO.setCantidadMesas(mesaRepository.countByAreaServicio_Id(areaServicio.getId()));
                 if(areaServicio.isDisponibilidad()){
                     areaServicioDTO.setEstado("Visible");
                 }else {

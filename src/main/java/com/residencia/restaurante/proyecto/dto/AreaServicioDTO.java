@@ -12,4 +12,5 @@ import lombok.*;
 public class AreaServicioDTO {
     AreaServicio areaServicio;
     String estado;
+    int cantidadMesas;
 }

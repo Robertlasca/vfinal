@@ -12,6 +12,7 @@ com\residencia\restaurante\proyecto\controller\IAreaServicioController.class
 com\residencia\restaurante\proyecto\controllerImpl\CajaControllerImpl.class
 com\residencia\restaurante\proyecto\dto\ImpresoraDTO.class
 com\residencia\restaurante\security\repository\IConfirmationTokenRepository.class
+com\residencia\restaurante\proyecto\serviceImpl\MesaServiceImpl.class
 com\residencia\restaurante\proyecto\controllerImpl\MovimientoCajaControllerImpl.class
 com\residencia\restaurante\proyecto\service\IUsuarioService.class
 com\residencia\restaurante\proyecto\repository\IOrdenRepository.class
@@ -25,6 +26,7 @@ com\residencia\restaurante\proyecto\entity\AreaServicio_Mesa.class
 com\residencia\restaurante\proyecto\repository\ICocinaRepository.class
 com\residencia\restaurante\proyecto\entity\Cocina.class
 com\residencia\restaurante\proyecto\repository\IImpresoraRepository.class
+com\residencia\restaurante\proyecto\service\IMesaService.class
 com\residencia\restaurante\proyecto\serviceImpl\CategoriaMateriaPrimaServiceImpl.class
 com\residencia\restaurante\proyecto\entity\Categoria.class
 com\residencia\restaurante\proyecto\service\ICategoriaMateriaPrimaService.class
@@ -43,6 +45,7 @@ com\residencia\restaurante\proyecto\entity\CategoriaMateriaPrima.class
 com\residencia\restaurante\proyecto\repository\IProductoTerminadoRepository.class
 com\residencia\restaurante\security\model\Usuario.class
 com\residencia\restaurante\proyecto\repository\IMateriaPrima_MenuRepository.class
+com\residencia\restaurante\proyecto\controllerImpl\MesaControllerImpl.class
 com\residencia\restaurante\proyecto\serviceImpl\MedioPagoServiceImpl.class
 com\residencia\restaurante\proyecto\entity\Inventario.class
 com\residencia\restaurante\proyecto\serviceImpl\MateriaPrimaServiceImpl.class
@@ -76,6 +79,7 @@ com\residencia\restaurante\proyecto\service\IArqueoSaldosService.class
 com\residencia\restaurante\proyecto\entity\Venta.class
 com\residencia\restaurante\proyecto\repository\IMesaRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\MovimientoCajaServiceImpl.class
+com\residencia\restaurante\proyecto\controller\IMesasController.class
 com\residencia\restaurante\proyecto\service\IProductoNormalService.class
 com\residencia\restaurante\security\model\Rol$RolBuilder.class
 com\residencia\restaurante\proyecto\serviceImpl\UploadFileService.class
@@ -116,6 +120,7 @@ com\residencia\restaurante\security\model\ConfirmationToken$ConfirmationTokenBui
 com\residencia\restaurante\RestauranteApplication.class
 com\residencia\restaurante\proyecto\controller\IUsuarioParametrosController.class
 com\residencia\restaurante\proyecto\serviceImpl\CocinaServiceImpl.class
+com\residencia\restaurante\proyecto\dto\MesaDTO.class
 com\residencia\restaurante\proyecto\entity\Utensilio.class
 com\residencia\restaurante\proyecto\repository\ICategoriaRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\UsuarioParametrosServiceImpl.class
