@@ -31,7 +31,7 @@ public class Mesa {
     private String estado;
     private boolean visibilidad=true;
     @ManyToOne
-    @JoinColumn(nullable = false,name = "areaServicio_id")
+    @JoinColumn(nullable = true,name = "areaServicio_id")
     private  AreaServicio areaServicio;
 
 

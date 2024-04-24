@@ -18,8 +18,8 @@ public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @Column(length = 30)
+    @Column(length = 30,nullable = true)
     private String nombre;
-
+    @Column(nullable = true)
     private boolean visibilidad=true;
 }

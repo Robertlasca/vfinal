@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.ProductoTerminadoDto;
+import com.residencia.restaurante.proyecto.dto.RecetaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima_ProductoTerminado;
@@ -42,6 +43,8 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
 
     @Autowired
     private IMateriaPrima_ProductoTerminadoRepository materiaPrimaProductoTerminadoRepository;
+
+
     @Override
     public ResponseEntity<List<ProductoTerminadoDto>> obtenerActivos() {
         return null;
@@ -230,6 +233,43 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
             e.printStackTrace();
         }
         return new ResponseEntity<ProductoTerminado>(new ProductoTerminado(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<RecetaDTO>> obtenerReceta(Integer id) {
+        try {
+            Optional<ProductoTerminado> optionalProductoTerminado= productoTerminadoRepository.findById(id);
+            List<RecetaDTO> recetaDTOS= new ArrayList<>();
+            if(optionalProductoTerminado.isPresent()){
+                ProductoTerminado productoTerminado=optionalProductoTerminado.get();
+                List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
+                if(!materiaPrimaProductoTerminados.isEmpty()){
+                    for (MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado:materiaPrimaProductoTerminados) {
+                        MateriaPrima materiaPrima= materiaPrimaProductoTerminado.getMateriaPrima();
+                        double costo= calcularCostoProduccion(materiaPrima.getCostoUnitario());
+                        RecetaDTO recetaDTO= new RecetaDTO();
+                        recetaDTO.setEsIngrediente(true);
+                        recetaDTO.setId(materiaPrima.getId());
+                        recetaDTO.setUnidadMedida(materiaPrima.getUnidadMedida());
+                        recetaDTO.setNombre(materiaPrima.getNombre());
+                        recetaDTO.setCantidad(materiaPrimaProductoTerminado.getCantidad());
+                        recetaDTO.setCostoProduccion(materiaPrimaProductoTerminado.getCantidad()*costo);
+
+                        recetaDTOS.add(recetaDTO);
+
+
+                    }
+                }
+
+                return new ResponseEntity<List<RecetaDTO>>(recetaDTOS,HttpStatus.OK);
+
+
+            }
+            return new ResponseEntity<List<RecetaDTO>>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<RecetaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private double calcularCostoProduccion(double precio){

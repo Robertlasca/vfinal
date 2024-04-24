@@ -20,12 +20,12 @@ public class Venta_MedioPago {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "medioPago_id")
+    @JoinColumn(nullable = true,name = "medioPago_id")
     private MedioPago medioPago;
 
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "venta_id")
+    @JoinColumn(nullable = true,name = "venta_id")
     private Venta venta;
 
     private double pagoRecibido;

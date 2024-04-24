@@ -127,12 +127,8 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
         try {
             if(validarAreaMap(objetoMap,false)){
                 if(!areaExistente(objetoMap)){
-                    Optional<Impresora> impresoraOptional= impresoraRepository.findById(Integer.parseInt(objetoMap.get("idImpresora")));
-                    if(!impresoraOptional.isEmpty()) {
                         areaServicioRepository.save(obtenerAreaDesdeMap(objetoMap, false));
                         return Utils.getResponseEntity("Área de servicio guardada.", HttpStatus.OK);
-                    }
-                    return Utils.getResponseEntity("La impresora no existe.",HttpStatus.BAD_REQUEST);
                 }
                 return Utils.getResponseEntity("Esta área de servicio ya existe.",HttpStatus.BAD_REQUEST);
 
@@ -207,11 +203,7 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
         }
 
         areaServicio.setNombre(objetoMap.get("nombre"));
-        Optional<Impresora> impresoraOptional= impresoraRepository.findById(Integer.parseInt(objetoMap.get("idImpresora")));
-        if(impresoraOptional.isPresent()){
-            Impresora impresora= impresoraOptional.get();
-            areaServicio.setImpresora(impresora);
-        }
+
 
         return areaServicio;
 
@@ -222,7 +214,7 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
     }
 
     private  boolean validarAreaMap(Map<String,String> objetoMap,boolean validarId){
-        if(objetoMap.containsKey("nombre") && objetoMap.containsKey("idImpresora")){
+        if(objetoMap.containsKey("nombre")){
             if(objetoMap.containsKey("id") && validarId){
                 return true;
             } else if (!validarId) {

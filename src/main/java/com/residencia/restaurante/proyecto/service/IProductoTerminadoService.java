@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.service;
 
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.ProductoTerminadoDto;
+import com.residencia.restaurante.proyecto.dto.RecetaDTO;
 import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,4 +35,6 @@ public interface IProductoTerminadoService {
     ResponseEntity<IngredienteProductoTerminado> obtenerMateriaPrimaId( Integer id);
 
     ResponseEntity<ProductoTerminado> obtenerProductoTerminado(Integer id);
+
+    ResponseEntity<List<RecetaDTO>> obtenerReceta(Integer id);
 }

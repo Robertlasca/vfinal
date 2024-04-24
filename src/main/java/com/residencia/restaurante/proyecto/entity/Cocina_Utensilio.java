@@ -17,11 +17,11 @@ public class Cocina_Utensilio {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "cocina_id")
+    @JoinColumn(nullable = true,name = "cocina_id")
     private Cocina cocina;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "utensilio_id")
+    @JoinColumn(nullable = true,name = "utensilio_id")
     private Utensilio utensilio;
 
     private int cantidad;

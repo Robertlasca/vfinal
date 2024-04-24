@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controller;
 
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.ProductoTerminadoDto;
+import com.residencia.restaurante.proyecto.dto.RecetaDTO;
 import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,9 @@ public interface IProductoTerminadoController {
 
     @GetMapping(path = "/obtenerProductoTerminado/{id}")
     ResponseEntity<ProductoTerminado> obtenerProductoTerminado(@PathVariable Integer id);
+
+    @GetMapping(path = "/obtenerReceta/{id}")
+    ResponseEntity<List<RecetaDTO>> obtenerRecetaId(@PathVariable Integer id);
 
 
 

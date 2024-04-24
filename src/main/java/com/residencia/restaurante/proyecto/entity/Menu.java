@@ -40,11 +40,11 @@ public class Menu {
     private String imagen;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "cocina_id")
+    @JoinColumn(nullable = true,name = "cocina_id")
     private Cocina cocina;
 
     @ManyToOne
-    @JoinColumn(name = "categoria_id",nullable = false)
+    @JoinColumn(name = "categoria_id",nullable = true)
     private Categoria categoria;
 
 

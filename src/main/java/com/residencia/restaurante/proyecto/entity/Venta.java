@@ -39,15 +39,15 @@ public class Venta {
     private String estado;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "orden_id")
+    @JoinColumn(nullable = true,name = "orden_id")
     private Orden orden;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "arqueo_id")
+    @JoinColumn(nullable = true,name = "arqueo_id")
     private Arqueo arqueo;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "usuario_id")
+    @JoinColumn(nullable = true,name = "usuario_id")
     private Usuario usuario;
 
 

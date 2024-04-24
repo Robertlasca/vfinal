@@ -18,13 +18,11 @@ public class AreaServicio {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @Column(length = 30)
+    @Column(length = 30, nullable = true)
     private  String nombre;
-
+    @Column(nullable = true)
     private  boolean disponibilidad=true;
 
-    @ManyToOne
-    @JoinColumn(nullable = false,name = "impresora_id")
-    private Impresora impresora;
+
 
 }

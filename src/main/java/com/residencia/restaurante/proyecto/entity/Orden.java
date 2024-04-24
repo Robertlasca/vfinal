@@ -26,11 +26,11 @@ public class Orden {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "mesa_id")
+    @JoinColumn(nullable = true,name = "mesa_id")
     private Mesa mesa;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "usuario_id")
+    @JoinColumn(nullable = true,name = "usuario_id")
     private Usuario usuario;
 
     private String nombreCliente;

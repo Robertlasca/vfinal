@@ -43,6 +43,6 @@ public class ProductoNormal {
     private String imagen;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "categoria_id")
+    @JoinColumn(nullable = true,name = "categoria_id")
     private Categoria categoria;
 }

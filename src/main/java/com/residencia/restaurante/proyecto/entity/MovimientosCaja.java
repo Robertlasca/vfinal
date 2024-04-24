@@ -33,10 +33,10 @@ public class MovimientosCaja {
     private LocalDateTime fechaHoraMovimiento;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "arqueo_id")
+    @JoinColumn(nullable = true,name = "arqueo_id")
     private Arqueo arqueo;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "usuario_id")
+    @JoinColumn(nullable = true,name = "usuario_id")
     private Usuario usuario;
 }

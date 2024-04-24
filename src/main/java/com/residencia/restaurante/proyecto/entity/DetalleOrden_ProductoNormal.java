@@ -22,11 +22,11 @@ public class DetalleOrden_ProductoNormal {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "orden_id")
+    @JoinColumn(nullable = true,name = "orden_id")
     private Orden orden;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "productoNormal_id")
+    @JoinColumn(nullable = true,name = "productoNormal_id")
     private ProductoNormal productoNormal;
 
     private int cantidad;

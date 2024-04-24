@@ -4,6 +4,7 @@ import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IProductoTerminadoController;
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.ProductoTerminadoDto;
+import com.residencia.restaurante.proyecto.dto.RecetaDTO;
 import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
 import com.residencia.restaurante.proyecto.service.IProductoTerminadoService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -72,5 +73,15 @@ private IProductoTerminadoService productoTerminadoService;
             e.printStackTrace();
         }
         return new ResponseEntity<ProductoTerminado>(new ProductoTerminado(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<RecetaDTO>> obtenerRecetaId(Integer id) {
+        try {
+            return productoTerminadoService.obtenerReceta(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

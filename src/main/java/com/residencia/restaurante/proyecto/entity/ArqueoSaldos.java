@@ -19,14 +19,14 @@ public class ArqueoSaldos {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "arqueo_id")
+    @JoinColumn(nullable = true,name = "arqueo_id")
     private Arqueo arqueo;
 
     @ManyToOne
-    @JoinColumn(nullable = false,name = "medioPago_id")
+    @JoinColumn(nullable = true,name = "medioPago_id")
     private MedioPago medioPago;
-
+    @Column(nullable = true)
     private  double saldoSistema;
-
+    @Column(nullable = true)
     private  double saldoAnotado;
 }

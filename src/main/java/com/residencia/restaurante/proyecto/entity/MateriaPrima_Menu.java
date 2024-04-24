@@ -21,11 +21,11 @@ public class MateriaPrima_Menu {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "menu_id",nullable = false)
+    @JoinColumn(name = "menu_id",nullable = true)
     private Menu menu;
 
     @ManyToOne
-    @JoinColumn(name = "materiaPrima_id",nullable = false)
+    @JoinColumn(name = "materiaPrima_id",nullable = true)
     private MateriaPrima materiaPrima;
 
     private double cantidad;

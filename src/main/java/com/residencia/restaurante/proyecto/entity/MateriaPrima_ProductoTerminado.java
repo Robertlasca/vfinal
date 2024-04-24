@@ -23,10 +23,10 @@ public class MateriaPrima_ProductoTerminado {
     private double cantidad;
 
     @ManyToOne
-    @JoinColumn(name = "productoTerminado_id",nullable = false)
+    @JoinColumn(name = "productoTerminado_id",nullable = true)
     private ProductoTerminado productoTerminado;
 
     @ManyToOne
-    @JoinColumn(name = "materiaPrima_id",nullable = false)
+    @JoinColumn(name = "materiaPrima_id",nullable = true)
     private MateriaPrima materiaPrima;
 }

@@ -26,16 +26,16 @@ public class Inventario {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "materiaPrima_id",nullable = false)
+    @JoinColumn(name = "materiaPrima_id",nullable = true)
     private MateriaPrima materiaPrima;
 
 
     @ManyToOne
-    @JoinColumn(name = "almacen_id",nullable = false)
+    @JoinColumn(name = "almacen_id",nullable = true)
     private Almacen almacen;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id",nullable = false)
+    @JoinColumn(name = "usuario_id",nullable = true)
     private Usuario usuario;
 
     private double stockMax;

@@ -18,15 +18,15 @@ public class Almacen {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @Column(length = 30)
+    @Column(length = 30, nullable = true)
     private String nombre;
-    @Column(length = 50)
+    @Column(length = 50, nullable = true)
     private  String descripcion;
-
+@Column(nullable = true)
     private boolean visibilidad=true;
 
     @OneToOne
-    @JoinColumn(nullable = false,name = "cocina_id")
+    @JoinColumn(nullable = true,name = "cocina_id")
     private Cocina cocina;
 
 

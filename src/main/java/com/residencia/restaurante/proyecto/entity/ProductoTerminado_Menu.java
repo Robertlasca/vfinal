@@ -19,10 +19,10 @@ public class ProductoTerminado_Menu {
     private double cantidad;
 
     @ManyToOne
-    @JoinColumn(name = "productoTerminado_id",nullable = false)
+    @JoinColumn(name = "productoTerminado_id",nullable = true)
     private ProductoTerminado productoTerminado;
 
     @ManyToOne
-    @JoinColumn(name = "menu_id",nullable = false)
+    @JoinColumn(name = "menu_id",nullable = true)
     private Menu menu;
 }
