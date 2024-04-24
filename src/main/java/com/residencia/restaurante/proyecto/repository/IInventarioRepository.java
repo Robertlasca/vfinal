@@ -20,7 +20,7 @@ public interface IInventarioRepository extends JpaRepository<Inventario,Integer>
      * @param id El ID del almacén.
      * @return Lista de registros de inventario asociados con el almacén específico.
      */
-    List<Inventario> findInventarioByAlmacenId(Integer id);
+    List<Inventario> getAllByAlmacen_Id(Integer id);
 
     /**
      * Encuentra un registro de inventario por ID de almacén y ID de materia prima.

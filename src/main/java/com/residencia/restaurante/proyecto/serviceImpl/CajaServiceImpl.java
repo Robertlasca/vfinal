@@ -4,8 +4,10 @@ import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.CajaDTO;
 import com.residencia.restaurante.proyecto.dto.MedioPagoDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
+import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
 import com.residencia.restaurante.proyecto.repository.ICajaRepository;
+import com.residencia.restaurante.proyecto.repository.IImpresoraRepository;
 import com.residencia.restaurante.proyecto.service.ICajaService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ import java.util.Optional;
 public class CajaServiceImpl implements ICajaService {
     @Autowired
     private ICajaRepository cajaRepository;
+
+    @Autowired
+    private IImpresoraRepository impresoraRepository;
     /**
      * Obtiene una lista de todas las cajas activas.
      * @return Lista de cajas activas con estado HTTP correspondiente.
@@ -164,6 +169,12 @@ public class CajaServiceImpl implements ICajaService {
 
         }else {
             caja.setVisibilidad(true);
+        }
+
+        if(objetoMap.containsKey("idImpresora")){
+            Integer id= Integer.parseInt(objetoMap.get("idImpresora"));
+            Optional<Impresora> impresoraOptional= impresoraRepository.findById(id);
+            impresoraOptional.ifPresent(caja::setImpresora);
         }
 
         caja.setNombre(objetoMap.get("nombre"));

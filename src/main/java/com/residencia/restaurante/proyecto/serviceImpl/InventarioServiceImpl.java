@@ -277,8 +277,8 @@ public class InventarioServiceImpl implements IInventarioService {
             if(validarMap(objetoMap)){
 
                 // Obtener listas de inventario para cada almacén
-                List<Inventario> inventarioAlmacen1 = inventarioRepository.findInventarioByAlmacenId(Integer.parseInt(objetoMap.get("idOrigen")));
-                List<Inventario> inventarioAlmacen2 = inventarioRepository.findInventarioByAlmacenId(Integer.parseInt(objetoMap.get("idDestino")));
+                List<Inventario> inventarioAlmacen1 = inventarioRepository.getAllByAlmacen_Id(Integer.parseInt(objetoMap.get("idOrigen")));
+                List<Inventario> inventarioAlmacen2 = inventarioRepository.getAllByAlmacen_Id(Integer.parseInt(objetoMap.get("idDestino")));
 
                 // Extraer materias primas de los objetos de inventario
                 List<MateriaPrima> materiasPrimasAlmacen1 = inventarioAlmacen1.stream()
@@ -312,16 +312,20 @@ public class InventarioServiceImpl implements IInventarioService {
     public ResponseEntity<List<MateriaPrima>> listarPorAlmacen(Integer id) {
         try {
                 // Obtener listas de inventario para cada almacén
-                List<Inventario> inventarioAlmacen = inventarioRepository.findInventarioByAlmacenId(id);
+                List<Inventario> inventarioAlmacen = inventarioRepository.getAllByAlmacen_Id(id);
+                if(!inventarioAlmacen.isEmpty()){
+                    // Extraer materias primas de los objetos de inventario
+                    List<MateriaPrima> materiasPrimasAlmacen = inventarioAlmacen.stream()
+                            .map(Inventario::getMateriaPrima)
+                            .distinct()
+                            .collect(Collectors.toList());
+                    return new ResponseEntity<List<MateriaPrima>>(materiasPrimasAlmacen,HttpStatus.OK);
 
-                // Extraer materias primas de los objetos de inventario
-                List<MateriaPrima> materiasPrimasAlmacen = inventarioAlmacen.stream()
-                        .map(Inventario::getMateriaPrima)
-                        .distinct()
-                        .collect(Collectors.toList());
+                }
 
 
-                return new ResponseEntity<List<MateriaPrima>>(materiasPrimasAlmacen,HttpStatus.OK);
+
+                return new ResponseEntity<List<MateriaPrima>>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -407,7 +411,7 @@ public class InventarioServiceImpl implements IInventarioService {
 
             Optional<Almacen> optional= almacenRepository.findAlmacenByCocina_Id(id);
             if(optional.isPresent()){
-                List<Inventario> inventarioList= inventarioRepository.findInventarioByAlmacenId(optional.get().getId());
+                List<Inventario> inventarioList= inventarioRepository.getAllByAlmacen_Id(optional.get().getId());
                 List<Inventario> inventarios= new ArrayList<>();
 
                 for (Inventario inventario:inventarioList) {
