@@ -42,6 +42,7 @@ public interface IMateriaPrimaController {
     @GetMapping(path = "/obtenerMateriasPrimas")
     ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimas();
 
+
     /**
      * Cambia el estado de una materia prima específica en el sistema. La información necesaria
      * para identificar la materia prima y el nuevo estado se pasa en el cuerpo de la solicitud.
@@ -95,4 +96,6 @@ public interface IMateriaPrimaController {
                                           @RequestParam("idCategoria") int idCategoria,
                                           @RequestParam("costoUnitario") double costoUnitario,
                                           @RequestParam("img") MultipartFile file);
+
+
 }

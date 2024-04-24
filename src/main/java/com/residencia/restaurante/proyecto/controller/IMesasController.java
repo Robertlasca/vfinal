@@ -19,8 +19,8 @@ public interface IMesasController {
     @GetMapping(path = "/obtenerMesas/{id}")
     ResponseEntity<List<Mesa>> obtenerMesasPorArea(@PathVariable Integer id);
 
-    @PostMapping(path = "/cambiarEstado")
-    ResponseEntity<String> cambiarEstado(@RequestBody(required = true) Map<String,String> objetoMap);
+    @PostMapping(path = "/cambiarEstado/{id}")
+    ResponseEntity<String> cambiarEstado(@PathVariable Integer id);
     @PostMapping(path = "/agregar")
     ResponseEntity<String> agregar(@RequestBody(required = true) Map<String,String> objetoMap);
     @PostMapping(path = "/actualizar")

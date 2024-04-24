@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import com.residencia.restaurante.proyecto.dto.InventarioDTO;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,9 @@ public interface IInventarioController {
      */
     @GetMapping(path = "/listarPorStock")
     ResponseEntity<List<InventarioDTO>> listarPorStock();
+
+    @GetMapping(path = "/obtenerMateriaIdCocina/{id}")
+    ResponseEntity<List<Inventario>> obtenerMateriasXCocinaID(@PathVariable Integer id);
 
     /**
      * Obtiene una lista de materias primas del inventario en un almacén específico.

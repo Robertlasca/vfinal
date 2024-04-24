@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import com.residencia.restaurante.proyecto.dto.InventarioDTO;
 import org.springframework.http.ResponseEntity;
@@ -66,4 +67,6 @@ public interface IInventarioService {
      * @return ResponseEntity con los datos del inventario.
      */
     ResponseEntity<Map<String,String>> obtenerDatos(Map<String,String> objetoMap);
+
+    ResponseEntity<List<Inventario>> obtenerMateriasXCocinaID(Integer id);
 }

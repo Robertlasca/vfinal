@@ -73,12 +73,11 @@ public class MesaServiceImpl implements IMesaService{
     }
 //Metodo para eliminar una mesa
     @Override
-    public ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap) {
+    public ResponseEntity<String> cambiarEstado(Integer id) {
         try{
-            if(objetoMap.containsKey("idMesa")){
 
-                    if(validarMesa(Integer.parseInt(objetoMap.get("idMesa")))){
-                        Optional<Mesa> mesaOptional= mesaRepository.findById(Integer.parseInt(objetoMap.get("idMesa")));
+                    if(validarMesa(id)){
+                        Optional<Mesa> mesaOptional= mesaRepository.findById(id);
                         if(mesaOptional.isPresent()){
                             Mesa mesa= mesaOptional.get();
                             if(!mesa.getEstado().equalsIgnoreCase("Disponible")){
@@ -99,8 +98,6 @@ public class MesaServiceImpl implements IMesaService{
 
 
 
-            }
-            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
             e.printStackTrace();

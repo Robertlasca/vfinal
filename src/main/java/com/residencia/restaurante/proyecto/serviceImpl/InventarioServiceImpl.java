@@ -1,10 +1,8 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
-import com.residencia.restaurante.proyecto.entity.Almacen;
-import com.residencia.restaurante.proyecto.entity.Inventario;
-import com.residencia.restaurante.proyecto.entity.MateriaPrima;
-import com.residencia.restaurante.proyecto.entity.Movimientos_Inventario;
+import com.residencia.restaurante.proyecto.entity.*;
+import com.residencia.restaurante.proyecto.repository.IAlmacenRepository;
 import com.residencia.restaurante.proyecto.repository.IInventarioRepository;
 import com.residencia.restaurante.proyecto.repository.IMateriaPrimaRepository;
 import com.residencia.restaurante.proyecto.repository.IMovimiento_InventarioRepository;
@@ -25,6 +23,9 @@ import java.util.stream.Collectors;
 public class InventarioServiceImpl implements IInventarioService {
     @Autowired
     IInventarioRepository inventarioRepository;
+
+    @Autowired
+    private IAlmacenRepository almacenRepository;
 
     @Autowired
     IUsuarioRepository usuarioRepository;
@@ -398,6 +399,31 @@ public class InventarioServiceImpl implements IInventarioService {
             e.printStackTrace();
         }
         return new ResponseEntity<Map<String, String>>(datos,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<Inventario>> obtenerMateriasXCocinaID(Integer id) {
+        try {
+
+            Optional<Almacen> optional= almacenRepository.findAlmacenByCocina_Id(id);
+            if(optional.isPresent()){
+                List<Inventario> inventarioList= inventarioRepository.findInventarioByAlmacenId(optional.get().getId());
+                List<Inventario> inventarios= new ArrayList<>();
+
+                for (Inventario inventario:inventarioList) {
+                    if(inventario.getMateriaPrima().isVisibilidad()){
+                        inventarios.add(inventario);
+                    }
+
+                }
+                return new ResponseEntity<List<Inventario>>(inventarios,HttpStatus.OK);
+            }
+            return new ResponseEntity<List<Inventario>>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<Inventario>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean validarMap(Map<String,String> objetoMap){

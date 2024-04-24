@@ -17,15 +17,15 @@ public interface IMesaService {
     ResponseEntity<List<Mesa>> obtenerMesasNoActivasPorArea(Integer id);
     ResponseEntity<List<Mesa>> obtenerMesasPorArea(Integer id);
 
-    ResponseEntity<String> cambiarEstado(Map<String,String> objetoMap);
-    @PostMapping(path = "/agregar")
+    ResponseEntity<String> cambiarEstado(Integer id);
+
     ResponseEntity<String> agregar(Map<String,String> objetoMap);
-    @PostMapping(path = "/actualizar")
+
     ResponseEntity<String> actualizar(Map<String,String> objetoMap);
 
-    @PostMapping(path = "/mover")
+
     ResponseEntity<String> mover(@RequestBody(required = true) Map<String,String> objetoMap);
 
-    @GetMapping(path = "/obtenerMesa/{id}")
+
     ResponseEntity<Mesa> obtenerMesaId(@PathVariable Integer id);
 }

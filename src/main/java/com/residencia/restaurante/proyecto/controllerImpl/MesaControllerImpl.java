@@ -50,9 +50,9 @@ public class MesaControllerImpl implements IMesasController {
     }
 
     @Override
-    public ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap) {
+    public ResponseEntity<String> cambiarEstado(Integer id) {
         try {
-            return mesaService.cambiarEstado(objetoMap);
+            return mesaService.cambiarEstado(id);
         }catch (Exception e){
             e.printStackTrace();
         }
