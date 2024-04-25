@@ -6,14 +6,8 @@ import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.ProductoTerminadoDto;
 import com.residencia.restaurante.proyecto.dto.RecetaDTO;
-import com.residencia.restaurante.proyecto.entity.Categoria;
-import com.residencia.restaurante.proyecto.entity.MateriaPrima;
-import com.residencia.restaurante.proyecto.entity.MateriaPrima_ProductoTerminado;
-import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
-import com.residencia.restaurante.proyecto.repository.ICategoriaRepository;
-import com.residencia.restaurante.proyecto.repository.IMateriaPrimaRepository;
-import com.residencia.restaurante.proyecto.repository.IMateriaPrima_ProductoTerminadoRepository;
-import com.residencia.restaurante.proyecto.repository.IProductoTerminadoRepository;
+import com.residencia.restaurante.proyecto.entity.*;
+import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IProductoTerminadoService;
 import com.residencia.restaurante.proyecto.wrapper.IngredientesProductoTerminadoWrapper;
 import com.residencia.restaurante.security.utils.Utils;
@@ -35,6 +29,9 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
 
     @Autowired
     private IMateriaPrimaRepository materiaPrimaRepository;
+
+    @Autowired
+    private IInventarioRepository inventarioRepository;
 
     @Autowired
     private ICategoriaRepository categoriaRepository;
@@ -65,16 +62,19 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
             List<ProductoTerminado> listSuficiente= productoTerminadoRepository.findProductoTerminadoByStockActualEntreMinimoYMaximo();
 
             List<ProductoTerminadoDto> terminadoDtoList= new ArrayList<>();
+            double costo=0;
 
             for (ProductoTerminado productoTerminado: listaMenor) {
 
                 ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
+                List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
                 productoTerminadoDto.setProductoTerminado(productoTerminado);
                 if(productoTerminado.isVisibilidad()){
                     productoTerminadoDto.setDisponibilidad("Visible");
                 }else {
                     productoTerminadoDto.setDisponibilidad("No visible");
                 }
+                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
 
                 productoTerminadoDto.setEstado("Insuficiente");
                 terminadoDtoList.add(productoTerminadoDto);
@@ -91,6 +91,8 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                 }else {
                     productoTerminadoDto.setDisponibilidad("No visible");
                 }
+                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
 
                 productoTerminadoDto.setEstado("Excedido");
                 terminadoDtoList.add(productoTerminadoDto);
@@ -107,6 +109,7 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                 }else {
                     productoTerminadoDto.setDisponibilidad("No visible");
                 }
+                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
 
                 productoTerminadoDto.setEstado("Suficiente");
                 terminadoDtoList.add(productoTerminadoDto);
@@ -122,6 +125,24 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
         return new ResponseEntity<List<ProductoTerminadoDto>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
 
 
+
+    }
+
+    private double calcularCosto(ProductoTerminado productoTerminado) {
+        List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
+        double costoTotal=0;
+        if(!materiaPrimaProductoTerminados.isEmpty()){
+            for (MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado:materiaPrimaProductoTerminados) {
+                MateriaPrima materiaPrima= materiaPrimaProductoTerminado.getInventario().getMateriaPrima();
+                double costo= calcularCostoProduccion(materiaPrima.getCostoUnitario());
+                costoTotal=costoTotal+rendondearADos((materiaPrimaProductoTerminado.getCantidad()*1000)*costo);
+
+
+
+
+            }
+        }
+        return rendondearADos(costoTotal);
 
     }
 
@@ -160,9 +181,12 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                             materiaPrimaProductoTerminado.setProductoTerminado(productoTerminado);
 
                             Optional<MateriaPrima> materiaPrimaOptional= materiaPrimaRepository.findById(ingrediente.getIdMateriaPrima());
-                            if(materiaPrimaOptional.isPresent()){
-                                MateriaPrima materiaPrima= materiaPrimaOptional.get();
-                                materiaPrimaProductoTerminado.setMateriaPrima(materiaPrima);
+                            Optional<Inventario> inventarioOptional=inventarioRepository.findById(ingrediente.getIdMateriaPrima());
+
+                            if(inventarioOptional.isPresent()){
+                                Inventario inventario= inventarioOptional.get();
+                                materiaPrimaProductoTerminado.setInventario(inventario);
+                                //materiaPrimaProductoTerminado.setMateriaPrima(materiaPrima);
                             }
 
                             materiaPrimaProductoTerminadoRepository.save(materiaPrimaProductoTerminado);
@@ -196,15 +220,15 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
     @Override
     public ResponseEntity<IngredienteProductoTerminado> obtenerMateriaPrimaId(Integer id) {
         try {
-            Optional<MateriaPrima> materiaPrimaOptional= materiaPrimaRepository.findById(id);
-            if(materiaPrimaOptional.isPresent()){
+            Optional<Inventario> inventarioOptional= inventarioRepository.findById(id);
+            if(inventarioOptional.isPresent()){
 
-                MateriaPrima materiaPrima= materiaPrimaOptional.get();
+                MateriaPrima materiaPrima= inventarioOptional.get().getMateriaPrima();
                 IngredienteProductoTerminado ingredienteProductoTerminado= new IngredienteProductoTerminado();
                 //Se debe calcular el costo de produccion por gramo
                 double precio= materiaPrima.getCostoUnitario();
 
-                ingredienteProductoTerminado.setId(materiaPrima.getId());
+                ingredienteProductoTerminado.setId(inventarioOptional.get().getId());
                 ingredienteProductoTerminado.setNombre(materiaPrima.getNombre());
                 ingredienteProductoTerminado.setUnidadMedida(materiaPrima.getUnidadMedida());
                 ingredienteProductoTerminado.setCostoProduccion(calcularCostoProduccion(precio));
@@ -239,13 +263,14 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
     public ResponseEntity<List<RecetaDTO>> obtenerReceta(Integer id) {
         try {
             Optional<ProductoTerminado> optionalProductoTerminado= productoTerminadoRepository.findById(id);
+            System.out.println("Este es el costo de produccion final."+calcularCostoProduccionTotal(id));
             List<RecetaDTO> recetaDTOS= new ArrayList<>();
             if(optionalProductoTerminado.isPresent()){
                 ProductoTerminado productoTerminado=optionalProductoTerminado.get();
                 List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
                 if(!materiaPrimaProductoTerminados.isEmpty()){
                     for (MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado:materiaPrimaProductoTerminados) {
-                        MateriaPrima materiaPrima= materiaPrimaProductoTerminado.getMateriaPrima();
+                        MateriaPrima materiaPrima= materiaPrimaProductoTerminado.getInventario().getMateriaPrima();
                         double costo= calcularCostoProduccion(materiaPrima.getCostoUnitario());
                         RecetaDTO recetaDTO= new RecetaDTO();
                         recetaDTO.setEsIngrediente(true);
@@ -253,7 +278,8 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                         recetaDTO.setUnidadMedida(materiaPrima.getUnidadMedida());
                         recetaDTO.setNombre(materiaPrima.getNombre());
                         recetaDTO.setCantidad(materiaPrimaProductoTerminado.getCantidad());
-                        recetaDTO.setCostoProduccion(materiaPrimaProductoTerminado.getCantidad()*costo);
+                        //Costo de produccion ejemplo que la materia prima ocupe 0.200
+                        recetaDTO.setCostoProduccion(rendondearADos((materiaPrimaProductoTerminado.getCantidad()*1000)*costo));
 
                         recetaDTOS.add(recetaDTO);
 
@@ -272,6 +298,23 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
         return new ResponseEntity<List<RecetaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<String> eliminar(Integer id) {
+        try {
+            Optional<ProductoTerminado> productoTerminadoOptional= productoTerminadoRepository.findById(id);
+            if(productoTerminadoOptional.isPresent()){
+                List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados=materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminadoOptional.get());
+                materiaPrimaProductoTerminadoRepository.deleteAll(materiaPrimaProductoTerminados);
+                productoTerminadoRepository.delete(productoTerminadoOptional.get());
+                return Utils.getResponseEntity("Producto terminado elimnado correctamente",HttpStatus.OK);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private double calcularCostoProduccion(double precio){
         double costoPorGramo= precio/1000;
 
@@ -284,5 +327,43 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
         // Convertir el String resultante de nuevo a double si es necesario
         double costoPorGramoRedondeado = Double.parseDouble(costoPorGramoFormateado);
         return costoPorGramoRedondeado;
+    }
+
+    private double rendondearADos(double valor){
+        // Crear un objeto DecimalFormat para redondear a 4 decimales
+        DecimalFormat df = new DecimalFormat("#.####");
+
+        // Aplicar el formato y convertir el resultado a String
+        String costoPorGramoFormateado = df.format(valor);
+
+        // Convertir el String resultante de nuevo a double si es necesario
+        double costoPorGramoRedondeado = Double.parseDouble(costoPorGramoFormateado);
+        return costoPorGramoRedondeado;
+
+    }
+
+    // Método para calcular el costo de producción total de un producto terminado
+    public Double calcularCostoProduccionTotal(Integer idProductoTerminado) {
+        List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminadoList =
+                materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(
+                        productoTerminadoRepository.findById(idProductoTerminado).get()
+                );
+
+        double costoProduccionTotal = 0.0;
+
+        for (MateriaPrima_ProductoTerminado mpt : materiaPrimaProductoTerminadoList) {
+            MateriaPrima materiaPrima = mpt.getInventario().getMateriaPrima();
+            double costoUnitario = materiaPrima.getCostoUnitario()/1000;
+            double cantidad = mpt.getCantidad();
+
+            // Convertir la cantidad a gramos si es menor que 1 (se asume que está en kilogramos)
+            if (cantidad < 1) {
+                cantidad *= 1000; // Convertir a gramos
+            }
+
+            costoProduccionTotal += cantidad * costoUnitario;
+        }
+
+        return costoProduccionTotal;
     }
 }

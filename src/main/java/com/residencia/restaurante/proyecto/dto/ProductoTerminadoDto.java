@@ -13,4 +13,5 @@ public class ProductoTerminadoDto {
     private ProductoTerminado productoTerminado;
     private String estado;
     private String disponibilidad;
+    private double costoProduccion;
 }

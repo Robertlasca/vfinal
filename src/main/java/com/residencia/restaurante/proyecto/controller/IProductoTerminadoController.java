@@ -42,6 +42,9 @@ public interface IProductoTerminadoController {
     @GetMapping(path = "/obtenerReceta/{id}")
     ResponseEntity<List<RecetaDTO>> obtenerRecetaId(@PathVariable Integer id);
 
+    @PostMapping(path = "/eliminar/{id}")
+    ResponseEntity<String> eliminar(@PathVariable Integer id);
+
 
 
 

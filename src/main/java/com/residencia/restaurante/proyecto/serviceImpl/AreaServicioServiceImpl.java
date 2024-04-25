@@ -147,8 +147,7 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
             if(validarAreaMap(objetoMap,true)){
                 Optional<AreaServicio> optional= areaServicioRepository.findById(Integer.parseInt(objetoMap.get("id")));
                 if(!optional.isEmpty()){
-                    Optional<Impresora> impresoraOptional= impresoraRepository.findById(Integer.parseInt(objetoMap.get("idImpresora")));
-                    if(!impresoraOptional.isEmpty()){
+
                         if(optional.get().getNombre().equalsIgnoreCase(objetoMap.get("nombre"))){
                             areaServicioRepository.save(obtenerAreaDesdeMap(objetoMap,true));
                             return Utils.getResponseEntity("Área de servicio actualizada.",HttpStatus.OK);
@@ -160,8 +159,7 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
                             return Utils.getResponseEntity("No puedes asignarle este nombre.",HttpStatus.BAD_REQUEST);
                         }
 
-                    }
-                    return Utils.getResponseEntity("No puedes asignarle la impresora.",HttpStatus.BAD_REQUEST);
+
 
                 }
                 return Utils.getResponseEntity("El área de servicio no existe.",HttpStatus.BAD_REQUEST);

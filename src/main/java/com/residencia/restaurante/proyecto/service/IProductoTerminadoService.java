@@ -37,4 +37,6 @@ public interface IProductoTerminadoService {
     ResponseEntity<ProductoTerminado> obtenerProductoTerminado(Integer id);
 
     ResponseEntity<List<RecetaDTO>> obtenerReceta(Integer id);
+
+    ResponseEntity<String> eliminar(Integer id);
 }

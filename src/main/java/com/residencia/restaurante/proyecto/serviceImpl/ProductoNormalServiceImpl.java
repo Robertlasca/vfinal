@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -335,4 +336,18 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
         Optional<Categoria> optionalCategoria=categoriaRepository.findById(id);
         return optionalCategoria.isPresent();
     }
+
+    private double rendondearADos(double valor){
+        // Crear un objeto DecimalFormat para redondear a 4 decimales
+        DecimalFormat df = new DecimalFormat("#.####");
+
+        // Aplicar el formato y convertir el resultado a String
+        String costoPorGramoFormateado = df.format(valor);
+
+        // Convertir el String resultante de nuevo a double si es necesario
+        double costoPorGramoRedondeado = Double.parseDouble(costoPorGramoFormateado);
+        return costoPorGramoRedondeado;
+
+    }
+
 }
