@@ -1,11 +1,13 @@
 package com.residencia.restaurante.proyecto.controllerImpl;
 
+import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IMenuController;
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.MenuDTO;
 import com.residencia.restaurante.proyecto.dto.RecetaDTO;
 import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
 import com.residencia.restaurante.proyecto.service.IMenuService;
+import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +35,22 @@ public class MenuControllerImpl implements IMenuController {
 
     @Override
     public ResponseEntity<List<MenuDTO>> obtenerTodos() {
-        return null;
+        try {
+            return menuService.obtenerTodos();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public ResponseEntity<String> agregar(String nombre, String descripcion, double costoProduccion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria, int idCocina, String receta) {
-        return null;
+    public ResponseEntity<String> agregar(String nombre, String descripcion, double costoProduccion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria, String receta) {
+        try {
+            return menuService.agregar(nombre,descripcion,costoProduccion,margenGanancia,precioVenta,file,idCategoria,receta);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -53,7 +65,12 @@ public class MenuControllerImpl implements IMenuController {
 
     @Override
     public ResponseEntity<List<RecetaDTO>> obtenerRecetaId(Integer id) {
-        return null;
+        try {
+            return menuService.obtenerRecetaId(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

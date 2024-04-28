@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
@@ -8,6 +9,7 @@ import com.residencia.restaurante.proyecto.dto.RecetaDTO;
 import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IMenuService;
+import com.residencia.restaurante.proyecto.wrapper.RecetaWrapper;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,8 +24,6 @@ import java.util.*;
 public class MenuServiceImpl implements IMenuService {
     @Autowired
     private IMenuRepository menuRepository;
-    @Autowired
-    private IMateriaPrimaRepository materiaPrimaRepository;
 
     @Autowired
     private IMateriaPrima_MenuRepository materiaPrimaMenuRepository;
@@ -62,11 +62,34 @@ public class MenuServiceImpl implements IMenuService {
 
     @Override
     public ResponseEntity<List<MenuDTO>> obtenerTodos() {
-        return null;
+        try {
+            List<Menu> menuList=menuRepository.findAll();
+            List<MenuDTO> menuDTOS=new ArrayList<>();
+            for (Menu menu: menuList) {
+                MenuDTO menuDTO= new MenuDTO();
+                menuDTO.setMenu(menu);
+                menuDTO.setGanancia(menu.getPrecioVenta()-menu.getCostoProduccionDirecto());
+                if(menu.isVisibilidad()){
+                    menuDTO.setDisponibilidad("Visible");
+
+                }else {
+                    menuDTO.setDisponibilidad("No visible");
+                }
+
+                menuDTOS.add(menuDTO);
+
+            }
+
+            return new ResponseEntity<List<MenuDTO>>(menuDTOS,HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<MenuDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public ResponseEntity<String> agregar(String nombre, String descripcion, double costoProduccion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria, int idCocina, String receta) {
+    public ResponseEntity<String> agregar(String nombre, String descripcion, double costoProduccion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria, String receta) {
         try {
             if(!menuRepository.existsByNombreLikeIgnoreCase(nombre)){
                 if(validarCategoriaId(idCategoria)){
@@ -87,8 +110,48 @@ public class MenuServiceImpl implements IMenuService {
                     menuRepository.save(menu);
 
                     ObjectMapper objectMapper= new ObjectMapper();
+                    try {
+                        List<RecetaWrapper> recetaWrappers=objectMapper.readValue(receta, new TypeReference<List<RecetaWrapper>>() {
+                        });
+                        if(!recetaWrappers.isEmpty()){
+                            for(RecetaWrapper recetaWrapper: recetaWrappers){
+                                if(recetaWrapper.getEsIngrediente().equalsIgnoreCase("true")){
+                                    Optional<Inventario> optionalInventario= inventarioRepository.findById(recetaWrapper.getId());
+                                    if(optionalInventario.isPresent()){
+                                        MateriaPrima_Menu materiaPrimaMenu= new MateriaPrima_Menu();
+                                        Inventario inventario= optionalInventario.get();
+                                        materiaPrimaMenu.setMenu(menu);
+                                        materiaPrimaMenu.setInventario(inventario);
+                                        materiaPrimaMenu.setCantidad(recetaWrapper.getCantidad());
+                                        materiaPrimaMenuRepository.save(materiaPrimaMenu);
+
+
+                                    }
+
+                                }else {
+                                    Optional<ProductoTerminado> productoTerminadoOptional=productoTerminadoRepository.findById(recetaWrapper.getId());
+                                    if(productoTerminadoOptional.isPresent()){
+                                        ProductoTerminado productoTerminado=productoTerminadoOptional.get();
+                                        ProductoTerminado_Menu productoTerminadoMenu=new ProductoTerminado_Menu();
+
+                                        productoTerminadoMenu.setMenu(menu);
+                                        productoTerminadoMenu.setProductoTerminado(productoTerminado);
+                                        productoTerminadoMenu.setCantidad(recetaWrapper.getCantidad());
+                                        productoTerminadoMenuRepository.save(productoTerminadoMenu);
+                                    }
+
+                                }
+                            }
+                        }
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    return Utils.getResponseEntity("Menú  guardado correctamente.",HttpStatus.OK);
+
 
                 }
+                return Utils.getResponseEntity("Error al asignar la categoría.",HttpStatus.BAD_REQUEST);
 
             }
             return Utils.getResponseEntity("El nombre del menú ya existe.",HttpStatus.BAD_REQUEST);
@@ -111,7 +174,61 @@ public class MenuServiceImpl implements IMenuService {
 
     @Override
     public ResponseEntity<List<RecetaDTO>> obtenerRecetaId(Integer id) {
-        return null;
+        try {
+            Optional<Menu> menuOptional= menuRepository.findById(id);
+            List<RecetaDTO> recetaDTOS= new ArrayList<>();
+            if(menuOptional.isPresent()){
+                Menu menu= menuOptional.get();
+
+                List<MateriaPrima_Menu> materiaPrimaMenus= materiaPrimaMenuRepository.getAllByMenu(menu);
+                List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
+
+                if(!materiaPrimaMenus.isEmpty()){
+                    for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus ) {
+                        MateriaPrima materiaPrima= materiaPrimaMenu.getInventario().getMateriaPrima();
+                        double costo= calcularCostoProduccion(materiaPrima.getCostoUnitario());
+                        RecetaDTO recetaDTO= new RecetaDTO();
+                        recetaDTO.setEsIngrediente(true);
+                        recetaDTO.setId(materiaPrima.getId());
+                        recetaDTO.setUnidadMedida(materiaPrima.getUnidadMedida());
+                        recetaDTO.setNombre(materiaPrima.getNombre());
+                        recetaDTO.setCantidad(materiaPrimaMenu.getCantidad());
+                        //Costo de produccion ejemplo que la materia prima ocupe 0.200
+                        recetaDTO.setCostoProduccion(rendondearADos((materiaPrimaMenu.getCantidad()*1000)*costo));
+                        recetaDTOS.add(recetaDTO);
+
+
+                    }
+                }
+
+                if(!productoTerminadoMenus.isEmpty()){
+                    for(ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus){
+
+                        ProductoTerminado productoTerminado= productoTerminadoMenu.getProductoTerminado();
+                        RecetaDTO recetaDTO= new RecetaDTO();
+                        double precio=rendondearADos(calcularCostoProduccionTotal(productoTerminado.getId()));
+                        double costoProduccionXUnidad= rendondearADos(precio/1000);
+                        recetaDTO.setId(productoTerminado.getId());
+                        recetaDTO.setNombre(productoTerminado.getNombre());
+                        recetaDTO.setCostoProduccion(rendondearADos((productoTerminadoMenu.getCantidad()*1000)*costoProduccionXUnidad));
+                        recetaDTO.setEsIngrediente(false);
+                        recetaDTO.setUnidadMedida(productoTerminado.getUnidadMedida());
+                        recetaDTO.setCantidad(productoTerminadoMenu.getCantidad());
+                        recetaDTOS.add(recetaDTO);
+
+
+                    }
+                }
+
+                return new ResponseEntity<List<RecetaDTO>>(recetaDTOS,HttpStatus.OK);
+
+            }
+            return new ResponseEntity<List<RecetaDTO>>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<RecetaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

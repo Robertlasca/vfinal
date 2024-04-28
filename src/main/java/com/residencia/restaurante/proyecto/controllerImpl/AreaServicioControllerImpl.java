@@ -94,4 +94,15 @@ public class AreaServicioControllerImpl implements IAreaServicioController {
         }
         return new ResponseEntity<AreaServicio>(new AreaServicio(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> eliminar() {
+        try {
+            return areaServicioService.eliminar();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

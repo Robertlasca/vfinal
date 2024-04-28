@@ -32,4 +32,7 @@ public interface IAreaServicioController {
 
     @GetMapping(path = "/obtenerArea/{id}")
     ResponseEntity<AreaServicio> obtenerAreaId(@PathVariable Integer id);
+
+    @PostMapping(path = "/eliminar")
+    ResponseEntity<String> eliminar();
 }

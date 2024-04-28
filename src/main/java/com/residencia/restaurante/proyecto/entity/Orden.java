@@ -40,4 +40,8 @@ public class Orden {
     private LocalDateTime fechaHoraApertura;
 
     private String estado;
+
+    @ManyToOne
+    @JoinColumn(nullable = true,name = "caja_id")
+    private Caja caja;
 }

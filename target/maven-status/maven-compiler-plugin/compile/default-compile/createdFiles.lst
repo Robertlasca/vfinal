@@ -43,7 +43,6 @@ com\residencia\restaurante\proyecto\repository\ICajaRepository.class
 com\residencia\restaurante\proyecto\repository\IArqueoRepository.class
 com\residencia\restaurante\proyecto\repository\IMesaRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\MovimientoCajaServiceImpl.class
-com\residencia\restaurante\proyecto\wrapper\ReceraWrapper.class
 com\residencia\restaurante\security\model\Rol$RolBuilder.class
 com\residencia\restaurante\proyecto\serviceImpl\UploadFileService.class
 com\residencia\restaurante\security\model\Rol.class
@@ -58,16 +57,19 @@ com\residencia\restaurante\proyecto\controller\ICategoriaController.class
 com\residencia\restaurante\proyecto\controller\ICocinaController.class
 com\residencia\restaurante\proyecto\serviceImpl\AlmacenServiceImpl.class
 com\residencia\restaurante\proyecto\controllerImpl\MenuControllerImpl.class
+com\residencia\restaurante\proyecto\controllerImpl\ComanderoControllerImpl.class
 com\residencia\restaurante\proyecto\repository\IMateriaPrimaRepository.class
 com\residencia\restaurante\proyecto\entity\Orden.class
 com\residencia\restaurante\proyecto\serviceImpl\ArqueoServiceImpl.class
 com\residencia\restaurante\proyecto\service\IUtensilioService.class
 com\residencia\restaurante\proyecto\serviceImpl\ProductoTerminadoServiceImpl.class
+com\residencia\restaurante\proyecto\serviceImpl\MenuServiceImpl$1.class
 com\residencia\restaurante\proyecto\dto\EstacionDTO.class
 com\residencia\restaurante\proyecto\entity\Almacen.class
 com\residencia\restaurante\proyecto\serviceImpl\EmailService.class
 com\residencia\restaurante\RestauranteApplication.class
 com\residencia\restaurante\proyecto\controller\IUsuarioParametrosController.class
+com\residencia\restaurante\proyecto\wrapper\RecetaWrapper.class
 com\residencia\restaurante\proyecto\dto\MesaDTO.class
 com\residencia\restaurante\proyecto\repository\ICategoriaRepository.class
 com\residencia\restaurante\proyecto\service\IAreaServicioService.class
@@ -93,6 +95,7 @@ com\residencia\restaurante\proyecto\repository\IInventarioRepository.class
 com\residencia\restaurante\proyecto\controllerImpl\MateriaPrimaControllerImpl.class
 com\residencia\restaurante\proyecto\controllerImpl\CajaControllerImpl.class
 com\residencia\restaurante\proyecto\dto\ImpresoraDTO.class
+com\residencia\restaurante\proyecto\service\IComanderoService.class
 com\residencia\restaurante\proyecto\dto\IngredienteProductoTerminado.class
 com\residencia\restaurante\proyecto\serviceImpl\MesaServiceImpl.class
 com\residencia\restaurante\proyecto\repository\IOrdenRepository.class
@@ -133,6 +136,7 @@ com\residencia\restaurante\proyecto\dto\AreaServicioDTO.class
 com\residencia\restaurante\proyecto\service\IArqueoSaldosService.class
 com\residencia\restaurante\proyecto\service\IMenuService.class
 com\residencia\restaurante\proyecto\entity\Venta.class
+com\residencia\restaurante\proyecto\serviceImpl\ComanderoServiceImpl.class
 com\residencia\restaurante\proyecto\controller\IMenuController.class
 com\residencia\restaurante\proyecto\wrapper\IngredientesProductoTerminadoWrapper.class
 com\residencia\restaurante\proyecto\controller\IMesasController.class
@@ -146,6 +150,7 @@ com\residencia\restaurante\proyecto\service\ICategoriaService.class
 com\residencia\restaurante\RestauranteApplication$Myconfiguration.class
 com\residencia\restaurante\security\model\Usuario_Rol$Usuario_RolBuilder.class
 com\residencia\restaurante\proyecto\serviceImpl\MenuServiceImpl.class
+com\residencia\restaurante\proyecto\controller\IComanderoController.class
 com\residencia\restaurante\proyecto\service\IArqueoService.class
 com\residencia\restaurante\proyecto\constantes\Constantes.class
 com\residencia\restaurante\proyecto\entity\MateriaPrima_ProductoTerminado.class

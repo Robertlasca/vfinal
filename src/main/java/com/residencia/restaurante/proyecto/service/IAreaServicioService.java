@@ -27,4 +27,6 @@ public interface IAreaServicioService {
     ResponseEntity<String> actualizar(@RequestBody(required = true) Map<String,String> objetoMap);
 
     ResponseEntity<AreaServicio> obtenerAreaId(@PathVariable Integer id);
+
+    ResponseEntity<String> eliminar();
 }

@@ -11,7 +11,6 @@ import lombok.*;
 @Data
 public class MenuDTO {
     private Menu menu;
-    private String estado;
     private String disponibilidad;
-    private double costoProduccion;
+    private double ganancia;
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping(path = "/productoTerminado")
 public interface IProductoTerminadoController {
@@ -44,6 +45,13 @@ public interface IProductoTerminadoController {
 
     @PostMapping(path = "/eliminar/{id}")
     ResponseEntity<String> eliminar(@PathVariable Integer id);
+
+    @PostMapping(path = "/preparacionDiaria")
+    ResponseEntity<String> preparacionDiaria(@RequestBody(required = true) Map<String, String> objetoMap);
+
+    @GetMapping(path = "/validarStock")
+    ResponseEntity<String> validarStock(@RequestBody(required = true) Map<String, String> objetoMap);
+
 
 
 

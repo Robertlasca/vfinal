@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IMesaRepository extends JpaRepository<Mesa,Integer> {
@@ -18,4 +19,9 @@ public interface IMesaRepository extends JpaRepository<Mesa,Integer> {
     // Método para contar las mesas por el ID del área de servicio
     @Query("SELECT COUNT(m) FROM Mesa m WHERE m.areaServicio.id = :id")
     int countByAreaServicio_Id(Integer id);
+
+    int countByAreaServicio_IdAndVisibilidadTrue(Integer id);
+
+
+    List<Mesa> findByAreaServicio_IdAndVisibilidadTrueOrderByNombreAsc(Integer idArea);
 }

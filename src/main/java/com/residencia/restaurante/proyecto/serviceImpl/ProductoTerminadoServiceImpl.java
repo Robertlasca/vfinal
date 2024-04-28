@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -313,6 +314,90 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> preparacionDiaria(Map<String, String> objetoMap) {
+        try {
+            if(validarMap(objetoMap)){
+                if(validarStock(objetoMap)){
+
+
+                Integer id= Integer.parseInt(objetoMap.get("id"));
+                int cantidad= Integer.parseInt(objetoMap.get("cantidad"));
+                Optional<ProductoTerminado> productoTerminadoOptional= productoTerminadoRepository.findById(id);
+                if(productoTerminadoOptional.isPresent()) {
+                    ProductoTerminado productoTerminado= productoTerminadoOptional.get();
+                    List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados = materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminadoOptional.get());
+                    productoTerminado.setStockActual(productoTerminado.getStockActual()+cantidad);
+
+                    for (MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado:materiaPrimaProductoTerminados){
+                        Inventario inventarioOptional=materiaPrimaProductoTerminado.getInventario();
+                        double stockActual = materiaPrimaProductoTerminado.getInventario().getStockActual();
+                        System.out.println("Este es el stock de la materia prima:"+stockActual);
+                        double cantidadAPreparar= cantidad*materiaPrimaProductoTerminado.getCantidad();
+                        System.out.println("Esta es la cantidad:" +cantidad+" :Esto es lo que requiere"+materiaPrimaProductoTerminado.getCantidad()+" y que se va a preparar:"+cantidadAPreparar);
+                        inventarioOptional.setStockActual(stockActual-cantidadAPreparar);
+                        inventarioRepository.save(inventarioOptional);
+
+                    }
+                    productoTerminadoRepository.save(productoTerminado);
+                    return Utils.getResponseEntity("Preparación exitosa.",HttpStatus.OK);
+                }
+                }
+                return Utils.getResponseEntity("No hay ingredientes suficientes.",HttpStatus.BAD_REQUEST);
+
+
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> validarStockActual(Map<String, String> objetoMap) {
+        try {
+            if(validarStock(objetoMap)){
+                return Utils.getResponseEntity("Si hay suficientes ingredientes.",HttpStatus.OK);
+            }
+            return Utils.getResponseEntity("No hay suficientes ingredientes.",HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public boolean validarStock(Map<String, String> objetoMap){
+        Integer id= Integer.parseInt(objetoMap.get("id"));
+        int cantidad= Integer.parseInt(objetoMap.get("cantidad"));
+        boolean suficienteStock=true;
+
+        Optional<ProductoTerminado> productoTerminadoOptional= productoTerminadoRepository.findById(id);
+        if(productoTerminadoOptional.isPresent()){
+            List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminadoOptional.get());
+
+            for (MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado:materiaPrimaProductoTerminados){
+                double stockActual = materiaPrimaProductoTerminado.getInventario().getStockActual();
+                System.out.println("Este es el stock de la materia prima:"+stockActual);
+                double cantidadAPreparar= cantidad*materiaPrimaProductoTerminado.getCantidad();
+                System.out.println("Esta es la cantidad:" +cantidad+" :Esto es lo que requiere"+materiaPrimaProductoTerminado.getCantidad()+" y que se va a preparar:"+cantidadAPreparar);
+                if(cantidadAPreparar>stockActual){
+                    suficienteStock=false;
+                }
+
+            }
+        }
+
+        return suficienteStock;
+
+    }
+
+    private boolean validarMap(Map<String, String> objetoMap) {
+        return objetoMap.containsKey("id") && objetoMap.containsKey("cantidad");
     }
 
     private double calcularCostoProduccion(double precio){

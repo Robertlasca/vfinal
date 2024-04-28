@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IProductoTerminadoService {
 
@@ -39,4 +40,8 @@ public interface IProductoTerminadoService {
     ResponseEntity<List<RecetaDTO>> obtenerReceta(Integer id);
 
     ResponseEntity<String> eliminar(Integer id);
+
+    ResponseEntity<String> preparacionDiaria(Map<String, String> objetoMap);
+
+    ResponseEntity<String> validarStockActual(Map<String, String> objetoMap);
 }

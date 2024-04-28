@@ -26,7 +26,6 @@ public interface IMenuService {
                                    double precioVenta,
                                     MultipartFile file,
                                     int idCategoria,
-                                   int idCocina,
                                    String receta
     );
 

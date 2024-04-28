@@ -32,8 +32,20 @@ public class MesaServiceImpl implements IMesaService{
         try {
             List<MesaDTO> mesaDTOS= new ArrayList<>();
             for(Mesa mesa: mesaRepository.findAllByAreaServicio_IdAndVisibilidadTrue(id)){
+                Optional<AreaServicio> optional=areaServicioRepository.findById(id);
+               String nombreArea="A";
+                if(optional.isPresent()){
+                    AreaServicio areaServicio=optional.get();
+                   String nombreAreas = areaServicio.getNombre(); // Obtiene el nombre completo del área
+                    if (nombreAreas != null && !nombreAreas.isEmpty()) {
+                        nombreArea = String.valueOf(nombreAreas.charAt(0)); // Obtiene la primera letra del nombre del área
+                    } else {
+                        System.out.println("El nombre del área está vacío o es nulo.");
+                    }
+
+                }
                 MesaDTO mesaDTO= new MesaDTO();
-                mesaDTO.setName(mesa.getNombre());
+                mesaDTO.setName(nombreArea+mesa.getNombre());
                 mesaDTO.setRow(mesa.getCoordY());
                 mesaDTO.setColumn(mesa.getCoordX());
                 mesaDTO.setId(mesa.getId());
@@ -72,37 +84,43 @@ public class MesaServiceImpl implements IMesaService{
         return new ResponseEntity<List<Mesa>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 //Metodo para eliminar una mesa
-    @Override
-    public ResponseEntity<String> cambiarEstado(Integer id) {
-        try{
+@Override
+public ResponseEntity<String> cambiarEstado(Integer id) {
+    try {
+        if (validarMesa(id)) {
+            Optional<Mesa> mesaOptional = mesaRepository.findById(id);
+            if (mesaOptional.isPresent()) {
+                Mesa mesa = mesaOptional.get();
+                if (mesa.getEstado().equalsIgnoreCase("Disponible")) {
+                    mesa.setEstado("Eliminada");
+                    mesa.setCoordY(0);
+                    mesa.setCoordX(0);
+                    mesa.setVisibilidad(false);
+                    mesaRepository.save(mesa);
 
-                    if(validarMesa(id)){
-                        Optional<Mesa> mesaOptional= mesaRepository.findById(id);
-                        if(mesaOptional.isPresent()){
-                            Mesa mesa= mesaOptional.get();
-                            if(!mesa.getEstado().equalsIgnoreCase("Disponible")){
-                                mesa.setEstado("Eliminada");
-                                mesa.setCoordY(0);
-                                mesa.setCoordX(0);
-                                mesa.setVisibilidad(false);
-                                mesaRepository.save(mesa);
-                                return Utils.getResponseEntity("Mesa eliminada correctamente.",HttpStatus.OK);
-                            }
+                    // Llamar al método para reordenar las mesas en el área de servicio
+                    reordenarMesas(mesa.getAreaServicio().getId());
 
-                            return Utils.getResponseEntity("No se puede eliminar la mesa ya que esta ocupada.",HttpStatus.BAD_REQUEST);
-                        }
-
-                    }
-                    return Utils.getResponseEntity("No existe la mesa.",HttpStatus.OK);
-
-
-
-
-
-        }catch (Exception e){
-            e.printStackTrace();
+                    return Utils.getResponseEntity("Mesa eliminada y mesas reordenadas correctamente.", HttpStatus.OK);
+                }
+                return Utils.getResponseEntity("No se puede eliminar la mesa ya que está ocupada.", HttpStatus.BAD_REQUEST);
+            }
+            return Utils.getResponseEntity("No existe la mesa.", HttpStatus.NOT_FOUND);
         }
-        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+        return Utils.getResponseEntity("Datos inválidos.", HttpStatus.BAD_REQUEST);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+    private void reordenarMesas(Integer idArea) {
+        List<Mesa> mesas = mesaRepository.findByAreaServicio_IdAndVisibilidadTrueOrderByNombreAsc(idArea);
+        int contador = 1;
+        for (Mesa mesa : mesas) {
+            mesa.setNombre(String.valueOf(contador++));
+            mesaRepository.save(mesa);
+        }
     }
 
     @Override
@@ -110,14 +128,19 @@ public class MesaServiceImpl implements IMesaService{
         try {
             //Se verifica que no exista la mesa en el área de servicio
             if(validarMap(objetoMap)) {
-                if (!mesaRepository.existsMesaByAreaServicio_IdAndNombreEqualsIgnoreCaseAndVisibilidadTrue(Integer.parseInt(objetoMap.get("idArea")), objetoMap.get("nombre"))) {
+                int numeroDeMesas= mesaRepository.countByAreaServicio_IdAndVisibilidadTrue(Integer.parseInt(objetoMap.get("idArea")));
+                String nombreMesa= String.valueOf(numeroDeMesas+1);
+
+
                     Mesa mesa= new Mesa();
+                    mesa.setNombre(nombreMesa);
                     mesa.setTipo(Boolean.parseBoolean(objetoMap.get("tipo")));
-                    mesa.setNombre(objetoMap.get("nombre"));
                     mesa.setEstado("Disponible");
                     mesa.setCoordX(Double.parseDouble(objetoMap.get("coordX")));
                     mesa.setCoordY(Double.parseDouble(objetoMap.get("coordY")));
                     mesa.setVisibilidad(true);
+
+
 
                     Optional<AreaServicio> areaServicioOptional= areaServicioRepository.findById(Integer.parseInt(objetoMap.get("idArea")));
                     if(areaServicioOptional.isPresent()){
@@ -126,8 +149,8 @@ public class MesaServiceImpl implements IMesaService{
                     }
                     mesaRepository.save(mesa);
                     return Utils.getResponseEntity("Mesa guardada correctamente.",HttpStatus.OK);
-                }
-                return Utils.getResponseEntity("La mesa ya existe en esta área de servicio.",HttpStatus.BAD_REQUEST);
+
+
             }
             return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
 
@@ -138,7 +161,7 @@ public class MesaServiceImpl implements IMesaService{
     }
 
     private boolean validarMap(Map<String, String> objetoMap) {
-        return objetoMap.containsKey("idArea") && objetoMap.containsKey("tipo") && objetoMap.containsKey("nombre") && objetoMap.containsKey("coordX") && objetoMap.containsKey("coordY");
+        return objetoMap.containsKey("idArea") && objetoMap.containsKey("tipo")  && objetoMap.containsKey("coordX") && objetoMap.containsKey("coordY");
     }
 
     @Override
@@ -153,7 +176,6 @@ public class MesaServiceImpl implements IMesaService{
                     }else {
                         mesa.setTipo(true);
                     }
-                    mesa.setNombre(objetoMap.get("nombre"));
                     mesaRepository.save(mesa);
                     return Utils.getResponseEntity("Mesa actualizada correctamente.",HttpStatus.OK);
                 }

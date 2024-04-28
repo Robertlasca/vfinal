@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 @RestController
 public class ProductoTerminadoControllerImpl implements IProductoTerminadoController {
 @Autowired
@@ -89,6 +91,28 @@ private IProductoTerminadoService productoTerminadoService;
     public ResponseEntity<String> eliminar(Integer id) {
         try {
             return productoTerminadoService.eliminar(id);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> preparacionDiaria(Map<String, String> objetoMap) {
+        try {
+            return productoTerminadoService.preparacionDiaria(objetoMap);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> validarStock(Map<String, String> objetoMap) {
+        try {
+            return productoTerminadoService.validarStockActual(objetoMap);
 
         }catch (Exception e){
             e.printStackTrace();

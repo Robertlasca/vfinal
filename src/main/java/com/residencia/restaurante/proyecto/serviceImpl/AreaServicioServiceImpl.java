@@ -5,6 +5,7 @@ import com.residencia.restaurante.proyecto.dto.AreaServicioDTO;
 import com.residencia.restaurante.proyecto.entity.AreaServicio;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.Impresora;
+import com.residencia.restaurante.proyecto.entity.Mesa;
 import com.residencia.restaurante.proyecto.repository.IAreaServicioRepository;
 import com.residencia.restaurante.proyecto.repository.IImpresoraRepository;
 import com.residencia.restaurante.proyecto.repository.IMesaRepository;
@@ -187,6 +188,25 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
         }
 
         return new ResponseEntity<>(new AreaServicio(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> eliminar() {
+        try {
+            List<AreaServicio> areaServicios= areaServicioRepository.findAll();
+            for (AreaServicio areaServicio:areaServicios) {
+                List<Mesa> optional= mesaRepository.findAllByAreaServicio_Id(areaServicio.getId());
+
+                if (optional.isEmpty()){
+                    areaServicioRepository.delete(areaServicio);
+                }
+            }
+            return Utils.getResponseEntity("Mesas eliminadas correctamente",HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private AreaServicio obtenerAreaDesdeMap(Map<String,String> objetoMap,boolean esAgregado){
