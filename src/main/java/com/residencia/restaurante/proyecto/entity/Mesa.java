@@ -25,6 +25,8 @@ public class Mesa {
 
     private boolean tipo;
 
+    private String tipoMesa;
+
     private double coordX;
 
     private double coordY;

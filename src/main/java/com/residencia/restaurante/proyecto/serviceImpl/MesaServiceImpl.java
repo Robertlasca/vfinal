@@ -49,11 +49,14 @@ public class MesaServiceImpl implements IMesaService{
                 mesaDTO.setRow(mesa.getCoordY());
                 mesaDTO.setColumn(mesa.getCoordX());
                 mesaDTO.setId(mesa.getId());
-                if(mesa.isTipo()){
+                String tipoMesa = mesa.getTipoMesa();
+                if (tipoMesa == null ) {
                     mesaDTO.setType("miCuadrado");
-                }else {
-                    mesaDTO.setType("circle");
+                }else{
+                    mesaDTO.setType(mesa.getTipoMesa());
                 }
+
+
                 mesaDTOS.add(mesaDTO);
 
             }
@@ -134,7 +137,8 @@ public ResponseEntity<String> cambiarEstado(Integer id) {
 
                     Mesa mesa= new Mesa();
                     mesa.setNombre(nombreMesa);
-                    mesa.setTipo(Boolean.parseBoolean(objetoMap.get("tipo")));
+                    //mesa.setTipo(Boolean.parseBoolean(objetoMap.get("tipo")));
+                    mesa.setTipoMesa(objetoMap.get("tipo"));
                     mesa.setEstado("Disponible");
                     mesa.setCoordX(Double.parseDouble(objetoMap.get("coordX")));
                     mesa.setCoordY(Double.parseDouble(objetoMap.get("coordY")));
@@ -171,11 +175,8 @@ public ResponseEntity<String> cambiarEstado(Integer id) {
                 Optional<Mesa> mesaOptional= mesaRepository.findById(Integer.parseInt(objetoMap.get("idMesa")));
                 if(mesaOptional.isPresent()){
                     Mesa mesa= mesaOptional.get();
-                    if(objetoMap.get("tipo").equalsIgnoreCase("circle")){
-                        mesa.setTipo(false);
-                    }else {
-                        mesa.setTipo(true);
-                    }
+                    mesa.setTipoMesa(objetoMap.get("tipo"));
+
                     mesaRepository.save(mesa);
                     return Utils.getResponseEntity("Mesa actualizada correctamente.",HttpStatus.OK);
                 }
