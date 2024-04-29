@@ -17,7 +17,7 @@ public interface IMesaRepository extends JpaRepository<Mesa,Integer> {
     boolean existsMesaByAreaServicio_IdAndNombreEqualsIgnoreCaseAndVisibilidadTrue(Integer id,String nombre);
 
     // Método para contar las mesas por el ID del área de servicio
-    @Query("SELECT COUNT(m) FROM Mesa m WHERE m.areaServicio.id = :id")
+    @Query("SELECT COUNT(m) FROM Mesa m WHERE m.areaServicio.id = :id AND m.visibilidad=true ")
     int countByAreaServicio_Id(Integer id);
 
     int countByAreaServicio_IdAndVisibilidadTrue(Integer id);
