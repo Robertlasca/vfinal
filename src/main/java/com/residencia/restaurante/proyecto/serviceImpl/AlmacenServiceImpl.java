@@ -249,14 +249,17 @@ public class AlmacenServiceImpl implements IAlmacenService {
         }else {
             almacen.setVisibilidad(true);
 
-            Optional<Cocina> cocinaOptional= cocinaRepository.findById(Integer.parseInt(objetoMap.get("cocinaId")));
-
-            if(!cocinaOptional.isEmpty()){
-                Cocina cocina= cocinaOptional.get();
-                almacen.setCocina(cocina);
-            }
-
         }
+if(objetoMap.containsKey("cocinaId")){
+    Optional<Cocina> cocinaOptional= cocinaRepository.findById(Integer.parseInt(objetoMap.get("cocinaId")));
+    System.out.println("Entre");
+    if(!cocinaOptional.isEmpty()){
+        System.out.println("Entre 2");
+        Cocina cocina= cocinaOptional.get();
+        almacen.setCocina(cocina);
+    }
+
+}
 
         almacen.setNombre(objetoMap.get("nombre"));
         almacen.setDescripcion(objetoMap.get("descripcion"));

@@ -24,18 +24,29 @@ public class ProductoTerminadoControllerImpl implements IProductoTerminadoContro
 private IProductoTerminadoService productoTerminadoService;
     @Override
     public ResponseEntity<List<ProductoTerminadoDto>> obtenerActivos() {
-        return null;
+        try {
+            return productoTerminadoService.obtenerActivos();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<ProductoTerminadoDto>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<List<ProductoTerminadoDto>> obtenerNoActivos() {
-        return null;
+        try {
+            return productoTerminadoService.obtenerNoActivos();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<ProductoTerminadoDto>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<List<ProductoTerminadoDto>> obtenerTodos() {
         try {
-
             return productoTerminadoService.obtenerTodos();
 
         }catch (Exception e){

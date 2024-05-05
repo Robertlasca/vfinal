@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
+import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.dto.ProductoTerminadoDto;
 import com.residencia.restaurante.proyecto.dto.RecetaDTO;
 import com.residencia.restaurante.proyecto.entity.*;
@@ -46,12 +47,148 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
 
     @Override
     public ResponseEntity<List<ProductoTerminadoDto>> obtenerActivos() {
-        return null;
+       try {
+
+           List<ProductoTerminado> listaMenor= productoTerminadoRepository.findProductoTerminadoByStockActualMenorAlMinimo();
+
+           List<ProductoTerminado> listMayor= productoTerminadoRepository.findProductoTerminadoByStockActualMayorAlMaximo();
+
+           List<ProductoTerminado> listSuficiente= productoTerminadoRepository.findProductoTerminadoByStockActualEntreMinimoYMaximo();
+
+           List<ProductoTerminadoDto> terminadoDtoList= new ArrayList<>();
+           double costo=0;
+
+           for (ProductoTerminado productoTerminado: listaMenor) {
+
+               ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
+               List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
+               productoTerminadoDto.setProductoTerminado(productoTerminado);
+               if(productoTerminado.isVisibilidad()){
+                   productoTerminadoDto.setDisponibilidad("Visible");
+                   productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+                   productoTerminadoDto.setEstado("Insuficiente");
+                   terminadoDtoList.add(productoTerminadoDto);
+               }
+
+
+
+           }
+
+           for (ProductoTerminado productoTerminado: listMayor) {
+
+               ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
+               productoTerminadoDto.setProductoTerminado(productoTerminado);
+               if(productoTerminado.isVisibilidad()){
+                   productoTerminadoDto.setDisponibilidad("Visible");
+                   productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+
+                   productoTerminadoDto.setEstado("Excedido");
+                   terminadoDtoList.add(productoTerminadoDto);
+               }
+
+
+
+           }
+
+           for (ProductoTerminado productoTerminado: listSuficiente) {
+
+               ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
+               productoTerminadoDto.setProductoTerminado(productoTerminado);
+               if(productoTerminado.isVisibilidad()){
+                   productoTerminadoDto.setDisponibilidad("Visible");
+                   productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+                   productoTerminadoDto.setEstado("Suficiente");
+                   terminadoDtoList.add(productoTerminadoDto);
+               }
+
+
+
+           }
+
+           return new ResponseEntity<List<ProductoTerminadoDto>>(terminadoDtoList,HttpStatus.OK);
+
+
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+       return new ResponseEntity<List<ProductoTerminadoDto>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<List<ProductoTerminadoDto>> obtenerNoActivos() {
-        return null;
+        try {
+            List<ProductoTerminado> listaMenor= productoTerminadoRepository.findProductoTerminadoByStockActualMenorAlMinimo();
+
+            List<ProductoTerminado> listMayor= productoTerminadoRepository.findProductoTerminadoByStockActualMayorAlMaximo();
+
+            List<ProductoTerminado> listSuficiente= productoTerminadoRepository.findProductoTerminadoByStockActualEntreMinimoYMaximo();
+
+            List<ProductoTerminadoDto> terminadoDtoList= new ArrayList<>();
+            double costo=0;
+
+            for (ProductoTerminado productoTerminado: listaMenor) {
+
+                ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
+                List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
+                productoTerminadoDto.setProductoTerminado(productoTerminado);
+                if(productoTerminado.isVisibilidad()){
+                    productoTerminadoDto.setDisponibilidad("Visible");
+                }else {
+                    productoTerminadoDto.setDisponibilidad("No visible");
+                }
+                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+                productoTerminadoDto.setEstado("Insuficiente");
+                terminadoDtoList.add(productoTerminadoDto);
+
+
+            }
+
+            for (ProductoTerminado productoTerminado: listMayor) {
+
+                ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
+                productoTerminadoDto.setProductoTerminado(productoTerminado);
+                if(productoTerminado.isVisibilidad()){
+                    productoTerminadoDto.setDisponibilidad("Visible");
+                }else {
+                    productoTerminadoDto.setDisponibilidad("No visible");
+                }
+                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+
+                productoTerminadoDto.setEstado("Excedido");
+                terminadoDtoList.add(productoTerminadoDto);
+
+
+            }
+
+            for (ProductoTerminado productoTerminado: listSuficiente) {
+
+                ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
+                productoTerminadoDto.setProductoTerminado(productoTerminado);
+                if(productoTerminado.isVisibilidad()){
+                    productoTerminadoDto.setDisponibilidad("Visible");
+                }else {
+                    productoTerminadoDto.setDisponibilidad("No visible");
+                }
+                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+                productoTerminadoDto.setEstado("Suficiente");
+                terminadoDtoList.add(productoTerminadoDto);
+
+
+            }
+
+            return new ResponseEntity<List<ProductoTerminadoDto>>(terminadoDtoList,HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<ProductoTerminadoDto>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     @Override
