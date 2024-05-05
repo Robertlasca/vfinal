@@ -31,7 +31,7 @@ public class DetalleOrdenMenu {
 
     private int cantidad;
 
-    private String comentario;
+    private String comentario="Sin comentarios.";
 
     private String estado;
 

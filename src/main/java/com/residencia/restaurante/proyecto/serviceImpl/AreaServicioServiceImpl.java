@@ -128,8 +128,28 @@ public class AreaServicioServiceImpl implements IAreaServicioService {
         try {
             if(validarAreaMap(objetoMap,false)){
                 if(!areaExistente(objetoMap)){
-                        areaServicioRepository.save(obtenerAreaDesdeMap(objetoMap, false));
-                        return Utils.getResponseEntity("Área de servicio guardada.", HttpStatus.OK);
+                    AreaServicio areaServicio= obtenerAreaDesdeMap(objetoMap, false);
+                        areaServicioRepository.save(areaServicio);
+
+                    int numeroDeMesas= mesaRepository.countByAreaServicio_IdAndVisibilidadTrue(areaServicio.getId());
+                    String nombreMesa= String.valueOf(numeroDeMesas+1);
+
+
+                    Mesa mesa= new Mesa();
+                    mesa.setNombre(nombreMesa);
+                    //mesa.setTipo(Boolean.parseBoolean(objetoMap.get("tipo")));
+                    mesa.setTipoMesa("miCuadrado");
+                    mesa.setEstado("Disponible");
+                    mesa.setCoordX(5);
+                    mesa.setCoordY(5);
+                    mesa.setVisibilidad(true);
+                    mesa.setAreaServicio(areaServicio);
+
+
+
+
+                    mesaRepository.save(mesa);
+                    return Utils.getResponseEntity("Área de servicio guardada.", HttpStatus.OK);
                 }
                 return Utils.getResponseEntity("Esta área de servicio ya existe.",HttpStatus.BAD_REQUEST);
 

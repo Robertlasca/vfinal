@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -189,9 +190,10 @@ public class MenuServiceImpl implements IMenuService {
                         double costo= calcularCostoProduccion(materiaPrima.getCostoUnitario());
                         RecetaDTO recetaDTO= new RecetaDTO();
                         recetaDTO.setEsIngrediente(true);
-                        recetaDTO.setId(materiaPrima.getId());
+                        recetaDTO.setId(materiaPrimaMenu.getId());
                         recetaDTO.setUnidadMedida(materiaPrima.getUnidadMedida());
                         recetaDTO.setNombre(materiaPrima.getNombre());
+                        recetaDTO.setIdProductoTerminado(materiaPrimaMenu.getMenu().getId());
                         recetaDTO.setCantidad(materiaPrimaMenu.getCantidad());
                         //Costo de produccion ejemplo que la materia prima ocupe 0.200
                         recetaDTO.setCostoProduccion(rendondearADos((materiaPrimaMenu.getCantidad()*1000)*costo));
@@ -208,10 +210,11 @@ public class MenuServiceImpl implements IMenuService {
                         RecetaDTO recetaDTO= new RecetaDTO();
                         double precio=rendondearADos(calcularCostoProduccionTotal(productoTerminado.getId()));
                         double costoProduccionXUnidad= rendondearADos(precio/1000);
-                        recetaDTO.setId(productoTerminado.getId());
+                        recetaDTO.setId(productoTerminadoMenu.getId());
                         recetaDTO.setNombre(productoTerminado.getNombre());
                         recetaDTO.setCostoProduccion(rendondearADos((productoTerminadoMenu.getCantidad()*1000)*costoProduccionXUnidad));
                         recetaDTO.setEsIngrediente(false);
+                        recetaDTO.setIdProductoTerminado(productoTerminadoMenu.getMenu().getId());
                         recetaDTO.setUnidadMedida(productoTerminado.getUnidadMedida());
                         recetaDTO.setCantidad(productoTerminadoMenu.getCantidad());
                         recetaDTOS.add(recetaDTO);
@@ -219,6 +222,7 @@ public class MenuServiceImpl implements IMenuService {
 
                     }
                 }
+                System.out.println("Este es el costo de producción total:"+calcularCostoTotalMenu(menu.getId()));
 
                 return new ResponseEntity<List<RecetaDTO>>(recetaDTOS,HttpStatus.OK);
 
@@ -322,6 +326,171 @@ public class MenuServiceImpl implements IMenuService {
             e.printStackTrace();
         }
         return new ResponseEntity<RecetaDTO>(new RecetaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria) {
+        try {
+            Optional<Menu> optional= menuRepository.findById(id);
+            if(optional.isPresent()){
+                Menu menu= optional.get();
+                if(menu.getNombre().equalsIgnoreCase(nombre)){
+                    menuRepository.save(actualizarDatos(menu,nombre,descripcion,margenGanancia,precioVenta,file,idCategoria));
+                    return Utils.getResponseEntity("Menú actualizado correctamente.",HttpStatus.OK);
+
+                }else {
+                    if(!menuRepository.existsByNombreLikeIgnoreCase(nombre)){
+                        menuRepository.save(actualizarDatos(menu,nombre,descripcion,margenGanancia,precioVenta,file,idCategoria));
+                        return Utils.getResponseEntity("Menú actualizado correctamente.",HttpStatus.OK);
+
+                    }
+                    return Utils.getResponseEntity("No se puede asignar el nombre al menú.",HttpStatus.BAD_REQUEST);
+                }
+
+            }
+            return Utils.getResponseEntity("No existe el menú.",HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria) {
+        try {
+            if(!menuRepository.existsByNombreLikeIgnoreCase(nombre)){
+                if(validarCategoriaId(idCategoria)){
+                    Menu menu= new Menu();
+                    Optional<Categoria> categoriaOptional= categoriaRepository.findById(idCategoria);
+                    categoriaOptional.ifPresent(menu::setCategoria);
+                    menu.setNombre(nombre);
+                    menu.setDescripcion(descripcion);
+                    menu.setVisibilidad(true);
+                    menu.setDependent(false);
+                    menu.setCostoProduccionDirecto(0);
+                    menu.setMargenGanancia(margenGanancia);
+                    menu.setPrecioVenta(precioVenta);
+
+
+                    String nombreImagen= uploadFileService.guardarImagen(file);
+                    menu.setImagen(nombreImagen);
+                    menuRepository.save(menu);
+                    return new ResponseEntity<Menu>(menu,HttpStatus.OK);
+
+                }
+                return new ResponseEntity<Menu>(new Menu(),HttpStatus.BAD_REQUEST);
+
+            }
+            return new ResponseEntity<Menu>(new Menu(),HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Menu>(new Menu(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> crearReceta(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("idMenu") && objetoMap.containsKey("receta")){
+                Optional<Menu> menuOptional= menuRepository.findById(Integer.parseInt(objetoMap.get("idMenu")));
+                if(menuOptional.isPresent()){
+                    Menu menu= menuOptional.get();
+                    ObjectMapper objectMapper= new ObjectMapper();
+                    try {
+                        List<RecetaWrapper> recetaWrappers=objectMapper.readValue(objetoMap.get("receta"), new TypeReference<List<RecetaWrapper>>() {
+                        });
+                        if(!recetaWrappers.isEmpty()){
+                            for(RecetaWrapper recetaWrapper: recetaWrappers){
+                                if(recetaWrapper.getEsIngrediente().equalsIgnoreCase("true")){
+                                    Optional<Inventario> optionalInventario= inventarioRepository.findById(recetaWrapper.getId());
+                                    if(optionalInventario.isPresent()){
+                                        MateriaPrima_Menu materiaPrimaMenu= new MateriaPrima_Menu();
+                                        Inventario inventario= optionalInventario.get();
+                                        materiaPrimaMenu.setMenu(menu);
+                                        materiaPrimaMenu.setInventario(inventario);
+                                        materiaPrimaMenu.setCantidad(recetaWrapper.getCantidad());
+                                        materiaPrimaMenuRepository.save(materiaPrimaMenu);
+
+
+                                    }
+
+                                }else {
+                                    Optional<ProductoTerminado> productoTerminadoOptional=productoTerminadoRepository.findById(recetaWrapper.getId());
+                                    if(productoTerminadoOptional.isPresent()){
+                                        ProductoTerminado productoTerminado=productoTerminadoOptional.get();
+                                        ProductoTerminado_Menu productoTerminadoMenu=new ProductoTerminado_Menu();
+                                        productoTerminadoMenu.setMenu(menu);
+                                        productoTerminadoMenu.setProductoTerminado(productoTerminado);
+                                        productoTerminadoMenu.setCantidad(recetaWrapper.getCantidad());
+                                        productoTerminadoMenuRepository.save(productoTerminadoMenu);
+                                    }
+
+                                }
+                            }
+                            menu.setCostoProduccionDirecto(calcularCostoTotalMenu(menu.getId()));
+                            menuRepository.save(menu);
+                            return Utils.getResponseEntity("Menú  guardado correctamente.",HttpStatus.OK);
+                        }
+                        return Utils.getResponseEntity("Menú guardado correctamente.",HttpStatus.OK);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    return Utils.getResponseEntity("Menú guardado correctamente.",HttpStatus.OK);
+                }
+                return Utils.getResponseEntity("No existe el menú.",HttpStatus.BAD_REQUEST);
+
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("idMenu") && objetoMap.containsKey("visibilidad") ){
+                Optional<Menu> menuOptional= menuRepository.findById(Integer.parseInt(objetoMap.get("idMenu")));
+                if(menuOptional.isPresent()){
+                    Menu menu= menuOptional.get();
+                    if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
+                        menu.setVisibilidad(false);
+                    }else{
+                        menu.setVisibilidad(true);
+                    }
+
+                    menuRepository.save(menu);
+                    return Utils.getResponseEntity("El estado del menú ha sido actualizado.",HttpStatus.OK);
+
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private Menu actualizarDatos(Menu menu, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria) throws IOException {
+        menu.setNombre(nombre);
+        menu.setDescripcion(descripcion);
+        menu.setPrecioVenta(precioVenta);
+        menu.setMargenGanancia(margenGanancia);
+        Optional<Categoria> categoriaOptional= categoriaRepository.findById(idCategoria);
+        categoriaOptional.ifPresent(menu::setCategoria);
+        if(file.isEmpty()){
+            menu.setImagen(menu.getImagen());
+        }else {
+            if(!menu.getImagen().equalsIgnoreCase("default.jpg")){
+                uploadFileService.eliminarImagen(menu.getImagen());
+            }
+            String nombreImagen= uploadFileService.guardarImagen(file);
+            menu.setImagen(nombreImagen);
+        }
+        return menu;
     }
 
     private boolean validarExistenciaMateriaOProducto(int id, boolean esIngrediente) {
@@ -440,7 +609,51 @@ public class MenuServiceImpl implements IMenuService {
     private boolean validarCategoriaId(int idCategoria) {
         Optional<Categoria> categoriaOptional= categoriaRepository.findById(idCategoria);
         return categoriaOptional.isPresent();
+    }
 
+
+    public Double calcularCostoTotalProductoTerminadoPorMenu(Integer menuId) {
+        // Obtener todos los productos terminados en un menú
+        List<ProductoTerminado_Menu> productosMenu = productoTerminadoMenuRepository.findAllByMenuId(menuId);
+        double costoTotal = 0.0;
+
+        // Calcular el costo de producción de cada producto terminado
+        for (ProductoTerminado_Menu productoMenu : productosMenu) {
+            ProductoTerminado producto = productoMenu.getProductoTerminado();
+            double costoProducto = calcularCostoProduccionProducto(producto);
+            costoTotal += costoProducto * productoMenu.getCantidad();
+        }
+
+        return costoTotal;
+    }
+
+    private double calcularCostoProduccionProducto(ProductoTerminado producto) {
+        List<MateriaPrima_ProductoTerminado> materiales = materiaPrimaProductoTerminadoRepository.findAllByProductoTerminado(producto);
+        double costo = 0.0;
+        for (MateriaPrima_ProductoTerminado material : materiales) {
+            double costoMateria = material.getInventario().getMateriaPrima().getCostoUnitario();
+            costo += costoMateria * material.getCantidad();
+        }
+        return costo;
+    }
+
+    public Double calcularCostoTotalMenu(Integer menuId) {
+        Double costoIngredientes = materiaPrimaMenuRepository.calcularCostoIngredientesPorMenu(menuId);
+        Double costoProductosTerminados = calcularCostoTotalProductoTerminadoPorMenu(menuId);
+
+        // Considerando la posibilidad de valores nulos si no hay ingredientes o productos terminados
+        costoIngredientes = costoIngredientes != null ? costoIngredientes : 0.0;
+        costoProductosTerminados = costoProductosTerminados != null ? costoProductosTerminados : 0.0;
+
+        return costoIngredientes + costoProductosTerminados;
     }
 
 }
+
+
+/*
+Editar la receta del menú solo con el id del ingrediente relacionado
+Eliminar ingrediente de la receta del menú solo con el id del ingrediente relacionado
+Editar la receta del producto terminado solo con el id del ingrediente relacionado
+Agregar la receta con un enpoint separado tanto de menú como de producto terminado
+*/

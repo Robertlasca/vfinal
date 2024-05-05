@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -275,10 +276,11 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                         double costo= calcularCostoProduccion(materiaPrima.getCostoUnitario());
                         RecetaDTO recetaDTO= new RecetaDTO();
                         recetaDTO.setEsIngrediente(true);
-                        recetaDTO.setId(materiaPrima.getId());
+                        recetaDTO.setId(materiaPrimaProductoTerminado.getId());
                         recetaDTO.setUnidadMedida(materiaPrima.getUnidadMedida());
                         recetaDTO.setNombre(materiaPrima.getNombre());
                         recetaDTO.setCantidad(materiaPrimaProductoTerminado.getCantidad());
+                        recetaDTO.setIdProductoTerminado(productoTerminado.getId());
                         //Costo de produccion ejemplo que la materia prima ocupe 0.200
                         recetaDTO.setCostoProduccion(rendondearADos((materiaPrimaProductoTerminado.getCantidad()*1000)*costo));
 
@@ -287,6 +289,7 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
 
                     }
                 }
+                System.out.println("Este es su costo de produccion:"+materiaPrimaProductoTerminadoRepository.calcularCostoProduccionPorProductoTerminado(productoTerminado.getId()));
 
                 return new ResponseEntity<List<RecetaDTO>>(recetaDTOS,HttpStatus.OK);
 
@@ -369,6 +372,80 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> actualizar(Integer id,String nombre, String descripcion, double stockMax, double stockMin, MultipartFile file, int idCategoria) {
+        try {
+            Optional<ProductoTerminado> optionalProductoTerminado= productoTerminadoRepository.findById(id);
+            if(optionalProductoTerminado.isPresent()){
+                ProductoTerminado productoTerminado= optionalProductoTerminado.get();
+                if(productoTerminado.getNombre().equalsIgnoreCase(nombre)){
+                    productoTerminadoRepository.save(actualizarDatos(productoTerminado,nombre,stockMax,stockMin,descripcion,idCategoria,file));
+
+                    return Utils.getResponseEntity("Producto actualizado correctamente.",HttpStatus.OK);
+                }else {
+                    if(!productoTerminadoRepository.existsByNombreLikeIgnoreCase(nombre)){
+                        productoTerminadoRepository.save(actualizarDatos(productoTerminado,nombre,stockMax,stockMin,descripcion,idCategoria,file));
+                        return Utils.getResponseEntity("Producto actualizado correctamente.",HttpStatus.OK);
+
+                    }
+                    return Utils.getResponseEntity("No se puede asignar el nombre al producto.",HttpStatus.BAD_REQUEST);
+                }
+
+            }
+            return Utils.getResponseEntity("No existe el producto terminado.",HttpStatus.BAD_REQUEST);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("idProducto") && objetoMap.containsKey("visibilidad") ){
+                Optional<ProductoTerminado> menuOptional= productoTerminadoRepository.findById(Integer.parseInt(objetoMap.get("idMenu")));
+                if(menuOptional.isPresent()){
+                    ProductoTerminado menu= menuOptional.get();
+                    if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
+                        menu.setVisibilidad(false);
+                    }else{
+                        menu.setVisibilidad(true);
+                    }
+
+                    productoTerminadoRepository.save(menu);
+                    return Utils.getResponseEntity("El estado del producto ha sido actualizado.",HttpStatus.OK);
+
+                }
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private ProductoTerminado actualizarDatos(ProductoTerminado productoTerminado, String nombre, double stockMax, double stockMin, String descripcion, int idCategoria, MultipartFile file) throws IOException {
+        productoTerminado.setNombre(nombre);
+        productoTerminado.setStockMax(stockMax);
+        productoTerminado.setStockMin(stockMin);
+        productoTerminado.setDescripcion(descripcion);
+        Optional<Categoria> categoriaOptional= categoriaRepository.findById(idCategoria);
+        categoriaOptional.ifPresent(productoTerminado::setCategoria);
+        if(file.isEmpty()){
+            productoTerminado.setImagen(productoTerminado.getImagen());
+        }else {
+            if(!productoTerminado.getImagen().equalsIgnoreCase("default.jpg")){
+                uploadFileService.eliminarImagen(productoTerminado.getImagen());
+            }
+            String nombreImagen=uploadFileService.guardarImagen(file);
+            productoTerminado.setImagen(nombreImagen);
+        }
+        return productoTerminado;
+
     }
 
     public boolean validarStock(Map<String, String> objetoMap){

@@ -34,6 +34,16 @@ public interface IProductoTerminadoController {
                                           @RequestPart("materias")String materias
                                           );
 
+    @PostMapping(path = "/actualizar")
+    ResponseEntity<String> actualizar(
+            @RequestParam("id") Integer id,@RequestParam("nombre") String nombre,
+                                   @RequestParam("descripcion") String descripcion,
+                                   @RequestParam("stockMax") double stockMax,
+                                   @RequestParam("stockMin") double stockMin,
+                                   @RequestParam("img") MultipartFile file,
+                                   @RequestParam("idCategoria") int idCategoria
+    );
+
     @GetMapping(path = "/obtenerMateriaPrima/{id}")
     ResponseEntity<IngredienteProductoTerminado> obtenerMateriaPrimaId(@PathVariable Integer id);
 
@@ -51,6 +61,9 @@ public interface IProductoTerminadoController {
 
     @GetMapping(path = "/validarStock")
     ResponseEntity<String> validarStock(@RequestBody(required = true) Map<String, String> objetoMap);
+
+    @PostMapping(path = "/cambiarEstado")
+    ResponseEntity<String> cambiarEstado(@RequestBody(required = true) Map<String, String> objetoMap);
 
 
 

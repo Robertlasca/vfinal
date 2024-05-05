@@ -377,11 +377,14 @@ public class InventarioServiceImpl implements IInventarioService {
     @Override
     public ResponseEntity<Map<String, String>> obtenerDatos(Map<String, String> objetoMap) {
         Map<String, String> datos = new HashMap<>();
+        System.out.println("entre2");
         try {
             if(objetoMap.containsKey("almacenId") && objetoMap.containsKey("materiaId")){
+                System.out.println("entre3");
                 Optional<Inventario> optionalOrigen=inventarioRepository.findInventarioByAlmacen_IdAndMateriaPrima_Id(Integer.parseInt(objetoMap.get("almacenId")),Integer.parseInt(objetoMap.get("materiaId")));
                 Optional<MateriaPrima> optionalMateriaPrima=materiaPrimaRepository.findById(Integer.parseInt(objetoMap.get("materiaId")));
                 if(!optionalOrigen.isEmpty()  && !optionalMateriaPrima.isEmpty()){
+                    System.out.println("entre1");
                     MateriaPrima materiaPrima=optionalMateriaPrima.get();
                     Inventario origen=optionalOrigen.get();
 

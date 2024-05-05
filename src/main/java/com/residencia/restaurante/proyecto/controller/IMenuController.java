@@ -4,6 +4,7 @@ import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.MenuDTO;
 import com.residencia.restaurante.proyecto.dto.ProductoTerminadoDto;
 import com.residencia.restaurante.proyecto.dto.RecetaDTO;
+import com.residencia.restaurante.proyecto.entity.Menu;
 import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
 import com.residencia.restaurante.proyecto.service.IMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,29 @@ public interface IMenuController {
                                    @RequestPart("receta")String receta
     );
 
+    @PostMapping(path = "/agregarMenu")
+    ResponseEntity<Menu> agregarMenu(@RequestParam("nombre") String nombre,
+                                     @RequestParam("descripcion") String descripcion,
+                                     @RequestParam("margenGanancia") double margenGanancia,
+                                     @RequestParam("precioVenta") double precioVenta,
+                                     @RequestParam("img") MultipartFile file,
+                                     @RequestParam("idCategoria") int idCategoria
+    );
+
+    @PostMapping(path = "/crearReceta")
+    ResponseEntity<String> crearReceta(@RequestBody(required = true) Map<String, String> objetoMap);
+
+    @PostMapping(path = "/actualizar")
+    ResponseEntity<String> actualizar(
+            @RequestParam("id") Integer id,
+            @RequestParam("nombre") String nombre,
+                                   @RequestParam("descripcion") String descripcion,
+                                   @RequestParam("margenGanancia") double margenGanancia,
+                                   @RequestParam("precioVenta") double precioVenta,
+                                   @RequestParam("img") MultipartFile file,
+                                   @RequestParam("idCategoria") int idCategoria
+    );
+
     @GetMapping(path = "/obtenerMateriaPrima/{id}")
     ResponseEntity<IngredienteProductoTerminado> obtenerMateriaPrimaId(@PathVariable Integer id);
 
@@ -51,5 +75,8 @@ public interface IMenuController {
 //Este método se obtiene
     @GetMapping(path = "/obtenerIngredienteOProducto")
     ResponseEntity<RecetaDTO> obtenerIngredientesOProductosTerminadosXId(@RequestBody(required = true) Map<String, String> objetoMap);
+
+    @PostMapping(path = "/cambiarEstado")
+    ResponseEntity<String> cambiarEstado(@RequestBody(required = true) Map<String, String> objetoMap);
 
 }

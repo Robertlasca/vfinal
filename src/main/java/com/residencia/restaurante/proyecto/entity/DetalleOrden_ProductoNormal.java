@@ -31,7 +31,7 @@ public class DetalleOrden_ProductoNormal {
 
     private int cantidad;
 
-    private String comentario;
+    private String comentario="Sin comentario";
 
     private String estado;
 

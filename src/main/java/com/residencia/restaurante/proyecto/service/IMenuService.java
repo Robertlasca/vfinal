@@ -3,6 +3,7 @@ package com.residencia.restaurante.proyecto.service;
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.MenuDTO;
 import com.residencia.restaurante.proyecto.dto.RecetaDTO;
+import com.residencia.restaurante.proyecto.entity.Menu;
 import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,4 +40,12 @@ public interface IMenuService {
     ResponseEntity<List<RecetaDTO>> obtenerIngredientesOProductosTerminadosIdCocina(@PathVariable Integer id);
 
     ResponseEntity<RecetaDTO> obtenerIngredientesOProductosTerminadosXId(Map<String, String> objetoMap);
+
+    ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria);
+
+    ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria);
+
+    ResponseEntity<String> crearReceta(Map<String, String> objetoMap);
+
+    ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap);
 }

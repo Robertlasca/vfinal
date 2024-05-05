@@ -44,4 +44,8 @@ public interface IProductoTerminadoService {
     ResponseEntity<String> preparacionDiaria(Map<String, String> objetoMap);
 
     ResponseEntity<String> validarStockActual(Map<String, String> objetoMap);
+
+    ResponseEntity<String> actualizar(Integer id,String nombre, String descripcion, double stockMax, double stockMin, MultipartFile file, int idCategoria);
+
+    ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap);
 }

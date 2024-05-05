@@ -56,6 +56,17 @@ private IProductoTerminadoService productoTerminadoService;
     }
 
     @Override
+    public ResponseEntity<String> actualizar(Integer id,String nombre, String descripcion, double stockMax, double stockMin, MultipartFile file, int idCategoria) {
+        try {
+            return productoTerminadoService.actualizar(id,nombre,descripcion,stockMax,stockMin,file,idCategoria);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
+    @Override
     public ResponseEntity<IngredienteProductoTerminado> obtenerMateriaPrimaId(Integer id) {
         try {
             return productoTerminadoService.obtenerMateriaPrimaId(id);
@@ -113,6 +124,17 @@ private IProductoTerminadoService productoTerminadoService;
     public ResponseEntity<String> validarStock(Map<String, String> objetoMap) {
         try {
             return productoTerminadoService.validarStockActual(objetoMap);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap) {
+        try {
+            return productoTerminadoService.cambiarEstado(objetoMap);
 
         }catch (Exception e){
             e.printStackTrace();

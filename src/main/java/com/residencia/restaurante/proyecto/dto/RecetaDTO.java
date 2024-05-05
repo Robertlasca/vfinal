@@ -15,4 +15,5 @@ public class RecetaDTO {
     private double cantidad;
     private String unidadMedida;
     private boolean esIngrediente;
+    private Integer idProductoTerminado;
 }

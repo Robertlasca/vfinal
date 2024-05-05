@@ -37,9 +37,11 @@ public class Orden {
 
     private int cantidadComensal;
 
-    private LocalDateTime fechaHoraApertura;
+    private LocalDateTime fechaHoraApertura=LocalDateTime.now();
 
     private String estado;
+
+    private int folio;
 
     @ManyToOne
     @JoinColumn(nullable = true,name = "caja_id")

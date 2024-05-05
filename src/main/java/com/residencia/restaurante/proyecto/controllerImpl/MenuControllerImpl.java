@@ -5,6 +5,7 @@ import com.residencia.restaurante.proyecto.controller.IMenuController;
 import com.residencia.restaurante.proyecto.dto.IngredienteProductoTerminado;
 import com.residencia.restaurante.proyecto.dto.MenuDTO;
 import com.residencia.restaurante.proyecto.dto.RecetaDTO;
+import com.residencia.restaurante.proyecto.entity.Menu;
 import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
 import com.residencia.restaurante.proyecto.service.IMenuService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -54,6 +55,38 @@ public class MenuControllerImpl implements IMenuController {
     }
 
     @Override
+    public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria) {
+        try {
+            return menuService.agregarMenu(nombre,descripcion,margenGanancia,precioVenta,file,idCategoria);
+
+        }catch (Exception e){
+         e.printStackTrace();
+        }
+        return new ResponseEntity<Menu>(new Menu(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> crearReceta(Map<String, String> objetoMap) {
+        try {
+            return menuService.crearReceta(objetoMap);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria) {
+        try {
+            return menuService.actualizar(id,nombre,descripcion,margenGanancia,precioVenta,file,idCategoria);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
     public ResponseEntity<IngredienteProductoTerminado> obtenerMateriaPrimaId(Integer id) {
         return null;
     }
@@ -91,5 +124,16 @@ public class MenuControllerImpl implements IMenuController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(new RecetaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap) {
+        try {
+            return menuService.cambiarEstado(objetoMap);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
