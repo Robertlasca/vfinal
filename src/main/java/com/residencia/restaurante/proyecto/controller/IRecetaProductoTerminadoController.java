@@ -1,11 +1,10 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.entity.Inventario;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RequestMapping(path = "/productoTerminado/receta")
@@ -18,5 +17,8 @@ public interface IRecetaProductoTerminadoController {
 
     @PostMapping(path ="/agregar")
     ResponseEntity<String> agregarIngredienteReceta(@RequestBody(required = true) Map<String,String> objetoMap);
+
+    @GetMapping(path = "/obtenerMateriasIdProducto/{id}")
+    ResponseEntity<List<Inventario>> obtenerMateriasXCProducto(@PathVariable Integer id);
 
 }

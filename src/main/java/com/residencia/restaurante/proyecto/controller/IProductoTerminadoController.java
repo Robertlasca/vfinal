@@ -40,7 +40,7 @@ public interface IProductoTerminadoController {
                                    @RequestParam("descripcion") String descripcion,
                                    @RequestParam("stockMax") double stockMax,
                                    @RequestParam("stockMin") double stockMin,
-                                   @RequestParam("img") MultipartFile file,
+                                   @RequestParam(value = "img",required = false) MultipartFile file,
                                    @RequestParam("idCategoria") int idCategoria
     );
 

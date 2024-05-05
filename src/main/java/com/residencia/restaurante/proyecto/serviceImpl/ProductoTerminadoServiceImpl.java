@@ -120,11 +120,8 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
     @Override
     public ResponseEntity<List<ProductoTerminadoDto>> obtenerNoActivos() {
         try {
-            List<ProductoTerminado> listaMenor= productoTerminadoRepository.findProductoTerminadoByStockActualMenorAlMinimo();
+            List<ProductoTerminado> listaMenor= productoTerminadoRepository.getAllByVisibilidadFalse();
 
-            List<ProductoTerminado> listMayor= productoTerminadoRepository.findProductoTerminadoByStockActualMayorAlMaximo();
-
-            List<ProductoTerminado> listSuficiente= productoTerminadoRepository.findProductoTerminadoByStockActualEntreMinimoYMaximo();
 
             List<ProductoTerminadoDto> terminadoDtoList= new ArrayList<>();
             double costo=0;
@@ -134,53 +131,20 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                 ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
                 List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
                 productoTerminadoDto.setProductoTerminado(productoTerminado);
-                if(productoTerminado.isVisibilidad()){
-                    productoTerminadoDto.setDisponibilidad("Visible");
-                }else {
-                    productoTerminadoDto.setDisponibilidad("No visible");
-                }
-                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
 
-                productoTerminadoDto.setEstado("Insuficiente");
-                terminadoDtoList.add(productoTerminadoDto);
+                    productoTerminadoDto.setDisponibilidad("No visible");
+                    productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+                    productoTerminadoDto.setEstado("Indisponible");
+                    terminadoDtoList.add(productoTerminadoDto);
+
+
 
 
             }
 
-            for (ProductoTerminado productoTerminado: listMayor) {
-
-                ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
-                productoTerminadoDto.setProductoTerminado(productoTerminado);
-                if(productoTerminado.isVisibilidad()){
-                    productoTerminadoDto.setDisponibilidad("Visible");
-                }else {
-                    productoTerminadoDto.setDisponibilidad("No visible");
-                }
-                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
 
 
-                productoTerminadoDto.setEstado("Excedido");
-                terminadoDtoList.add(productoTerminadoDto);
-
-
-            }
-
-            for (ProductoTerminado productoTerminado: listSuficiente) {
-
-                ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
-                productoTerminadoDto.setProductoTerminado(productoTerminado);
-                if(productoTerminado.isVisibilidad()){
-                    productoTerminadoDto.setDisponibilidad("Visible");
-                }else {
-                    productoTerminadoDto.setDisponibilidad("No visible");
-                }
-                productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
-
-                productoTerminadoDto.setEstado("Suficiente");
-                terminadoDtoList.add(productoTerminadoDto);
-
-
-            }
 
             return new ResponseEntity<List<ProductoTerminadoDto>>(terminadoDtoList,HttpStatus.OK);
 
@@ -371,7 +335,7 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                 ingredienteProductoTerminado.setNombre(materiaPrima.getNombre());
                 ingredienteProductoTerminado.setUnidadMedida(materiaPrima.getUnidadMedida());
                 ingredienteProductoTerminado.setCostoProduccion(calcularCostoProduccion(precio));
-                return new ResponseEntity<IngredienteProductoTerminado>(ingredienteProductoTerminado,HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<IngredienteProductoTerminado>(ingredienteProductoTerminado,HttpStatus.OK);
 
             }
             return new ResponseEntity<IngredienteProductoTerminado>(new IngredienteProductoTerminado(),HttpStatus.BAD_REQUEST);
@@ -387,7 +351,7 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
         try {
             Optional<ProductoTerminado> productoTerminadoOptional= productoTerminadoRepository.findById(id);
             if(productoTerminadoOptional.isPresent()){
-                ProductoTerminado productoTerminado= new ProductoTerminado();
+                ProductoTerminado productoTerminado= productoTerminadoOptional.get();
                 return new ResponseEntity<ProductoTerminado>(productoTerminado,HttpStatus.OK);
             }
 
@@ -544,7 +508,7 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
     public ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap) {
         try {
             if(objetoMap.containsKey("idProducto") && objetoMap.containsKey("visibilidad") ){
-                Optional<ProductoTerminado> menuOptional= productoTerminadoRepository.findById(Integer.parseInt(objetoMap.get("idMenu")));
+                Optional<ProductoTerminado> menuOptional= productoTerminadoRepository.findById(Integer.parseInt(objetoMap.get("idProducto")));
                 if(menuOptional.isPresent()){
                     ProductoTerminado menu= menuOptional.get();
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
@@ -572,7 +536,7 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
         productoTerminado.setDescripcion(descripcion);
         Optional<Categoria> categoriaOptional= categoriaRepository.findById(idCategoria);
         categoriaOptional.ifPresent(productoTerminado::setCategoria);
-        if(file.isEmpty()){
+        if(file==null || file.isEmpty()){
             productoTerminado.setImagen(productoTerminado.getImagen());
         }else {
             if(!productoTerminado.getImagen().equalsIgnoreCase("default.jpg")){

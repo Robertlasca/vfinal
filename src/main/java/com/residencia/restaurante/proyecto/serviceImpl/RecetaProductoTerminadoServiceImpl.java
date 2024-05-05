@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class RecetaProductoTerminadoServiceImpl implements IRecetaProductoTerminadoService {
@@ -29,6 +27,8 @@ public class RecetaProductoTerminadoServiceImpl implements IRecetaProductoTermin
 
     @Autowired
             private IMateriaPrimaRepository materiaPrimaRepository;
+    @Autowired
+            private IInventarioRepository inventarioRepository;
 
     MenuServiceImpl menuServiceImp;
     @Override
@@ -116,11 +116,11 @@ public class RecetaProductoTerminadoServiceImpl implements IRecetaProductoTermin
     public ResponseEntity<String> agregarIngredienteReceta(Map<String, String> objetoMap) {
         try {
             if(objetoMap.containsKey("idMateria") && objetoMap.containsKey("idProducto") && objetoMap.containsKey("cantidad")){
-                Optional<MateriaPrima> materiaPrimaOptional= materiaPrimaRepository.findById(Integer.parseInt(objetoMap.get("idMateria")));
+                Optional<Inventario> materiaPrimaOptional= inventarioRepository.findById(Integer.parseInt(objetoMap.get("idMateria")));
                 Optional<ProductoTerminado> productoTerminadoOptional=productoTerminadoRepository.findById(Integer.parseInt(objetoMap.get("idProducto")));
                 if(materiaPrimaOptional.isPresent() && productoTerminadoOptional.isPresent()){
                     MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado= new MateriaPrima_ProductoTerminado();
-                    materiaPrimaProductoTerminado.setMateriaPrima(materiaPrimaOptional.get());
+                    materiaPrimaProductoTerminado.setInventario(materiaPrimaOptional.get());
                     materiaPrimaProductoTerminado.setProductoTerminado(productoTerminadoOptional.get());
                     materiaPrimaProductoTerminado.setCantidad(Double.parseDouble(objetoMap.get("cantidad")));
                     materiaPrimaProductoTerminadoRepository.save(materiaPrimaProductoTerminado);
@@ -149,5 +149,37 @@ public class RecetaProductoTerminadoServiceImpl implements IRecetaProductoTermin
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<Inventario>> obtenerMateriasXCProducto(Integer id) {
+        try {
+            Optional<ProductoTerminado> productoTerminadoOptional = productoTerminadoRepository.findById(id);
+            List<Inventario> inventarioList = new ArrayList<>();
+            if (productoTerminadoOptional.isPresent()) {
+                List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados = materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminadoOptional.get());
+                if (!materiaPrimaProductoTerminados.isEmpty()) {
+                    Set<Long> inventarioIdsEnUso = new HashSet<>();
+                    for (MateriaPrima_ProductoTerminado mppt : materiaPrimaProductoTerminados) {
+                        inventarioIdsEnUso.add(Long.valueOf(mppt.getInventario().getId()));
+                    }
+
+                    Inventario inventario = materiaPrimaProductoTerminados.get(0).getInventario();
+                    List<Inventario> inventarios = inventarioRepository.getAllByAlmacen_Id(inventario.getAlmacen().getId());
+                    for (Inventario inv : inventarios) {
+                        if (!inventarioIdsEnUso.contains(inv.getId())) {
+
+                            inventarioList.add(inv);
+                        }
+                    }
+                }
+                return new ResponseEntity<List<Inventario>>(inventarioList,HttpStatus.OK);
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<Inventario>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
