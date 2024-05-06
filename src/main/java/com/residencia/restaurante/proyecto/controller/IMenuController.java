@@ -43,7 +43,7 @@ public interface IMenuController {
                                      @RequestParam("descripcion") String descripcion,
                                      @RequestParam("margenGanancia") double margenGanancia,
                                      @RequestParam("precioVenta") double precioVenta,
-                                     @RequestParam("img") MultipartFile file,
+                                     @RequestParam(value = "img",required = false) MultipartFile file,
                                      @RequestParam("idCategoria") int idCategoria
     );
 
@@ -57,7 +57,7 @@ public interface IMenuController {
                                    @RequestParam("descripcion") String descripcion,
                                    @RequestParam("margenGanancia") double margenGanancia,
                                    @RequestParam("precioVenta") double precioVenta,
-                                   @RequestParam("img") MultipartFile file,
+                                   @RequestParam(value = "img",required = false) MultipartFile file,
                                    @RequestParam("idCategoria") int idCategoria
     );
 
@@ -78,5 +78,7 @@ public interface IMenuController {
 
     @PostMapping(path = "/cambiarEstado")
     ResponseEntity<String> cambiarEstado(@RequestBody(required = true) Map<String, String> objetoMap);
+    @GetMapping(path = "/obtenerIngredientesAgregar/{idMenu}")
+    ResponseEntity<List<RecetaDTO>> obtenerRecetasUnicasPorCocinaYMenu(@PathVariable Integer idMenu);
 
 }

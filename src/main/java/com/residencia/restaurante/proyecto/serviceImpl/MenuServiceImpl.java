@@ -53,12 +53,56 @@ public class MenuServiceImpl implements IMenuService {
 
     @Override
     public ResponseEntity<List<MenuDTO>> obtenerActivos() {
-        return null;
+        try {
+            List<Menu> menuList=menuRepository.getAllByVisibilidadTrue();
+            List<MenuDTO> menuDTOS=new ArrayList<>();
+            for (Menu menu: menuList) {
+                MenuDTO menuDTO= new MenuDTO();
+                menuDTO.setMenu(menu);
+                menuDTO.setGanancia(menu.getPrecioVenta()-menu.getCostoProduccionDirecto());
+                if(menu.isVisibilidad()){
+                    menuDTO.setDisponibilidad("Visible");
+                    menuDTOS.add(menuDTO);
+
+                }
+
+            }
+
+            return new ResponseEntity<List<MenuDTO>>(menuDTOS,HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<MenuDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<List<MenuDTO>> obtenerNoActivos() {
-        return null;
+        try {
+            List<Menu> menuList=menuRepository.getAllByVisibilidadFalse();
+            List<MenuDTO> menuDTOS=new ArrayList<>();
+            for (Menu menu: menuList) {
+                MenuDTO menuDTO= new MenuDTO();
+                menuDTO.setMenu(menu);
+                menuDTO.setGanancia(menu.getPrecioVenta()-menu.getCostoProduccionDirecto());
+                if(menu.isVisibilidad()){
+                    menuDTO.setDisponibilidad("Visible");
+
+                }else {
+                    menuDTO.setDisponibilidad("No visible");
+                    menuDTOS.add(menuDTO);
+                }
+
+
+
+            }
+
+            return new ResponseEntity<List<MenuDTO>>(menuDTOS,HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<MenuDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -371,11 +415,16 @@ public class MenuServiceImpl implements IMenuService {
                     menu.setMargenGanancia(margenGanancia);
                     menu.setPrecioVenta(precioVenta);
 
+if(file==null||file.isEmpty()){
 
-                    String nombreImagen= uploadFileService.guardarImagen(file);
-                    menu.setImagen(nombreImagen);
+}else{
+    String nombreImagen= uploadFileService.guardarImagen(file);
+    menu.setImagen(nombreImagen);
+
+}
                     menuRepository.save(menu);
                     return new ResponseEntity<Menu>(menu,HttpStatus.OK);
+
 
                 }
                 return new ResponseEntity<Menu>(new Menu(),HttpStatus.BAD_REQUEST);
@@ -472,6 +521,70 @@ public class MenuServiceImpl implements IMenuService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<RecetaDTO>> obtenerRecetasUnicasPorCocinaYMenu(Integer idMenu) {
+        try {
+            Set<String> recetasMenuSet = new HashSet<>();  // Para almacenar nombres únicos de la receta del menú
+            Integer idCocina= 0;
+
+            // Obtenemos las recetas del menú
+            Optional<Menu> menuOptional = menuRepository.findById(idMenu);
+            if (menuOptional.isPresent()) {
+                Menu menu = menuOptional.get();
+                List<MateriaPrima_Menu> materiaPrimaMenus = materiaPrimaMenuRepository.getAllByMenu(menu);
+                MateriaPrima_Menu materiaPrimaMenu= materiaPrimaMenus.get(0);
+               idCocina= materiaPrimaMenu.getInventario().getAlmacen().getCocina().getId();
+
+                List<ProductoTerminado_Menu> productoTerminadoMenus = productoTerminadoMenuRepository.getAllByMenu(menu);
+
+                // Agregamos nombres a set para materia prima y productos terminados en el menú
+                materiaPrimaMenus.forEach(mpm -> recetasMenuSet.add(mpm.getInventario().getMateriaPrima().getNombre()));
+                productoTerminadoMenus.forEach(ptm -> recetasMenuSet.add(ptm.getProductoTerminado().getNombre()));
+            }
+
+            List<RecetaDTO> recetaDTOList = new ArrayList<>();
+            List<Inventario> inventarios = obtenerMateriasIdCocina(idCocina);
+            List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados = obtenerProductosTerminadosIdCocina(idCocina);
+
+            // Agregamos las recetas de los inventarios si no están en el menú
+            for (Inventario inventario : inventarios) {
+                if (!recetasMenuSet.contains(inventario.getMateriaPrima().getNombre())) {
+                    RecetaDTO recetaDTO = new RecetaDTO();
+                    recetaDTO.setId(inventario.getId());
+                    recetaDTO.setEsIngrediente(true);
+                    recetaDTO.setNombre(inventario.getMateriaPrima().getNombre());
+                    recetaDTOList.add(recetaDTO);
+                }
+            }
+
+            // Agregamos las recetas de los productos terminados si no están en el menú
+            for (MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado : materiaPrimaProductoTerminados) {
+                if (!recetasMenuSet.contains(materiaPrimaProductoTerminado.getProductoTerminado().getNombre())) {
+                    RecetaDTO recetaDTO = new RecetaDTO();
+                    recetaDTO.setId(materiaPrimaProductoTerminado.getProductoTerminado().getId());
+                    recetaDTO.setEsIngrediente(false);
+                    recetaDTO.setNombre(materiaPrimaProductoTerminado.getProductoTerminado().getNombre());
+                    recetaDTOList.add(recetaDTO);
+                }
+            }
+
+            Set<Integer> idVistos = new HashSet<>();
+            List<RecetaDTO> listaLimpia = new ArrayList<>();
+
+            for (RecetaDTO receta : recetaDTOList) {
+                if (!idVistos.contains(receta.getId())) {
+                    listaLimpia.add(receta);
+                    idVistos.add(receta.getId());
+                }
+            }
+
+            return new ResponseEntity<>(listaLimpia, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private Menu actualizarDatos(Menu menu, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria) throws IOException {

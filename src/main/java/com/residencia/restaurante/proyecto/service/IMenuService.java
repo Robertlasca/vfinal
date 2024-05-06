@@ -48,4 +48,6 @@ public interface IMenuService {
     ResponseEntity<String> crearReceta(Map<String, String> objetoMap);
 
     ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap);
+
+    ResponseEntity<List<RecetaDTO>> obtenerRecetasUnicasPorCocinaYMenu(Integer idMenu);
 }

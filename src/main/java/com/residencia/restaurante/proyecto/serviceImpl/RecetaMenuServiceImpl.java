@@ -28,9 +28,12 @@ public class RecetaMenuServiceImpl implements IRecetaMenuService {
     private IProductoTerminadoRepository productoTerminadoRepository;
     @Autowired
     private IMateriaPrimaRepository materiaPrimaRepository;
+    @Autowired
+            private IInventarioRepository inventarioRepository;
 
+@Autowired
+        MenuServiceImpl menuServiceImpl;
 
-    MenuServiceImpl menuServiceImpl;
     @Override
     public ResponseEntity<String> eliminarIngrediente(Map<String, String> objetoMap) {
         try {
@@ -40,11 +43,18 @@ public class RecetaMenuServiceImpl implements IRecetaMenuService {
                     Optional<MateriaPrima_Menu> materiaPrimaMenuOptional= materiaPrimaMenuRepository.findById(id);
                     if(materiaPrimaMenuOptional.isPresent()){
                         MateriaPrima_Menu materiaPrimaMenu=materiaPrimaMenuOptional.get();
-                        Menu menu= materiaPrimaMenu.getMenu();
+                        Integer idMenu= materiaPrimaMenu.getMenu().getId();
+
                         materiaPrimaMenuRepository.delete(materiaPrimaMenu);
 
-                        menu.setCostoProduccionDirecto(menuServiceImpl.calcularCostoTotalMenu(menu.getId()));
-                        menuRepository.save(menu);
+                        Optional<Menu> optionalMenu=menuRepository.findById(idMenu);
+                        if(optionalMenu.isPresent()){
+                            Menu menu= optionalMenu.get();
+                            menu.setCostoProduccionDirecto(menuServiceImpl.calcularCostoTotalMenu(menu.getId()));
+                            menuRepository.save(menu);
+                        }
+
+
                         return Utils.getResponseEntity("Ingrediente eliminado correctamente.",HttpStatus.OK);
 
                     }
@@ -131,12 +141,12 @@ public class RecetaMenuServiceImpl implements IRecetaMenuService {
 
 
                 if(objetoMap.get("esIngrediente").equalsIgnoreCase("true")){
-                    Optional<MateriaPrima> materiaPrimaMenuOptional= materiaPrimaRepository.findById(id);
+                    Optional<Inventario> materiaPrimaMenuOptional= inventarioRepository.findById(id);
                     if(materiaPrimaMenuOptional.isPresent()){
-                        MateriaPrima materiaPrima= materiaPrimaMenuOptional.get();
+                        Inventario materiaPrima= materiaPrimaMenuOptional.get();
                         MateriaPrima_Menu materiaPrimaMenu=new MateriaPrima_Menu();
                         materiaPrimaMenu.setMenu(menu);
-                        materiaPrimaMenu.setMateriaPrima(materiaPrima);
+                        materiaPrimaMenu.setInventario(materiaPrima);
                         materiaPrimaMenu.setCantidad(Double.parseDouble(objetoMap.get("cantidad")));
 
                         materiaPrimaMenuRepository.save(materiaPrimaMenu);

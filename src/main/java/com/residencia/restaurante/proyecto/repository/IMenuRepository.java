@@ -11,4 +11,5 @@ public interface IMenuRepository extends JpaRepository<Menu,Integer> {
     boolean existsByNombreLikeIgnoreCase(String nombre);
 
     List<Menu> getAllByVisibilidadTrue();
+    List<Menu> getAllByVisibilidadFalse();
 }

@@ -26,12 +26,22 @@ public class MenuControllerImpl implements IMenuController {
     private IMenuService menuService;
     @Override
     public ResponseEntity<List<MenuDTO>> obtenerActivos() {
-        return null;
+        try {
+            return menuService.obtenerActivos();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<List<MenuDTO>> obtenerNoActivos() {
-        return null;
+        try {
+            return menuService.obtenerNoActivos();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -135,5 +145,16 @@ public class MenuControllerImpl implements IMenuController {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<RecetaDTO>> obtenerRecetasUnicasPorCocinaYMenu(Integer idMenu) {
+        try {
+            return menuService.obtenerRecetasUnicasPorCocinaYMenu(idMenu);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
