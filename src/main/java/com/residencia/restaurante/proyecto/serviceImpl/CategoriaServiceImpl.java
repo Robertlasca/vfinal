@@ -7,6 +7,9 @@ import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.repository.ICategoriaRepository;
+import com.residencia.restaurante.proyecto.repository.IMenuRepository;
+import com.residencia.restaurante.proyecto.repository.IProductoNormalRepository;
+import com.residencia.restaurante.proyecto.repository.IProductoTerminadoRepository;
 import com.residencia.restaurante.proyecto.service.ICategoriaService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,14 @@ import java.util.Optional;
 public class CategoriaServiceImpl implements ICategoriaService {
     @Autowired
     ICategoriaRepository categoriaRepository;
+
+    @Autowired
+    IMenuRepository menuRepository;
+    @Autowired
+    IProductoNormalRepository productoNormalRepository;
+
+    @Autowired
+    IProductoTerminadoRepository productoTerminadoRepository;
     /**
      * Obtiene una lista de todas las categorías activas.
      * @return Lista de categorías activas con estado HTTP correspondiente.
@@ -213,6 +224,78 @@ public class CategoriaServiceImpl implements ICategoriaService {
         return new ResponseEntity<>(new Categoria(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriasMenu() {
+        try {
+            List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
+            for (Categoria categoria : categoriaRepository.getAllByVisibilidadTrueAndPerteneceEqualsIgnoreCase("M")) {
+                CategoriaDTO categoriaDTO= new CategoriaDTO();
+                int cantidadTerminado= Math.toIntExact(productoTerminadoRepository.countByCategoriaId(categoria.getId()));
+                int cantidadNormal= Math.toIntExact(productoNormalRepository.countByCategoriaId(categoria.getId()));
+                int cantidadMenu= Math.toIntExact(menuRepository.countByCategoriaId(categoria.getId()));
+                categoriaDTO.setCantidadProductos(cantidadTerminado+cantidadNormal+cantidadMenu);
+                categoriaDTO.setCategoria(categoria);
+                categoriaDTO.setEstado("Visible");
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaDTO>>(categoriaConEstado, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<List<CategoriaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriasProductoTerminado() {
+        try {
+            List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
+            for (Categoria categoria : categoriaRepository.getAllByVisibilidadTrueAndPerteneceEqualsIgnoreCase("T")) {
+                CategoriaDTO categoriaDTO= new CategoriaDTO();
+                int cantidadTerminado= Math.toIntExact(productoTerminadoRepository.countByCategoriaId(categoria.getId()));
+                int cantidadNormal= Math.toIntExact(productoNormalRepository.countByCategoriaId(categoria.getId()));
+                int cantidadMenu= Math.toIntExact(menuRepository.countByCategoriaId(categoria.getId()));
+                categoriaDTO.setCantidadProductos(cantidadTerminado+cantidadNormal+cantidadMenu);
+                categoriaDTO.setCategoria(categoria);
+                categoriaDTO.setEstado("Visible");
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaDTO>>(categoriaConEstado, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<List<CategoriaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriasProductoNormal() {
+        try {
+            List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
+            for (Categoria categoria : categoriaRepository.getAllByVisibilidadTrueAndPerteneceEqualsIgnoreCase("N")) {
+                CategoriaDTO categoriaDTO= new CategoriaDTO();
+                int cantidadTerminado= Math.toIntExact(productoTerminadoRepository.countByCategoriaId(categoria.getId()));
+                int cantidadNormal= Math.toIntExact(productoNormalRepository.countByCategoriaId(categoria.getId()));
+                int cantidadMenu= Math.toIntExact(menuRepository.countByCategoriaId(categoria.getId()));
+                categoriaDTO.setCantidadProductos(cantidadTerminado+cantidadNormal+cantidadMenu);
+                categoriaDTO.setCategoria(categoria);
+                categoriaDTO.setEstado("Visible");
+
+                categoriaConEstado.add(categoriaDTO);
+            }
+            return new ResponseEntity<List<CategoriaDTO>>(categoriaConEstado, HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<List<CategoriaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private Categoria obtenerCategoriaDesdeMap(Map<String, String> objetoMap, boolean esAgregado) {
         Categoria categoria= new Categoria();
         boolean disponibidad=true;
@@ -226,6 +309,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
 
         }else {
             categoria.setVisibilidad(true);
+            categoria.setPertenece(objetoMap.get("pertenece"));
         }
 
         categoria.setNombre(objetoMap.get("nombre"));

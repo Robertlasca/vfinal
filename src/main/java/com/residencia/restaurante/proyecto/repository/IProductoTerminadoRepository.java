@@ -37,4 +37,8 @@ public interface IProductoTerminadoRepository extends JpaRepository<ProductoTerm
      */
     @Query("SELECT inv FROM ProductoTerminado inv WHERE inv.stockActual >= inv.stockMin AND inv.stockActual <= inv.stockMax AND inv.visibilidad=true")
     List<ProductoTerminado> findProductoTerminadoByStockActualEntreMinimoYMaximo();
+
+    // Método para contar productos terminados por categoría
+    @Query("SELECT COUNT(p) FROM ProductoTerminado p WHERE p.categoria.id = :categoriaId")
+    Long countByCategoriaId(Integer categoriaId);
 }

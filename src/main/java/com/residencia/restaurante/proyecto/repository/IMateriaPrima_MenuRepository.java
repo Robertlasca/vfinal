@@ -17,4 +17,6 @@ public interface IMateriaPrima_MenuRepository extends JpaRepository<MateriaPrima
             "JOIN i.materiaPrima mp " +
             "WHERE mpm.menu.id = :menuId")
     Double calcularCostoIngredientesPorMenu(Integer menuId);
+
+    List<MateriaPrima_Menu> findByMenuId(Integer idProducto);
 }

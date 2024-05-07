@@ -22,6 +22,15 @@ public interface ICategoriaController {
      */
     @GetMapping(path = "/categoriasActivas")
     ResponseEntity<List<CategoriaDTO>> obtenerCategoriaActivas();
+
+    @GetMapping(path = "/categoriasMenu")
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriaMenu();
+
+    @GetMapping(path = "/categoriasProductoTerminado")
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriaProductoTerminado();
+
+    @GetMapping(path = "/categoriasProductoNormal")
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriaNormal();
     /**
      * Obtiene una lista de todas las categorías que actualmente no están activas en el sistema.
      *

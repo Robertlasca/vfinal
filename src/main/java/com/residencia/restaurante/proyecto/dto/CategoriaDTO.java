@@ -12,5 +12,6 @@ import lombok.*;
 public class CategoriaDTO {
     Categoria categoria;
     String estado;
+    int cantidadProductos;
 }
 

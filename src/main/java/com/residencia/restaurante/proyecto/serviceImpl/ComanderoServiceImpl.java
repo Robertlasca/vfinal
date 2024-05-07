@@ -1,10 +1,13 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IComanderoService;
+import com.residencia.restaurante.proyecto.wrapper.DetalleOrdenWrapper;
 import com.residencia.restaurante.security.model.Usuario;
 import com.residencia.restaurante.security.repository.IUsuarioRepository;
 import com.residencia.restaurante.security.utils.Utils;
@@ -15,10 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ComanderoServiceImpl implements IComanderoService {
@@ -40,6 +40,10 @@ public class ComanderoServiceImpl implements IComanderoService {
     private IUsuarioRepository usuarioRepository;
     @Autowired
     private IMesaRepository mesaRepository;
+@Autowired
+    private IInventarioRepository inventarioRepository;
+@Autowired
+    private IMateriaPrima_MenuRepository materiaPrimaMenuRepository;
 
     @Autowired
     private IProductoNormalRepository productoNormalRepository;
@@ -84,8 +88,59 @@ public class ComanderoServiceImpl implements IComanderoService {
 
     @Override
     public ResponseEntity<String> asignarPlatillos(Map<String, String> objetoMap) {
-        return null;
+        try{
+            if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("detalleOrden")){
+                if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
+
+                }
+
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    public String validarStock(String detalleOrdenJson) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(detalleOrdenJson, new TypeReference<List<DetalleOrdenWrapper>>() {});
+            Map<Integer, Double> necesidadIngredientes = new HashMap<>(); // ID de Inventario y cantidad total requerida
+
+            for (DetalleOrdenWrapper detalle : detalleOrdenWrappers) {
+                if (detalle.isMenu()) {
+                    List<MateriaPrima_Menu> ingredientesMenu = materiaPrimaMenuRepository.findByMenuId(detalle.getIdProducto());
+                    for (MateriaPrima_Menu ingrediente : ingredientesMenu) {
+                        int inventarioId = ingrediente.getInventario().getId();
+                        double cantidadNecesaria = ingrediente.getCantidad() * detalle.getCantidad();
+                        necesidadIngredientes.merge(inventarioId, cantidadNecesaria, Double::sum);
+                    }
+                }
+            }
+
+            StringBuilder menusNoPreparables = new StringBuilder();
+            for (Map.Entry<Integer, Double> entrada : necesidadIngredientes.entrySet()) {
+                Inventario inventario = inventarioRepository.findById(entrada.getKey()).orElse(null);
+                if (inventario != null && entrada.getValue() > inventario.getStockActual()) {
+                    menusNoPreparables.append("No hay suficiente stock para el ingrediente con ID de inventario ")
+                            .append(entrada.getKey())
+                            .append(". Necesitado: ")
+                            .append(entrada.getValue())
+                            .append(", Disponible: ")
+                            .append(inventario.getStockActual())
+                            .append(".\n");
+                }
+            }
+
+            return menusNoPreparables.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error al procesar el pedido.";
+        }
+    }
+
 
     @Override
     public ResponseEntity<List<ProductoDto>> obtenerProductos() {
@@ -142,10 +197,10 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<ProductoDto> obtenerProducto(Map<String, String> objetoMap) {
         try{
-            if(objetoMap.containsKey("id") && objetoMap.containsKey("isMenu")){
+            if(objetoMap.containsKey("id") && objetoMap.containsKey("esMenu")){
                 Integer id= Integer.parseInt(objetoMap.get("id"));
                 ProductoDto productoDto= new ProductoDto();
-                if(objetoMap.get("isMenu").equalsIgnoreCase("true")){
+                if(objetoMap.get("esMenu").equalsIgnoreCase("true")){
                     Optional<Menu> menuOptional= menuRepository.findById(id);
                     if(menuOptional.isPresent()){
                         Menu menu= menuOptional.get();
@@ -169,8 +224,8 @@ public class ComanderoServiceImpl implements IComanderoService {
                     }
 
                 }
-                return new ResponseEntity<ProductoDto>(productoDto,HttpStatus.BAD_REQUEST);
 
+                return new ResponseEntity<ProductoDto>(productoDto,HttpStatus.OK);
             }
             return new ResponseEntity<ProductoDto>(new ProductoDto(),HttpStatus.INTERNAL_SERVER_ERROR);
 

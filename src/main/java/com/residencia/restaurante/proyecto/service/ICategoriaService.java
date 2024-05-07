@@ -57,4 +57,10 @@ public interface ICategoriaService {
      * @return ResponseEntity con la categoría obtenida.
      */
     ResponseEntity<Categoria> obtenerCategoriasId(Integer id);
+
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriasMenu();
+
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriasProductoTerminado();
+
+    ResponseEntity<List<CategoriaDTO>> obtenerCategoriasProductoNormal();
 }

@@ -39,6 +39,36 @@ public class CategoriaControllerImpl implements ICategoriaController {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriaMenu() {
+        try {
+            return categoriaService.obtenerCategoriasMenu();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriaProductoTerminado() {
+        try {
+            return categoriaService.obtenerCategoriasProductoTerminado();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<CategoriaDTO>> obtenerCategoriaNormal() {
+        try {
+            return categoriaService.obtenerCategoriasProductoNormal();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     /**
      * Obtiene una lista de categorías no activas.
      *

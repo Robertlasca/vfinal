@@ -22,4 +22,6 @@ public class Categoria {
     private String nombre;
     @Column(nullable = true)
     private boolean visibilidad=true;
+    @Column(nullable = true)
+    private String pertenece;
 }

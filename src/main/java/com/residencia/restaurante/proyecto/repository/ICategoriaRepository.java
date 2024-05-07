@@ -24,6 +24,8 @@ public interface ICategoriaRepository extends JpaRepository<Categoria,Integer> {
      */
     List<Categoria> getAllByVisibilidadFalse();
 
+    List<Categoria> getAllByVisibilidadTrueAndPerteneceEqualsIgnoreCase(String pertenece);
+
     /**
      * Verifica si existe una categoría con el nombre especificado (ignorando mayúsculas y minúsculas).
      * @param nombre El nombre de la categoría a buscar.

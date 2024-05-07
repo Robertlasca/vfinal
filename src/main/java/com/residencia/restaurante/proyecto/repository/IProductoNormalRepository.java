@@ -52,4 +52,8 @@ public interface IProductoNormalRepository extends JpaRepository<ProductoNormal,
      */
     @Query("SELECT prod FROM ProductoNormal prod WHERE prod.stockActual >= prod.stockMin AND prod.stockActual <= prod.stockMax")
     List<ProductoNormal> findProductoNormalByStockActualEntreMinimoYMaximo();
+
+    // Método para contar productos normales por categoría
+    @Query("SELECT COUNT(p) FROM ProductoNormal p WHERE p.categoria.id = :categoriaId")
+    Long countByCategoriaId( Integer categoriaId);
 }
