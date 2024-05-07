@@ -6,6 +6,7 @@ import com.residencia.restaurante.proyecto.dto.CategoriaMateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.CategoriaMateriaPrima;
 import com.residencia.restaurante.proyecto.repository.ICategoriaMateriaPrimaRepository;
+import com.residencia.restaurante.proyecto.repository.IMateriaPrimaRepository;
 import com.residencia.restaurante.proyecto.service.ICategoriaMateriaPrimaService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ import java.util.Optional;
 public class CategoriaMateriaPrimaServiceImpl implements ICategoriaMateriaPrimaService {
     @Autowired
     ICategoriaMateriaPrimaRepository categoriaMateriaPrimaRepository;
+
+    @Autowired
+    IMateriaPrimaRepository materiaPrimaRepository;
     /**
      * Obtiene una lista de todas las categorías activas de materia prima.
      * @return Lista de categorías activas con estado HTTP correspondiente.
@@ -34,6 +38,7 @@ public class CategoriaMateriaPrimaServiceImpl implements ICategoriaMateriaPrimaS
                 CategoriaMateriaPrimaDTO categoriaDTO= new CategoriaMateriaPrimaDTO();
                 categoriaDTO.setCategoriaMateriaPrima(categoria);
                 categoriaDTO.setEstado("No visible");
+                categoriaDTO.setCantidadMaterias(materiaPrimaRepository.countByCategoriaId(categoria.getId()));
 
 
                 categoriaConEstado.add(categoriaDTO);
@@ -58,6 +63,7 @@ public class CategoriaMateriaPrimaServiceImpl implements ICategoriaMateriaPrimaS
                 CategoriaMateriaPrimaDTO categoriaDTO= new CategoriaMateriaPrimaDTO();
                 categoriaDTO.setCategoriaMateriaPrima(categoria);
                 categoriaDTO.setEstado("No visible");
+                categoriaDTO.setCantidadMaterias(materiaPrimaRepository.countByCategoriaId(categoria.getId()));
 
 
                 categoriaConEstado.add(categoriaDTO);
@@ -86,6 +92,7 @@ public class CategoriaMateriaPrimaServiceImpl implements ICategoriaMateriaPrimaS
                 }else{
                     categoriaDTO.setEstado("No visible");
                 }
+                categoriaDTO.setCantidadMaterias(materiaPrimaRepository.countByCategoriaId(categoria.getId()));
 
                 categoriaConEstado.add(categoriaDTO);
             }

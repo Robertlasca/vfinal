@@ -12,4 +12,5 @@ import lombok.*;
 public class CategoriaMateriaPrimaDTO {
     CategoriaMateriaPrima categoriaMateriaPrima;
     String estado;
+    int cantidadMaterias;
 }

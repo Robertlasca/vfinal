@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.repository;
 
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,4 +31,7 @@ public interface IMateriaPrimaRepository extends JpaRepository<MateriaPrima,Inte
      * @return Verdadero si existe una materia prima con el nombre especificado, falso en caso contrario.
      */
     boolean existsMateriaPrimaByNombreLikeIgnoreCase(String nombre);
+
+    @Query("SELECT COUNT(p) FROM MateriaPrima p WHERE p.categoriaMateriaPrima.id = :categoriaId")
+    int countByCategoriaId( Integer categoriaId);
 }
