@@ -592,6 +592,44 @@ if(file==null||file.isEmpty()){
         }
     }
 
+    @Override
+    public ResponseEntity<List<MenuDTO>> obtenerTodosPorCategoria(Integer id) {
+        try {
+            List<Menu> menuList=menuRepository.getAllByCategoriaId(id);
+            List<MenuDTO> menuDTOS=new ArrayList<>();
+            for (Menu menu: menuList) {
+                MenuDTO menuDTO= new MenuDTO();
+                menuDTO.setMenu(menu);
+                menuDTO.setGanancia(menu.getPrecioVenta()-menu.getCostoProduccionDirecto());
+                if(menu.isVisibilidad()){
+                    menuDTO.setDisponibilidad("Visible");
+
+                }else {
+                    menuDTO.setDisponibilidad("No visible");
+                }
+
+                menuDTOS.add(menuDTO);
+
+            }
+
+            return new ResponseEntity<List<MenuDTO>>(menuDTOS,HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<MenuDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Integer> obtenerTotalMenu() {
+        try {
+            return new ResponseEntity<Integer>((int) menuRepository.count(),HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Integer>(0,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private Menu actualizarDatos(Menu menu, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) throws IOException {
         menu.setNombre(nombre);
         menu.setDescripcion(descripcion);

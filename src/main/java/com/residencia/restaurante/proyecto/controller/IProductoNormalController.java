@@ -124,4 +124,10 @@ public interface IProductoNormalController {
      */
     @GetMapping(path = "/listarPorStock")
     ResponseEntity<List<ProductoNormalDTO>> listarPorStock();
+
+    @GetMapping(path = "/obtenerProductoPorCategoria/{id}")
+    ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesPorCategoria(@PathVariable Integer id);
+
+    @GetMapping(path = "/totalProductoNormales")
+    ResponseEntity<Integer> obtenerTotalProductosNormales();
 }

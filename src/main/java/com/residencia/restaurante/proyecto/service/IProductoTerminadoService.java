@@ -48,4 +48,8 @@ public interface IProductoTerminadoService {
     ResponseEntity<String> actualizar(Integer id,String nombre, String descripcion, double stockMax, double stockMin, MultipartFile file, int idCategoria);
 
     ResponseEntity<String> cambiarEstado(Map<String, String> objetoMap);
+
+    ResponseEntity<List<ProductoTerminadoDto>> obtenerTodosPorCategoria(Integer id);
+
+    ResponseEntity<Integer> obtenerTotalProductos();
 }

@@ -23,6 +23,12 @@ public interface IProductoTerminadoController {
     @GetMapping(path = "/obtener")
     ResponseEntity<List<ProductoTerminadoDto>> obtenerTodos();
 
+    @GetMapping(path = "/obtenerPorCategoria/{id}")
+    ResponseEntity<List<ProductoTerminadoDto>> obtenerTodosPorCategoria(Integer id);
+
+    @GetMapping(path = "/obtenerTotal")
+    ResponseEntity<Integer> obtenerTotalProductos();
+
     @PostMapping(path = "/agregar")
     ResponseEntity<String> agregar(@RequestParam("nombre") String nombre,
                                    @RequestParam("unidadMedida") String unidadMedida,

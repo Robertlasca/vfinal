@@ -102,4 +102,8 @@ public interface IProductoNormalService {
      * @return ResponseEntity con la lista de productos normales ordenados por su stock.
      */
     ResponseEntity<List<ProductoNormalDTO>> listarPorStock();
+
+    ResponseEntity<Integer> obtenerTotalProductosNormales();
+
+    ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesPorCategoria(Integer id);
 }

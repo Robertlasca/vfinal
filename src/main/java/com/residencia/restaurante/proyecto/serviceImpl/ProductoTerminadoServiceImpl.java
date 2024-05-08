@@ -529,6 +529,60 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<ProductoTerminadoDto>> obtenerTodosPorCategoria(Integer id) {
+        try {
+            List<ProductoTerminado> listaMenor= productoTerminadoRepository.getAllByCategoriaId(id);
+
+
+            List<ProductoTerminadoDto> terminadoDtoList= new ArrayList<>();
+            double costo=0;
+
+            for (ProductoTerminado productoTerminado: listaMenor) {
+
+                ProductoTerminadoDto productoTerminadoDto= new ProductoTerminadoDto();
+                List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
+                productoTerminadoDto.setProductoTerminado(productoTerminado);
+if(productoTerminado.isVisibilidad()){
+    productoTerminadoDto.setDisponibilidad("Visible");
+    productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+    productoTerminadoDto.setEstado("Disponible");
+}else {productoTerminadoDto.setDisponibilidad("No visible");
+    productoTerminadoDto.setCostoProduccion(calcularCosto(productoTerminado));
+
+    productoTerminadoDto.setEstado("Indisponible");
+
+}
+
+                terminadoDtoList.add(productoTerminadoDto);
+
+
+
+
+            }
+
+
+
+
+            return new ResponseEntity<List<ProductoTerminadoDto>>(terminadoDtoList,HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<ProductoTerminadoDto>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Integer> obtenerTotalProductos() {
+        try {
+            return new ResponseEntity<Integer>((int) productoTerminadoRepository.count(),HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Integer>(0,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private ProductoTerminado actualizarDatos(ProductoTerminado productoTerminado, String nombre, double stockMax, double stockMin, String descripcion, int idCategoria, MultipartFile file) throws IOException {
         productoTerminado.setNombre(nombre);
         productoTerminado.setStockMax(stockMax);

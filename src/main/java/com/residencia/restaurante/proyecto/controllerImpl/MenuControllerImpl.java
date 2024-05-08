@@ -55,6 +55,27 @@ public class MenuControllerImpl implements IMenuController {
     }
 
     @Override
+    public ResponseEntity<List<MenuDTO>> obtenerTodosPorCategoria(Integer id) {
+        try {
+            return menuService.obtenerTodosPorCategoria(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Integer> obtenerTotalMenu() {
+        try {
+            return menuService.obtenerTotalMenu();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(0,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
     public ResponseEntity<String> agregar(String nombre, String descripcion, double costoProduccion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria, String receta) {
         try {
             return menuService.agregar(nombre,descripcion,costoProduccion,margenGanancia,precioVenta,file,idCategoria,receta);

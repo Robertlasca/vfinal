@@ -166,4 +166,24 @@ public class ProductoNormalControllerImpl implements IProductoNormalController {
         }
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesPorCategoria(Integer id) {
+        try {
+            return productoNormalService.obtenerProductosNormalesPorCategoria(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Integer> obtenerTotalProductosNormales() {
+        try {
+            return productoNormalService.obtenerTotalProductosNormales();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(0,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

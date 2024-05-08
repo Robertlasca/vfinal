@@ -41,4 +41,6 @@ public interface IProductoTerminadoRepository extends JpaRepository<ProductoTerm
     // Método para contar productos terminados por categoría
     @Query("SELECT COUNT(p) FROM ProductoTerminado p WHERE p.categoria.id = :categoriaId")
     Long countByCategoriaId(Integer categoriaId);
+
+    List<ProductoTerminado> getAllByCategoriaId(Integer id);
 }

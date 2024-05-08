@@ -26,6 +26,11 @@ public interface IMenuController {
 
     @GetMapping(path = "/obtener")
     ResponseEntity<List<MenuDTO>> obtenerTodos();
+    @GetMapping(path = "/obtenerPorCategoria/{id}")
+    ResponseEntity<List<MenuDTO>> obtenerTodosPorCategoria(@PathVariable Integer id);
+
+    @GetMapping(path = "/obtenerTotalMenu")
+    ResponseEntity<Integer> obtenerTotalMenu();
 
     @PostMapping(path = "/agregar")
     ResponseEntity<String> agregar(@RequestParam("nombre") String nombre,

@@ -328,6 +328,42 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
         return new ResponseEntity<List<ProductoNormalDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<Integer> obtenerTotalProductosNormales() {
+        try {
+            return new ResponseEntity<Integer>((int) productoNormalRepository.count(),HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Integer>(0,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesPorCategoria(Integer id) {
+        try {
+            List<ProductoNormal> list= productoNormalRepository.getAllByCategoriaId(id);
+            List<ProductoNormalDTO> productoNormalDTOS=new ArrayList<>();
+            if(!list.isEmpty()){
+                for (ProductoNormal productoNormal:list) {
+                    ProductoNormalDTO productoNormalDTO=new ProductoNormalDTO();
+                    productoNormalDTO.setProductoNormal(productoNormal);
+                    if(productoNormal.isVisibilidad()){
+                        productoNormalDTO.setEstado("Visible");
+                    }else{
+                        productoNormalDTO.setEstado("No visible");
+                    }
+                    productoNormalDTOS.add(productoNormalDTO);
+                }
+
+            }
+            return new ResponseEntity<List<ProductoNormalDTO>>(productoNormalDTOS,HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<ProductoNormalDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private boolean productoNormalExistente(String nombre) {
         return productoNormalRepository.existsProductoNormalByNombreLikeIgnoreCase(nombre);
     }

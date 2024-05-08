@@ -18,4 +18,5 @@ public interface IMenuRepository extends JpaRepository<Menu,Integer> {
     Long countByCategoriaId(Integer categoriaId);
 
     List<Menu> getAllByVisibilidadFalse();
+    List<Menu> getAllByCategoriaId(Integer id);
 }

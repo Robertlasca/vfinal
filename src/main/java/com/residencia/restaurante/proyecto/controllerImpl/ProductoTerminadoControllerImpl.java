@@ -56,6 +56,26 @@ private IProductoTerminadoService productoTerminadoService;
     }
 
     @Override
+    public ResponseEntity<List<ProductoTerminadoDto>> obtenerTodosPorCategoria(Integer id) {
+        try {
+            return productoTerminadoService.obtenerTodosPorCategoria(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Integer> obtenerTotalProductos() {
+        try {
+            return productoTerminadoService.obtenerTotalProductos();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(0,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
     public ResponseEntity<String> agregar(String nombre, String unidadMedida, String descripcion, double stockMax, double stockMin, MultipartFile file, int idCategoria, String materias) {
         try {
             return productoTerminadoService.agregar(nombre,unidadMedida,descripcion,stockMax,stockMin,file,idCategoria,materias);

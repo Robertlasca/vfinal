@@ -56,4 +56,6 @@ public interface IProductoNormalRepository extends JpaRepository<ProductoNormal,
     // Método para contar productos normales por categoría
     @Query("SELECT COUNT(p) FROM ProductoNormal p WHERE p.categoria.id = :categoriaId")
     Long countByCategoriaId( Integer categoriaId);
+
+    List<ProductoNormal> getAllByCategoriaId(Integer id);
 }
