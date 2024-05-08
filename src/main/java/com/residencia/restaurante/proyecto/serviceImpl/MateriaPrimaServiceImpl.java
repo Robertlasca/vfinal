@@ -426,6 +426,38 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasIdCategoria(Integer id) {
+        try {
+            List<MateriaPrimaDTO> materiaConEstado = new ArrayList<>();
+            for (MateriaPrima materiaPrima : materiaPrimaRepository.getAllByCategoriaMateriaPrima_Id(id)) {
+                MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
+                materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
+                if(materiaPrima.isVisibilidad()){
+                    materiaPrimaDTO.setEstado("Visible");
+                }else{
+                    materiaPrimaDTO.setEstado("No visible");
+                }
+
+                materiaConEstado.add(materiaPrimaDTO);
+            }
+            return new ResponseEntity<List<MateriaPrimaDTO>>(materiaConEstado, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<MateriaPrimaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Integer> calcularTotalMateriasPrimas() {
+        try {
+            return new ResponseEntity<Integer>((int) materiaPrimaRepository.count(),HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Integer>(0,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private boolean materiaPrimaExistente1(String nombre) {
         return materiaPrimaRepository.existsMateriaPrimaByNombreLikeIgnoreCase(nombre);
     }

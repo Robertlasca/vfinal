@@ -69,6 +69,16 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasIdCategoria(Integer id) {
+        try {
+            return materiaPrimaService.obtenerMateriasPrimasIdCategoria(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     /**
      * Cambia el estado de una materia prima.
      *
@@ -151,6 +161,16 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<Integer> calcularTotalMateriasPrimas() {
+        try {
+            return materiaPrimaService.calcularTotalMateriasPrimas();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(0,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

@@ -62,4 +62,8 @@ public interface IMateriaPrimaService {
     ResponseEntity<String> agregarMateria(String nombre, int idCategoria, int idUsuario, String unidadMedida, double costoUnitario, String inventario, MultipartFile file);
 
     ResponseEntity<String> actualizarMateria(int id, String nombre, int idCategoria, double costoUnitario, MultipartFile file);
+
+    ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasIdCategoria(Integer id);
+
+    ResponseEntity<Integer> calcularTotalMateriasPrimas();
 }

@@ -90,9 +90,50 @@ public class ComanderoServiceImpl implements IComanderoService {
     public ResponseEntity<String> asignarPlatillos(Map<String, String> objetoMap) {
         try{
             if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("detalleOrden")){
-                if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
+              //  if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
+                Optional<Orden> optional=ordenRepository.findById(Integer.parseInt("idOrden"));
+                if (optional.isPresent()){
+                    Orden orden= optional.get();
 
-                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                    List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(objetoMap.get("detalleOrden"), new TypeReference<List<DetalleOrdenWrapper>>() {
+                    });
+
+                    if(!detalleOrdenWrappers.isEmpty()){
+                        for (DetalleOrdenWrapper detalleOrdenWrapper: detalleOrdenWrappers) {
+                            if(detalleOrdenWrapper.isMenu()){
+
+
+                            }else {
+                                DetalleOrden_ProductoNormal detalleOrdenProductoNormal= new DetalleOrden_ProductoNormal();
+                                detalleOrdenProductoNormal.setCantidad(detalleOrdenWrapper.getCantidad());
+                                Optional<ProductoNormal> productoNormalOptional= productoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
+
+                                productoNormalOptional.ifPresent(detalleOrdenProductoNormal::setProductoNormal);
+                                detalleOrdenProductoNormal.setOrden(orden);
+                                detalleOrdenProductoNormal.setEstado("En espera");
+                                detalleOrdenProductoNormal.setComentario(detalleOrdenWrapper.getComentario());
+                                detalleOrdenProductoNormal.setTotal(detalleOrdenWrapper.getCantidad()*productoNormalOptional.get().getPrecioUnitario());
+
+                                //Descontar del stock
+                                if(productoNormalOptional.isPresent()){
+                                    ProductoNormal productoNormal=productoNormalOptional.get();
+                                    productoNormal.setStockActual(productoNormal.getStockActual()-detalleOrdenWrapper.getCantidad());
+                                }
+                                detalleOrdenProductoNormalRepository.save(detalleOrdenProductoNormal);
+
+                            }
+
+                        }
+                    }
+
+            }
+                return Utils.getResponseEntity("La orden no existe.",HttpStatus.BAD_REQUEST);
+
+
+                //}
 
             }
             return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);

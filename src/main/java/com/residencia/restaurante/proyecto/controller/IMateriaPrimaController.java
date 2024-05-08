@@ -42,6 +42,9 @@ public interface IMateriaPrimaController {
     @GetMapping(path = "/obtenerMateriasPrimas")
     ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimas();
 
+    @GetMapping(path = "/obtenerMateriasPrimasXCategoria/{id}")
+    ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasIdCategoria(@PathVariable Integer id);
+
 
     /**
      * Cambia el estado de una materia prima específica en el sistema. La información necesaria
@@ -96,6 +99,9 @@ public interface IMateriaPrimaController {
                                           @RequestParam("idCategoria") int idCategoria,
                                           @RequestParam("costoUnitario") double costoUnitario,
                                           @RequestParam("img") MultipartFile file);
+
+    @GetMapping(path = "/totalMateriasPrimas")
+    ResponseEntity<Integer> calcularTotalMateriasPrimas();
 
 
 }

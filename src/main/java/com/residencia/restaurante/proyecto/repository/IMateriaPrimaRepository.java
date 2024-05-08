@@ -34,4 +34,7 @@ public interface IMateriaPrimaRepository extends JpaRepository<MateriaPrima,Inte
 
     @Query("SELECT COUNT(p) FROM MateriaPrima p WHERE p.categoriaMateriaPrima.id = :categoriaId")
     int countByCategoriaId( Integer categoriaId);
+
+    List<MateriaPrima> getAllByCategoriaMateriaPrima_Id(Integer id);
+
 }
