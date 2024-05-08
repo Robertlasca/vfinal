@@ -30,7 +30,7 @@ public class ProductoNormalControllerImpl implements IProductoNormalController {
      * @return ResponseEntity con la lista de productos normales activos y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<ProductoNormal>> obtenerProductosNormalesActivos() {
+    public ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesActivos() {
         try {
             return productoNormalService.obtenerProductosNormalesActivos();
         } catch (Exception e) {
@@ -45,7 +45,7 @@ public class ProductoNormalControllerImpl implements IProductoNormalController {
      * @return ResponseEntity con la lista de productos normales no activos y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<ProductoNormal>> obtenerProductosNormalesNoActivos() {
+    public ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesNoActivos() {
         try {
             return productoNormalService.obtenerProductosNormalesNoActivos();
         } catch (Exception e) {
@@ -60,7 +60,7 @@ public class ProductoNormalControllerImpl implements IProductoNormalController {
      * @return ResponseEntity con la lista completa de productos normales y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<ProductoNormal>> obtenerProductosNormales() {
+    public ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormales() {
         try {
             return productoNormalService.obtenerProductosNormales();
         } catch (Exception e) {

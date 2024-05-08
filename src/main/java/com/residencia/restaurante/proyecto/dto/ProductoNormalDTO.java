@@ -16,5 +16,6 @@ public class ProductoNormalDTO {
     private ProductoNormal productoNormal;
 
     private String estado;
+    private String disponibilidad;
 
 }

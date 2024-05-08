@@ -23,7 +23,7 @@ public interface IProductoNormalController {
      * @return ResponseEntity con la lista de productos normales activos y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/productoNormalActivos")
-    ResponseEntity<List<ProductoNormal>> obtenerProductosNormalesActivos();
+    ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesActivos();
 
     /**
      * Obtiene una lista de todos los productos normales que actualmente no están activos en el sistema.
@@ -31,7 +31,7 @@ public interface IProductoNormalController {
      * @return ResponseEntity con la lista de productos normales no activos y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/productoNormalNoActivos")
-    ResponseEntity<List<ProductoNormal>> obtenerProductosNormalesNoActivos();
+    ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesNoActivos();
 
     /**
      * Obtiene una lista de todos los productos normales registrados en el sistema, independientemente de su estado.
@@ -39,7 +39,7 @@ public interface IProductoNormalController {
      * @return ResponseEntity con la lista completa de productos normales y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerProductosNormales")
-    ResponseEntity<List<ProductoNormal>> obtenerProductosNormales();
+    ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormales();
 
     /**
      * Cambia el estado de un producto normal específico en el sistema. La información necesaria

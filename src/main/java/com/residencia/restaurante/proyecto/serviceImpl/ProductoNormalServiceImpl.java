@@ -35,39 +35,188 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
      * @return ResponseEntity<List<ProductoNormal>> Lista de productos normales activos.
      */
     @Override
-    public ResponseEntity<List<ProductoNormal>> obtenerProductosNormalesActivos() {
+    public ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesActivos() {
         try {
-            return new ResponseEntity<List<ProductoNormal>>(productoNormalRepository.getAllByVisibilidadTrue(),HttpStatus.OK);
+
+            // Obtener las tres listas de inventarios
+            List<ProductoNormal> inventariosMenorMinimo = productoNormalRepository.findProductoNormalByStockActualMenorAlMinimo();
+
+            List<ProductoNormal> inventariosMayorMaximo = productoNormalRepository.findProductoNormalByStockActualMayorAlMaximo();
+
+            List<ProductoNormal> inventariosEntreMinimoYMaximo = productoNormalRepository.findProductoNormalByStockActualEntreMinimoYMaximo();
+
+            // Crear una lista para almacenar los inventarios con su estado
+            List<ProductoNormalDTO> inventariosConEstado = new ArrayList<>();
+            // Agregar inventarios con estado "Suficiente" a la lista
+
+            // Agregar inventarios con estado "Insuficiente" a la lista
+            for (ProductoNormal productoNormal : inventariosMenorMinimo) {
+                if(!productoNormal.isVisibilidad()){
+
+
+                    ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                    productoNormalDTO.setProductoNormal(productoNormal);
+                    productoNormalDTO.setEstado("Insuficiente");
+                    productoNormalDTO.setDisponibilidad("Visible");
+                    inventariosConEstado.add(productoNormalDTO);
+                }
+            }
+
+
+            // Agregar inventarios con estado "Excedido" a la lista
+            for (ProductoNormal productoNormal  : inventariosMayorMaximo) {
+                if(!productoNormal.isVisibilidad()){
+
+
+
+                    ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                    productoNormalDTO.setProductoNormal(productoNormal);
+                    productoNormalDTO.setEstado("Excedido");
+                    productoNormalDTO.setDisponibilidad("Visible");
+                    inventariosConEstado.add(productoNormalDTO);
+                }
+
+            }
+
+
+            for (ProductoNormal productoNormal  : inventariosEntreMinimoYMaximo) {
+                if(!productoNormal.isVisibilidad()) {
+                    ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                    productoNormalDTO.setProductoNormal(productoNormal);
+                    productoNormalDTO.setEstado("Suficiente");
+                    productoNormalDTO.setDisponibilidad("Visible");
+                    inventariosConEstado.add(productoNormalDTO);
+                }
+            }
+            return new ResponseEntity<List<ProductoNormalDTO>>(inventariosConEstado,HttpStatus.OK);
+
+
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<ProductoNormal>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<ProductoNormalDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene todos los productos normales no activos.
      * @return ResponseEntity<List<ProductoNormal>> Lista de productos normales no activos.
      */
     @Override
-    public ResponseEntity<List<ProductoNormal>> obtenerProductosNormalesNoActivos() {
+    public ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesNoActivos() {
         try {
-            return new ResponseEntity<List<ProductoNormal>>(productoNormalRepository.getAllByVisibilidadFalse(),HttpStatus.OK);
+
+            // Obtener las tres listas de inventarios
+            List<ProductoNormal> inventariosMenorMinimo = productoNormalRepository.findProductoNormalByStockActualMenorAlMinimo();
+
+            List<ProductoNormal> inventariosMayorMaximo = productoNormalRepository.findProductoNormalByStockActualMayorAlMaximo();
+
+            List<ProductoNormal> inventariosEntreMinimoYMaximo = productoNormalRepository.findProductoNormalByStockActualEntreMinimoYMaximo();
+
+            // Crear una lista para almacenar los inventarios con su estado
+            List<ProductoNormalDTO> inventariosConEstado = new ArrayList<>();
+            // Agregar inventarios con estado "Suficiente" a la lista
+
+            // Agregar inventarios con estado "Insuficiente" a la lista
+            for (ProductoNormal productoNormal : inventariosMenorMinimo) {
+                if(!productoNormal.isVisibilidad()){
+
+
+                    ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                    productoNormalDTO.setProductoNormal(productoNormal);
+                    productoNormalDTO.setEstado("Insuficiente");
+                    productoNormalDTO.setDisponibilidad("No visible");
+                    inventariosConEstado.add(productoNormalDTO);
+                }
+            }
+
+
+            // Agregar inventarios con estado "Excedido" a la lista
+            for (ProductoNormal productoNormal  : inventariosMayorMaximo) {
+                if(!productoNormal.isVisibilidad()){
+
+
+
+                ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                productoNormalDTO.setProductoNormal(productoNormal);
+                productoNormalDTO.setEstado("Excedido");
+                productoNormalDTO.setDisponibilidad("No visible");
+                inventariosConEstado.add(productoNormalDTO);
+                }
+
+            }
+
+
+            for (ProductoNormal productoNormal  : inventariosEntreMinimoYMaximo) {
+                if(!productoNormal.isVisibilidad()) {
+                    ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                    productoNormalDTO.setProductoNormal(productoNormal);
+                    productoNormalDTO.setEstado("Suficiente");
+                    productoNormalDTO.setDisponibilidad("No visible");
+                    inventariosConEstado.add(productoNormalDTO);
+                }
+            }
+            return new ResponseEntity<List<ProductoNormalDTO>>(inventariosConEstado,HttpStatus.OK);
+
+
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<ProductoNormal>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<ProductoNormalDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene todos los productos normales.
      * @return ResponseEntity<List<ProductoNormal>> Lista de todos los productos normales.
      */
     @Override
-    public ResponseEntity<List<ProductoNormal>> obtenerProductosNormales() {
+    public ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormales() {
         try {
-            return new ResponseEntity<List<ProductoNormal>>(productoNormalRepository.findAll(),HttpStatus.OK);
+
+            // Obtener las tres listas de inventarios
+            List<ProductoNormal> inventariosMenorMinimo = productoNormalRepository.findProductoNormalByStockActualMenorAlMinimo();
+
+            List<ProductoNormal> inventariosMayorMaximo = productoNormalRepository.findProductoNormalByStockActualMayorAlMaximo();
+
+            List<ProductoNormal> inventariosEntreMinimoYMaximo = productoNormalRepository.findProductoNormalByStockActualEntreMinimoYMaximo();
+
+            // Crear una lista para almacenar los inventarios con su estado
+            List<ProductoNormalDTO> inventariosConEstado = new ArrayList<>();
+            // Agregar inventarios con estado "Suficiente" a la lista
+
+            // Agregar inventarios con estado "Insuficiente" a la lista
+            for (ProductoNormal productoNormal : inventariosMenorMinimo) {
+                if(productoNormal.isVisibilidad()){
+
+
+                ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                productoNormalDTO.setProductoNormal(productoNormal);
+                productoNormalDTO.setEstado("Insuficiente");
+                inventariosConEstado.add(productoNormalDTO);
+                }
+            }
+
+
+            // Agregar inventarios con estado "Excedido" a la lista
+            for (ProductoNormal productoNormal  : inventariosMayorMaximo) {
+                ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                productoNormalDTO.setProductoNormal(productoNormal);
+                productoNormalDTO.setEstado("Excedido");
+                inventariosConEstado.add(productoNormalDTO);
+
+            }
+
+
+            for (ProductoNormal productoNormal  : inventariosEntreMinimoYMaximo) {
+                ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
+                productoNormalDTO.setProductoNormal(productoNormal);
+                productoNormalDTO.setEstado("Suficiente");
+                inventariosConEstado.add(productoNormalDTO);
+            }
+            return new ResponseEntity<List<ProductoNormalDTO>>(inventariosConEstado,HttpStatus.OK);
+
+
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<ProductoNormal>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<ProductoNormalDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Cambia el estado de visibilidad de un producto normal.
@@ -282,7 +431,7 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
     @Override
     public ResponseEntity<List<ProductoNormalDTO>> listarPorStock() {
         try {
-            System.out.println("entre 1");
+
             // Obtener las tres listas de inventarios
             List<ProductoNormal> inventariosMenorMinimo = productoNormalRepository.findProductoNormalByStockActualMenorAlMinimo();
 
@@ -299,6 +448,11 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
                 ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
                 productoNormalDTO.setProductoNormal(productoNormal);
                 productoNormalDTO.setEstado("Insuficiente");
+                if(productoNormal.isVisibilidad()){
+                    productoNormalDTO.setDisponibilidad("Visible");
+                }else{
+                    productoNormalDTO.setDisponibilidad("No visible");
+                }
                 inventariosConEstado.add(productoNormalDTO);
             }
 
@@ -308,6 +462,11 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
                 ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
                 productoNormalDTO.setProductoNormal(productoNormal);
                 productoNormalDTO.setEstado("Excedido");
+                if(productoNormal.isVisibilidad()){
+                    productoNormalDTO.setDisponibilidad("Visible");
+                }else{
+                    productoNormalDTO.setDisponibilidad("No visible");
+                }
                 inventariosConEstado.add(productoNormalDTO);
 
             }
@@ -317,6 +476,11 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
                 ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
                 productoNormalDTO.setProductoNormal(productoNormal);
                 productoNormalDTO.setEstado("Suficiente");
+                if(productoNormal.isVisibilidad()){
+                    productoNormalDTO.setDisponibilidad("Visible");
+                }else{
+                    productoNormalDTO.setDisponibilidad("No visible");
+                }
                 inventariosConEstado.add(productoNormalDTO);
             }
             return new ResponseEntity<List<ProductoNormalDTO>>(inventariosConEstado,HttpStatus.OK);

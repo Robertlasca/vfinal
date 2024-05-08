@@ -17,19 +17,19 @@ public interface IProductoNormalService {
      * Obtiene todos los productos normales activos.
      * @return ResponseEntity con la lista de productos normales activos.
      */
-    ResponseEntity<List<ProductoNormal>> obtenerProductosNormalesActivos();
+    ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesActivos();
 
     /**
      * Obtiene todos los productos normales no activos.
      * @return ResponseEntity con la lista de productos normales no activos.
      */
-    ResponseEntity<List<ProductoNormal>> obtenerProductosNormalesNoActivos();
+    ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormalesNoActivos();
 
     /**
      * Obtiene todos los productos normales.
      * @return ResponseEntity con la lista de todos los productos normales.
      */
-    ResponseEntity<List<ProductoNormal>> obtenerProductosNormales();
+    ResponseEntity<List<ProductoNormalDTO>> obtenerProductosNormales();
 
     /**
      * Cambia el estado de un producto normal.
