@@ -44,7 +44,8 @@ public interface IMenuController {
                                      @RequestParam("margenGanancia") double margenGanancia,
                                      @RequestParam("precioVenta") double precioVenta,
                                      @RequestParam(value = "img",required = false) MultipartFile file,
-                                     @RequestParam("idCategoria") int idCategoria
+                                     @RequestParam("idCategoria") int idCategoria,
+                                     @RequestParam("idCocina") int idCocina
     );
 
     @PostMapping(path = "/crearReceta")
@@ -58,7 +59,8 @@ public interface IMenuController {
                                    @RequestParam("margenGanancia") double margenGanancia,
                                    @RequestParam("precioVenta") double precioVenta,
                                    @RequestParam(value = "img",required = false) MultipartFile file,
-                                   @RequestParam("idCategoria") int idCategoria
+                                   @RequestParam("idCategoria") int idCategoria,
+            @RequestParam("idCocina") int idCocina
     );
 
     @GetMapping(path = "/obtenerMateriaPrima/{id}")

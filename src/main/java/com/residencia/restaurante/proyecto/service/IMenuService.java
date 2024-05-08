@@ -41,9 +41,9 @@ public interface IMenuService {
 
     ResponseEntity<RecetaDTO> obtenerIngredientesOProductosTerminadosXId(Map<String, String> objetoMap);
 
-    ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria);
+    ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina);
 
-    ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria);
+    ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina);
 
     ResponseEntity<String> crearReceta(Map<String, String> objetoMap);
 

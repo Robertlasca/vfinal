@@ -65,9 +65,9 @@ public class MenuControllerImpl implements IMenuController {
     }
 
     @Override
-    public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria) {
+    public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
         try {
-            return menuService.agregarMenu(nombre,descripcion,margenGanancia,precioVenta,file,idCategoria);
+            return menuService.agregarMenu(nombre,descripcion,margenGanancia,precioVenta,file,idCategoria,idCocina);
 
         }catch (Exception e){
          e.printStackTrace();
@@ -86,9 +86,9 @@ public class MenuControllerImpl implements IMenuController {
     }
 
     @Override
-    public ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria) {
+    public ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
         try {
-            return menuService.actualizar(id,nombre,descripcion,margenGanancia,precioVenta,file,idCategoria);
+            return menuService.actualizar(id,nombre,descripcion,margenGanancia,precioVenta,file,idCategoria,idCocina);
 
         }catch (Exception e){
             e.printStackTrace();
