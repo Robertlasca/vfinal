@@ -51,9 +51,7 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
 
             // Agregar inventarios con estado "Insuficiente" a la lista
             for (ProductoNormal productoNormal : inventariosMenorMinimo) {
-                if(!productoNormal.isVisibilidad()){
-
-
+                if(productoNormal.isVisibilidad()){
                     ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
                     productoNormalDTO.setProductoNormal(productoNormal);
                     productoNormalDTO.setEstado("Insuficiente");
@@ -65,7 +63,7 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
 
             // Agregar inventarios con estado "Excedido" a la lista
             for (ProductoNormal productoNormal  : inventariosMayorMaximo) {
-                if(!productoNormal.isVisibilidad()){
+                if(productoNormal.isVisibilidad()){
 
 
 
@@ -80,7 +78,7 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
 
 
             for (ProductoNormal productoNormal  : inventariosEntreMinimoYMaximo) {
-                if(!productoNormal.isVisibilidad()) {
+                if(productoNormal.isVisibilidad()) {
                     ProductoNormalDTO productoNormalDTO = new ProductoNormalDTO();
                     productoNormalDTO.setProductoNormal(productoNormal);
                     productoNormalDTO.setEstado("Suficiente");
