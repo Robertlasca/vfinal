@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.Orden;
 import org.springframework.http.ResponseEntity;
@@ -17,4 +18,10 @@ public interface IComanderoService {
     ResponseEntity<List<Orden>> obtenerOrdenes();
 
     ResponseEntity<ProductoDto> obtenerProducto(Map<String, String> objetoMap);
+
+    ResponseEntity<ComandaDTO> obtenerComandaPorIdOrden(Integer id);
+
+    ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(Integer id);
+
+    ResponseEntity<String> cerrarCuenta(Integer id);
 }

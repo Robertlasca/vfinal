@@ -3,6 +3,8 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.ComandaDTO;
+import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
 import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.*;
@@ -10,6 +12,7 @@ import com.residencia.restaurante.proyecto.service.IComanderoService;
 import com.residencia.restaurante.proyecto.wrapper.DetalleOrdenWrapper;
 import com.residencia.restaurante.security.model.Usuario;
 import com.residencia.restaurante.security.repository.IUsuarioRepository;
+import com.residencia.restaurante.security.utils.TicketComanda;
 import com.residencia.restaurante.security.utils.Utils;
 import org.apache.tomcat.util.bcel.Const;
 import org.aspectj.weaver.ast.Or;
@@ -18,6 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.print.DocFlavor;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
 import java.util.*;
 
 @Service
@@ -37,6 +43,8 @@ public class ComanderoServiceImpl implements IComanderoService {
     private ICajaRepository cajaRepository;
 
     @Autowired
+    private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
+    @Autowired
     private IUsuarioRepository usuarioRepository;
     @Autowired
     private IMesaRepository mesaRepository;
@@ -49,6 +57,9 @@ public class ComanderoServiceImpl implements IComanderoService {
     private IProductoNormalRepository productoNormalRepository;
     @Autowired
     private IMenuRepository menuRepository;
+
+    @Autowired
+    private  IImpresoraRepository impresoraRepository;
     @Override
     public ResponseEntity<Orden> abrirOrden(Map<String, String> objetoMap) {
        try {
@@ -69,7 +80,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                if(objetoMap.containsKey("nombreCliente")){
                    orden.setNombreCliente(objetoMap.get("nombreCliente"));
                }
-               orden.setEstado("Abierto");
+               orden.setEstado("En curso");
                orden.setFolio(folioService.getNextFolio());
                orden.setCantidadComensal(Integer.parseInt(objetoMap.get("numComensales")));
                ordenRepository.save(orden);
@@ -91,7 +102,7 @@ public class ComanderoServiceImpl implements IComanderoService {
         try{
             if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("detalleOrden")){
               //  if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
-                Optional<Orden> optional=ordenRepository.findById(Integer.parseInt("idOrden"));
+                Optional<Orden> optional=ordenRepository.findById(Integer.parseInt(objetoMap.get("idOrden")));
                 if (optional.isPresent()){
                     Orden orden= optional.get();
 
@@ -101,12 +112,77 @@ public class ComanderoServiceImpl implements IComanderoService {
                     List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(objetoMap.get("detalleOrden"), new TypeReference<List<DetalleOrdenWrapper>>() {
                     });
 
+
+                    Set<Integer> cocinas = new HashSet<>();
+                    Map<Integer, List<String>> productosPorCocina = new HashMap<>();
+
+
+
+                    if(!detalleOrdenWrappers.isEmpty()) {
+                        for (DetalleOrdenWrapper detalleOrdenWrapper : detalleOrdenWrappers) {
+                            System.out.println(detalleOrdenWrapper.getIsMenu());
+                            if (detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("true")) {
+                                //Verificar si es un menu con producto terminados.
+                                DetalleOrdenMenu detalleOrdenMenu = new DetalleOrdenMenu();
+                                Optional<Menu> menuOptional = menuRepository.findById(detalleOrdenWrapper.getIdProducto());
+
+                                Menu menu = new Menu();
+                                Integer cocinaId = 0;
+                                if (menuOptional.isPresent()) {
+                                    menu = menuOptional.get();
+                                    cocinaId=menuOptional.get().getCocina().getId();
+                                }
+
+                                if (!cocinas.contains(menu.getCocina().getId())){
+                                    cocinas.add(cocinaId);
+                                    productosPorCocina.put(cocinaId, new ArrayList<>());
+                                }
+
+                                // Añadir el producto a la lista correspondiente a la cocina
+                                List<String> productos = productosPorCocina.get(cocinaId);
+                                menu.getNombre();
+                                detalleOrdenWrapper.getCantidad();
+                                detalleOrdenWrapper.getComentario();
+                                String productoDetalle = menu.getNombre() + detalleOrdenWrapper.getCantidad() +  detalleOrdenWrapper.getComentario();
+                                productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al producto
+                            }
+
+
+                        }
+
+
+
+
+                    }
+
                     if(!detalleOrdenWrappers.isEmpty()){
                         for (DetalleOrdenWrapper detalleOrdenWrapper: detalleOrdenWrappers) {
-                            if(detalleOrdenWrapper.isMenu()){
+                            System.out.println(detalleOrdenWrapper.getIsMenu());
+                            if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("true")){
+                                //Verificar si es un menu con producto terminados o
+                                DetalleOrdenMenu detalleOrdenMenu= new DetalleOrdenMenu();
+                                Optional<Menu> menuOptional= menuRepository.findById(detalleOrdenWrapper.getIdProducto());
+
+                                Menu menu= new Menu();
+                                if(menuOptional.isPresent()){
+                                    menu= menuOptional.get();
+                                }
 
 
-                            }else {
+                                detalleOrdenMenu.setMenu(menu);
+                                detalleOrdenMenu.setOrden(orden);
+                                detalleOrdenMenu.setCantidad(detalleOrdenWrapper.getCantidad());
+                                detalleOrdenMenu.setTotal(menu.getPrecioVenta()*detalleOrdenWrapper.getCantidad());
+                                detalleOrdenMenu.setComentario(detalleOrdenWrapper.getComentario());
+                                detalleOrdenMenu.setEstado("En espera");
+                                detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                                //Descontar stock
+
+
+
+                            }
+                            if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("false")){
+
                                 DetalleOrden_ProductoNormal detalleOrdenProductoNormal= new DetalleOrden_ProductoNormal();
                                 detalleOrdenProductoNormal.setCantidad(detalleOrdenWrapper.getCantidad());
                                 Optional<ProductoNormal> productoNormalOptional= productoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
@@ -120,14 +196,54 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 //Descontar del stock
                                 if(productoNormalOptional.isPresent()){
                                     ProductoNormal productoNormal=productoNormalOptional.get();
-                                    productoNormal.setStockActual(productoNormal.getStockActual()-detalleOrdenWrapper.getCantidad());
+                                   // productoNormal.setStockActual(productoNormal.getStockActual()-detalleOrdenWrapper.getCantidad());
+                                   // productoNormalRepository.save(productoNormal);
                                 }
                                 detalleOrdenProductoNormalRepository.save(detalleOrdenProductoNormal);
 
                             }
 
+
+
+
                         }
+
+                        Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
+                        if (impresoraOptional.isPresent()) {
+                            System.out.println("No se ha configurado una impresora por defecto.");
+                        }
+
+                        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
+                        PrintService selectedService = null;
+
+                        for (PrintService service : printServices) {
+                            if (service.getName().equalsIgnoreCase(impresoraOptional.get().getNombre()) || service.getName().contains(impresoraOptional.get().getDireccionIp())) {
+                                selectedService = service;
+                                break;
+                            }
+                        }
+
+                        if (selectedService == null) {
+                            System.out.println("No se encontró la impresora POS-58 en el puerto USB001.");
+                        }
+
+
+
+
+
+
+                        for (Map.Entry<Integer, List<String>> entry : productosPorCocina.entrySet()) {
+                            Integer cocinaId = entry.getKey();
+                            List<String> productos = entry.getValue();
+                            System.out.println("Cocina ID: " + cocinaId);
+                            System.out.println("Productos: " + productos);
+                            TicketComanda ticket = new TicketComanda(orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre(), orden.getUsuario().getNombre(), productos);
+                            ticket.print(selectedService);
+                            // Aquí puedes llamar a tu método de impresión o realizar otras operaciones
+                        }
+                        return Utils.getResponseEntity("Platillos asignados correctamente.",HttpStatus.OK);
                     }
+                    return Utils.getResponseEntity("Error al obtener los detalles de la orden.",HttpStatus.BAD_REQUEST);
 
             }
                 return Utils.getResponseEntity("La orden no existe.",HttpStatus.BAD_REQUEST);
@@ -151,7 +267,7 @@ public class ComanderoServiceImpl implements IComanderoService {
             Map<Integer, Double> necesidadIngredientes = new HashMap<>(); // ID de Inventario y cantidad total requerida
 
             for (DetalleOrdenWrapper detalle : detalleOrdenWrappers) {
-                if (detalle.isMenu()) {
+                if (detalle.getIsMenu().equalsIgnoreCase("true")) {
                     List<MateriaPrima_Menu> ingredientesMenu = materiaPrimaMenuRepository.findByMenuId(detalle.getIdProducto());
                     for (MateriaPrima_Menu ingrediente : ingredientesMenu) {
                         int inventarioId = ingrediente.getInventario().getId();
@@ -275,5 +391,135 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return new ResponseEntity<ProductoDto>(new ProductoDto(),HttpStatus.INTERNAL_SERVER_ERROR);
 
+    }
+
+    @Override
+    public ResponseEntity<ComandaDTO> obtenerComandaPorIdOrden(Integer id) {
+        try{
+            Optional<Orden> optionalOrden=ordenRepository.findById(id);
+            if(optionalOrden.isPresent()){
+                double total= 0;
+                Orden orden= optionalOrden.get();
+                List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
+                List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+                List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
+                ComandaDTO comandaDTO= new ComandaDTO();
+                comandaDTO.setOrden(orden);
+                if(!detalleOrdenMenus.isEmpty()){
+                    for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                        detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                        detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                        detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                        detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                        detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                        detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                        total=total+detalleOrdenMenu.getTotal();
+                        detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                    }
+                }
+
+                if(!detalleOrdenProductoNormals.isEmpty()){
+                    for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                        detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
+                        detalleOrdenProductoDTO.setIdProducto(detalleOrdenProductoNormal.getProductoNormal().getId());
+                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getProductoNormal().getNombre());
+                        detalleOrdenProductoDTO.setComentario(detalleOrdenProductoNormal.getComentario());
+                        detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
+                        detalleOrdenProductoDTO.setEstado(detalleOrdenProductoNormal.getEstado());
+                        detalleOrdenProductoDTO.setTotal(detalleOrdenProductoNormal.getTotal());
+                        total=total+detalleOrdenProductoNormal.getTotal();
+                        detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                    }
+                }
+                comandaDTO.setDetalleOrdenProductoDTOS(detalleOrdenProductoDTOS);
+
+                comandaDTO.setTotal(total);
+
+                return new ResponseEntity<ComandaDTO>(comandaDTO,HttpStatus.OK);
+
+            }
+            return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.BAD_REQUEST);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(Integer id) {
+        try{
+
+            Optional<Orden> optionalOrden=ordenRepository.findOrdensByMesaId(id);
+            if(optionalOrden.isPresent()){
+                double total= 0;
+                Orden orden= optionalOrden.get();
+                List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
+                List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+                List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
+                ComandaDTO comandaDTO= new ComandaDTO();
+                comandaDTO.setOrden(orden);
+                if(!detalleOrdenMenus.isEmpty()){
+                    for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                        detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                        detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                        detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                        detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                        detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                        detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                        total=total+detalleOrdenMenu.getTotal();
+                        detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                    }
+                }
+
+                if(!detalleOrdenProductoNormals.isEmpty()){
+                    for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                        detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
+                        detalleOrdenProductoDTO.setIdProducto(detalleOrdenProductoNormal.getProductoNormal().getId());
+                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getProductoNormal().getNombre());
+                        detalleOrdenProductoDTO.setComentario(detalleOrdenProductoNormal.getComentario());
+                        detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
+                        detalleOrdenProductoDTO.setEstado(detalleOrdenProductoNormal.getEstado());
+                        detalleOrdenProductoDTO.setTotal(detalleOrdenProductoNormal.getTotal());
+                        total=total+detalleOrdenProductoNormal.getTotal();
+                        detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                    }
+                }
+                comandaDTO.setDetalleOrdenProductoDTOS(detalleOrdenProductoDTOS);
+
+                comandaDTO.setTotal(total);
+
+                return new ResponseEntity<ComandaDTO>(comandaDTO,HttpStatus.OK);
+
+            }
+            return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.BAD_REQUEST);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cerrarCuenta(Integer id) {
+        try{
+            Optional<Orden> ordenOptional= ordenRepository.findById(id);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

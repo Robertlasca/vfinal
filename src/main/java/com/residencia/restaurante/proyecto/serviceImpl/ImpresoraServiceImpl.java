@@ -233,7 +233,7 @@ public class ImpresoraServiceImpl implements IImpresoraService {
         }
 
         impresora.setNombre(objetoMap.get("nombre"));
-        impresora.setDireccionIp("direccionIP");
+        impresora.setDireccionIp(objetoMap.get("direccionIP"));
 
         if(objetoMap.get("porDefecto").equalsIgnoreCase("true")){
             Optional<Impresora> impresoraDefault=iImpresoraRepository.getImpresoraByPorDefectoTrue();

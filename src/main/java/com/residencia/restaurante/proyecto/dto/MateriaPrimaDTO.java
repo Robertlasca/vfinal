@@ -3,6 +3,8 @@ package com.residencia.restaurante.proyecto.dto;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,4 +14,5 @@ import lombok.*;
 public class MateriaPrimaDTO {
     MateriaPrima materiaPrimaDTO;
     String estado;
+    List<String> almacenes;
 }

@@ -93,7 +93,9 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
     public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimas() {
         try {
             List<MateriaPrimaDTO> materiaConEstado = new ArrayList<>();
+
             for (MateriaPrima materiaPrima : materiaPrimaRepository.findAll()) {
+                List<String> almacenes=new ArrayList<>();
                 MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
                 materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
                 if(materiaPrima.isVisibilidad()){
@@ -101,6 +103,14 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 }else{
                     materiaPrimaDTO.setEstado("No visible");
                 }
+                List<Inventario> inventarios= inventarioRepository.getAllByMateriaPrima_Id(materiaPrima.getId());
+                if(!inventarios.isEmpty()){
+                    for (Inventario inventario:inventarios) {
+                        almacenes.add(inventario.getAlmacen().getNombre());
+                    }
+
+                }
+                materiaPrimaDTO.setAlmacenes(almacenes);
 
                 materiaConEstado.add(materiaPrimaDTO);
             }

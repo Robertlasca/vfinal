@@ -1,12 +1,10 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.Orden;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +25,17 @@ public interface IComanderoController {
 
     @GetMapping(path = "/obtenerOrdenes")
     ResponseEntity<List<Orden>> obtenerOrdenes();
+
+    @GetMapping(path = "/obtenerComanda/{id}")
+    ResponseEntity<ComandaDTO> obtenerComandaPorIdOrden(@PathVariable Integer id);
+
+    @GetMapping(path = "/obtenerComandaMesa/{id}")
+    ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(@PathVariable Integer id);
+
+    @PostMapping(path = "/cerrarCuenta/{id}")
+    ResponseEntity<String> cerrarCuenta(@PathVariable Integer id);
+
+
 
 
 

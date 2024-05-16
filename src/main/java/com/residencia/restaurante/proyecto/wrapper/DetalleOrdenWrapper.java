@@ -11,7 +11,7 @@ import lombok.*;
 public class DetalleOrdenWrapper {
     private Integer  idProducto;
     private int cantidad;
-    private boolean isMenu;
+    private String isMenu;
     private String comentario;
 }
 

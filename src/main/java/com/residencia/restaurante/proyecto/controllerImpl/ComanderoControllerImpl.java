@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IComanderoController;
+import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.Orden;
 import com.residencia.restaurante.proyecto.service.IComanderoService;
@@ -70,5 +71,36 @@ public class ComanderoControllerImpl implements IComanderoController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<ComandaDTO> obtenerComandaPorIdOrden(Integer id) {
+        try {
+            return comanderoService.obtenerComandaPorIdOrden(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(Integer id) {
+        try {
+            return comanderoService.obtenerComandaPorIdOrdenMesa(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cerrarCuenta(Integer id) {
+        try{
+            return comanderoService.cerrarCuenta(id);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
