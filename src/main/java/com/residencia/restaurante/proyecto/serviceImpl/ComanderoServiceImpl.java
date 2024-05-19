@@ -13,6 +13,7 @@ import com.residencia.restaurante.proyecto.wrapper.DetalleOrdenWrapper;
 import com.residencia.restaurante.security.model.Usuario;
 import com.residencia.restaurante.security.repository.IUsuarioRepository;
 import com.residencia.restaurante.security.utils.TicketComanda;
+import com.residencia.restaurante.security.utils.TicketOrden;
 import com.residencia.restaurante.security.utils.Utils;
 import org.apache.tomcat.util.bcel.Const;
 import org.aspectj.weaver.ast.Or;
@@ -467,6 +468,9 @@ public class ComanderoServiceImpl implements IComanderoService {
                 comandaDTO.setOrden(orden);
                 if(!detalleOrdenMenus.isEmpty()){
                     for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
+                        if(!detalleOrdenMenu.getEstado().equalsIgnoreCase("cancelado")){
+
+
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
@@ -478,6 +482,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
                         total=total+detalleOrdenMenu.getTotal();
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                        }
                     }
                 }
 
@@ -515,7 +520,92 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<String> cerrarCuenta(Integer id) {
         try{
-            Optional<Orden> ordenOptional= ordenRepository.findById(id);
+            //Optional<Orden> ordenOptional= ordenRepository.findById(id);
+           // if(ordenOptional.isPresent()){
+              /*  double total= 0;
+                Orden orden= ordenOptional.get();
+                Mesa mesa= orden.getMesa();
+                mesa.setEstado("Disponible");
+                mesaRepository.save(mesa);
+                List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
+                List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+                List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
+                ComandaDTO comandaDTO= new ComandaDTO();
+                comandaDTO.setOrden(orden);
+                if(!detalleOrdenMenus.isEmpty()){
+                    for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
+                        if(!detalleOrdenMenu.getEstado().equalsIgnoreCase("cancelado")){
+
+
+                            DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                            detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                            detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                            detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                            detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                            detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                            detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                            detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                            detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                            total=total+detalleOrdenMenu.getTotal();
+                            detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                        }
+                    }
+                }
+
+                if(!detalleOrdenProductoNormals.isEmpty()){
+                    for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                        detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
+                        detalleOrdenProductoDTO.setIdProducto(detalleOrdenProductoNormal.getProductoNormal().getId());
+                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getProductoNormal().getNombre());
+                        detalleOrdenProductoDTO.setComentario(detalleOrdenProductoNormal.getComentario());
+                        detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
+                        detalleOrdenProductoDTO.setEstado(detalleOrdenProductoNormal.getEstado());
+                        detalleOrdenProductoDTO.setTotal(detalleOrdenProductoNormal.getTotal());
+                        total=total+detalleOrdenProductoNormal.getTotal();
+                        detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                    }
+                }
+
+*/
+                Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
+                if (impresoraOptional.isPresent()) {
+                    System.out.println("No se ha configurado una impresora por defecto.");
+                }
+
+                PrintService[] printServices = PrintServiceLookup.lookupPrintServices(DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
+                PrintService selectedService = null;
+
+                for (PrintService service : printServices) {
+                    if (service.getName().equalsIgnoreCase(impresoraOptional.get().getNombre()) || service.getName().contains(impresoraOptional.get().getDireccionIp())) {
+                        selectedService = service;
+                        break;
+                    }
+                }
+
+                if (selectedService == null) {
+                    System.out.println("No se encontró la impresora POS-58 en el puerto USB001.");
+                }
+
+            List<String[]> products = List.of(
+                    new String[]{"2", "Burger", "5.99"},
+                    new String[]{"1", "Fries", "2.99"},
+                    new String[]{"3", "Soda", "1.50"}
+            );
+
+            TicketOrden ticket = new TicketOrden(
+                    "12345", "Caja 1", "John Doe", "Jane Smith", products,
+                    "10.48", "0.00", "3", "10.48", "20.00", "9.52",
+                    "Cash", "20.00"
+            );
+            ticket.print(selectedService);
+
+            return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
+
+
+            //}
+            //return Utils.getResponseEntity("No existe la orden.",HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
             e.printStackTrace();

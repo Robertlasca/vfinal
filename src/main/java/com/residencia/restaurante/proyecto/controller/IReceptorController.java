@@ -29,4 +29,7 @@ public interface IReceptorController {
 
     @PostMapping(path = "/cambiarPlatilloCancelado/{id}")
     ResponseEntity<String> cambiarPlatilloCancelado(@PathVariable Integer id);
+
+    @PostMapping(path = "/imprimir")
+    ResponseEntity<String> cerrarCuenta();
 }

@@ -19,4 +19,6 @@ public interface IReceptorService {
     ResponseEntity<String> cambiarPlatilloTerminado(Integer id);
 
     ResponseEntity<String> cambiarPlatilloCancelado(Integer id);
+
+    ResponseEntity<String> cerrarCuenta();
 }

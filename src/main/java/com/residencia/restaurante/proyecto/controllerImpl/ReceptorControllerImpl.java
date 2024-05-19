@@ -82,4 +82,14 @@ public class ReceptorControllerImpl implements IReceptorController {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> cerrarCuenta() {
+        try {
+            return receptorService.cerrarCuenta();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.OK);
+    }
 }

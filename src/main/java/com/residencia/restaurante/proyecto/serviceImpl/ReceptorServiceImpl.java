@@ -5,18 +5,23 @@ import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.DetalleOrdenMenu;
+import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.entity.Orden;
 import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
 import com.residencia.restaurante.proyecto.repository.IDetalleOrden_MenuRepository;
 import com.residencia.restaurante.proyecto.repository.IDetalleOrden_ProductoNormalRepository;
 import com.residencia.restaurante.proyecto.repository.IOrdenRepository;
 import com.residencia.restaurante.proyecto.service.IReceptorService;
+import com.residencia.restaurante.security.utils.TicketOrden;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +37,8 @@ public class ReceptorServiceImpl implements IReceptorService {
     private IDetalleOrden_ProductoNormalRepository detalleOrdenProductoNormalRepository;
     @Autowired
     private ICocinaRepository cocinaRepository;
+@Autowired
+    private  PrintClient printClient;
     @Override
     public ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasPorIdCocina(Integer id) {
         try {
@@ -211,5 +218,38 @@ public class ReceptorServiceImpl implements IReceptorService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cerrarCuenta() {
+        try {
+
+
+            // Datos de prueba para imprimir
+            List<String[]> products = List.of(
+                    new String[]{"2", "Burger", "5.99"},
+                    new String[]{"1", "Fries", "2.99"},
+                    new String[]{"3", "Soda", "1.50"}
+            );
+
+            // Crear ticket de orden
+            TicketOrden ticket = new TicketOrden(
+                    "12345", "Caja 1", "John Doe", "Jane Smith", products,
+                    "10.48", "0.00", "3", "10.48", "20.00", "9.52",
+                    "Cash", "20.00"
+            );
+
+            // Convertir ticket a bytes
+            byte[] printData = ticket.toString().getBytes();
+
+            // Enviar datos al servidor de impresión
+            printClient.sendPrintJob(printData);
+
+            return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
