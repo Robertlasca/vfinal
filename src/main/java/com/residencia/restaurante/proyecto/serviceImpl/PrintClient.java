@@ -10,7 +10,7 @@ import java.net.Socket;
 public class PrintClient {
 
 
-    private String serverAddress="127.0.0.1";
+    private String serverAddress="192.168.5.102";
 
 
     private int port=9100;

@@ -49,16 +49,14 @@ public class ComanderoServiceImpl implements IComanderoService {
     private IUsuarioRepository usuarioRepository;
     @Autowired
     private IMesaRepository mesaRepository;
-@Autowired
+    @Autowired
     private IInventarioRepository inventarioRepository;
-@Autowired
+    @Autowired
     private IMateriaPrima_MenuRepository materiaPrimaMenuRepository;
-
     @Autowired
     private IProductoNormalRepository productoNormalRepository;
     @Autowired
     private IMenuRepository menuRepository;
-
     @Autowired
     private  IImpresoraRepository impresoraRepository;
     @Override
@@ -340,7 +338,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return new ResponseEntity<List<ProductoDto>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<List<Orden>> obtenerOrdenes() {
         try {
@@ -351,7 +348,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return new ResponseEntity<List<Orden>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<ProductoDto> obtenerProducto(Map<String, String> objetoMap) {
         try{
@@ -393,7 +389,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         return new ResponseEntity<ProductoDto>(new ProductoDto(),HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
-
     @Override
     public ResponseEntity<ComandaDTO> obtenerComandaPorIdOrden(Integer id) {
         try{
@@ -452,7 +447,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(Integer id) {
         try{
@@ -516,7 +510,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<String> cerrarCuenta(Integer id) {
         try{
@@ -599,9 +592,17 @@ public class ComanderoServiceImpl implements IComanderoService {
                     "10.48", "0.00", "3", "10.48", "20.00", "9.52",
                     "Cash", "20.00"
             );
-            ticket.print(selectedService);
+            //ticket.print(selectedService);
+            // Buscar la impresora por nombre compartido
+            PrintService printService = findPrintService("POS-58");
+            if (printService != null) {
+                ticket.print(printService);
+                return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
+            } else {
+                return Utils.getResponseEntity("No se encontro la impresora",HttpStatus.BAD_REQUEST);
+            }
 
-            return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
+            //return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
 
 
             //}
@@ -611,5 +612,15 @@ public class ComanderoServiceImpl implements IComanderoService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private PrintService findPrintService(String printerName) {
+        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+        for (PrintService printService : printServices) {
+            if (printService.getName().equalsIgnoreCase(printerName)) {
+                return printService;
+            }
+        }
+        return null;
     }
 }

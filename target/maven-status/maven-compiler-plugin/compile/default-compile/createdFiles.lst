@@ -99,6 +99,7 @@ com\residencia\restaurante\proyecto\entity\ProductoNormal.class
 com\residencia\restaurante\proyecto\repository\IAreaServicio_MesaRepository.class
 com\residencia\restaurante\proyecto\wrapper\Cocina_UtensilioWrapper.class
 com\residencia\restaurante\proyecto\repository\ICategoriaMateriaPrimaRepository.class
+com\residencia\restaurante\security\utils\PrintServer.class
 com\residencia\restaurante\proyecto\wrapper\ArqueoSaldosWrapper.class
 com\residencia\restaurante\proyecto\entity\DetalleOrdenMenu.class
 com\residencia\restaurante\proyecto\dto\ProductoTerminadoDto.class
@@ -122,6 +123,7 @@ com\residencia\restaurante\proyecto\entity\Categoria.class
 com\residencia\restaurante\proyecto\service\ICategoriaMateriaPrimaService.class
 com\residencia\restaurante\proyecto\controller\IMedioPagoController.class
 com\residencia\restaurante\proyecto\entity\ProductoTerminado_Menu.class
+com\residencia\restaurante\security\utils\TicketOrden.class
 com\residencia\restaurante\proyecto\repository\ICocina_UtensilioRepository.class
 com\residencia\restaurante\proyecto\controller\IInventarioController.class
 com\residencia\restaurante\proyecto\serviceImpl\ComanderoServiceImpl$1.class
@@ -202,6 +204,7 @@ com\residencia\restaurante\proyecto\dto\MateriaPrimaDTO.class
 com\residencia\restaurante\proyecto\service\IImpresoraService.class
 com\residencia\restaurante\proyecto\wrapper\DetalleOrdenWrapper.class
 com\residencia\restaurante\proyecto\entity\Caja.class
+com\residencia\restaurante\proyecto\serviceImpl\PrintClient.class
 com\residencia\restaurante\proyecto\serviceImpl\ArqueoServiceImpl$1.class
 com\residencia\restaurante\security\model\Usuario_Rol.class
 com\residencia\restaurante\proyecto\controllerImpl\ArqueoControllerImpl.class
