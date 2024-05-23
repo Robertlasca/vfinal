@@ -49,10 +49,19 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
     public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasActivas() {
         try {
             List<MateriaPrimaDTO> materiaConEstado = new ArrayList<>();
+            List<String> almacenes=new ArrayList<>();
             for (MateriaPrima materiaPrima : materiaPrimaRepository.getAllByVisibilidadTrue()) {
                 MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
                 materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
                 materiaPrimaDTO.setEstado("Visible");
+                List<Inventario> inventarios= inventarioRepository.getAllByMateriaPrima_Id(materiaPrima.getId());
+                if(!inventarios.isEmpty()){
+                    for (Inventario inventario:inventarios) {
+                        almacenes.add(inventario.getAlmacen().getNombre());
+                    }
+
+                }
+                materiaPrimaDTO.setAlmacenes(almacenes);
 
 
                 materiaConEstado.add(materiaPrimaDTO);
@@ -71,10 +80,22 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
     public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasNoActivas() {
         try {
             List<MateriaPrimaDTO> materiaConEstado = new ArrayList<>();
+            List<String> almacenes=new ArrayList<>();
             for (MateriaPrima materiaPrima : materiaPrimaRepository.getAllByVisibilidadFalse()) {
                 MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
                 materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
                 materiaPrimaDTO.setEstado("No visible");
+                List<Inventario> inventarios= inventarioRepository.getAllByMateriaPrima_Id(materiaPrima.getId());
+                if(!inventarios.isEmpty()){
+                    for (Inventario inventario:inventarios) {
+                        almacenes.add(inventario.getAlmacen().getNombre());
+                    }
+
+                }
+                materiaPrimaDTO.setAlmacenes(almacenes);
+
+
+
 
 
                 materiaConEstado.add(materiaPrimaDTO);
