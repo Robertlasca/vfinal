@@ -270,7 +270,7 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
                                           double margenGanancia, double precioUnitario, MultipartFile file) {
         try {
 
-            if(!productoNormalExistente(nombre)){
+            if(!productoNormalExistente(nombre) || !nombre.isEmpty() ){
                 if(validarCategoria(idCategoria)){
                     ProductoNormal productoNormal= new ProductoNormal();
 

@@ -139,7 +139,7 @@ public class MenuServiceImpl implements IMenuService {
     @Override
     public ResponseEntity<String> agregar(String nombre, String descripcion, double costoProduccion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria, String receta) {
         try {
-            if(!menuRepository.existsByNombreLikeIgnoreCase(nombre)){
+            if(!menuRepository.existsByNombreLikeIgnoreCase(nombre) || !nombre.isEmpty()){
                 if(validarCategoriaId(idCategoria)){
                     Menu menu=new Menu();
                     Optional<Categoria> categoriaOptional= categoriaRepository.findById(idCategoria);
@@ -411,7 +411,7 @@ public class MenuServiceImpl implements IMenuService {
     @Override
     public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
         try {
-            if(!menuRepository.existsByNombreLikeIgnoreCase(nombre)){
+            if(!menuRepository.existsByNombreLikeIgnoreCase(nombre) || nombre.isEmpty() || nombre==null){
                 if(validarCategoriaId(idCategoria)){
                     Menu menu= new Menu();
                     Optional<Categoria> categoriaOptional= categoriaRepository.findById(idCategoria);

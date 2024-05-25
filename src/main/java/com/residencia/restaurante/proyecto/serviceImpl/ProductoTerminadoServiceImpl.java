@@ -252,7 +252,7 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
     @Override
     public ResponseEntity<String> agregar(String nombre, String unidadMedida, String descripcion, double stockMax, double stockMin, MultipartFile file, int idCategoria, String materias) {
         try {
-            if(!productoTerminadoRepository.existsByNombreLikeIgnoreCase(nombre)){
+            if(!productoTerminadoRepository.existsByNombreLikeIgnoreCase(nombre) || !nombre.isEmpty() ){
 
 
             if(validarCategoriaId(idCategoria)){
