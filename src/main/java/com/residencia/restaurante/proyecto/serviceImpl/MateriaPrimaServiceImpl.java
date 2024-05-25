@@ -335,8 +335,15 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                     materiaPrima.setUnidadMedida(unidadMedida);
                     materiaPrima.setNombre(nombre);
 
-                    String nombreImagen=uploadFileService.guardarImagen(file);
-                    materiaPrima.setImagen(nombreImagen);
+                    if(file==null||file.isEmpty()){
+                        materiaPrima.setImagen("default.jpg");
+                    }else{
+                        String nombreImagen= uploadFileService.guardarImagen(file);
+                        materiaPrima.setImagen(nombreImagen);
+
+                    }
+
+
 
                     materiaPrimaRepository.save(materiaPrima);
 
@@ -405,7 +412,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                             CategoriaMateriaPrima categoriaMateriaPrima=optionalCategoriaMateriaPrima.get();
                             materiaPrima.setCategoriaMateriaPrima(categoriaMateriaPrima);
                         }
-                    if(file.isEmpty()){
+                    if(file.isEmpty() || file==null){
                         materiaPrima.setImagen(materiaPrima.getImagen());
                     }else{
                         if(!materiaPrima.getImagen().equalsIgnoreCase("default.jpg")){

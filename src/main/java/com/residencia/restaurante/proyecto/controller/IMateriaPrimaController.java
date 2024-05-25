@@ -91,14 +91,14 @@ public interface IMateriaPrimaController {
                                    @RequestParam("unidadMedida") String unidadMedida,
                                    @RequestParam("costoUnitario") double costoUnitario,
                                    @RequestPart("inventario")String inventario,
-                                   @RequestParam("img") MultipartFile file);
+                                   @RequestParam(value = "img",required = false) MultipartFile file);
 
     @PostMapping(path = "/actualizarMateriaPrima")
     ResponseEntity<String> actualizarMateria(@RequestParam("id") int id,
             @RequestParam("nombre") String nombre,
                                           @RequestParam("idCategoria") int idCategoria,
                                           @RequestParam("costoUnitario") double costoUnitario,
-                                          @RequestParam("img") MultipartFile file);
+                                          @RequestParam(value = "img",required = false) MultipartFile file);
 
     @GetMapping(path = "/totalMateriasPrimas")
     ResponseEntity<Integer> calcularTotalMateriasPrimas();

@@ -38,7 +38,7 @@ public interface IMenuController {
                                    @RequestParam("costoProduccion") double costoProduccion,
                                    @RequestParam("margenGanancia") double margenGanancia,
                                    @RequestParam("precioVenta") double precioVenta,
-                                   @RequestParam("img") MultipartFile file,
+                                   @RequestParam(value = "img",required = false) MultipartFile file,
                                    @RequestParam("idCategoria") int idCategoria,
                                    @RequestPart("receta")String receta
     );

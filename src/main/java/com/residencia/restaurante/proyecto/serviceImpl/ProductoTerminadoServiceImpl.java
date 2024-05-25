@@ -268,8 +268,13 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                 productoTerminado.setStockMin(stockMin);
                 productoTerminado.setStockActual(0);
 
-                String nombreImagen=uploadFileService.guardarImagen(file);
-                productoTerminado.setImagen(nombreImagen);
+                if(file==null || file.isEmpty()){
+                    productoTerminado.setImagen("default.jpg");
+                }else {
+                    String nombreImagen=uploadFileService.guardarImagen(file);
+                    productoTerminado.setImagen(nombreImagen);
+                }
+
 
                 productoTerminadoRepository.save(productoTerminado);
 

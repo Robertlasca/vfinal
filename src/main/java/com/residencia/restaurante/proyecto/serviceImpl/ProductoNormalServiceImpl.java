@@ -289,8 +289,13 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
                     productoNormal.setPrecioUnitario(precioUnitario);
                     productoNormal.setVisibilidad(true);
 
-                    String nombreImagen=uploadFileService.guardarImagen(file);
-                    productoNormal.setImagen(nombreImagen);
+                    if(file==null || file.isEmpty()){
+                        productoNormal.setImagen("default.jpg");
+                    }else {
+                        String nombreImagen=uploadFileService.guardarImagen(file);
+                        productoNormal.setImagen(nombreImagen);
+                    }
+
 
                     productoNormalRepository.save(productoNormal);
 
@@ -344,7 +349,7 @@ public class ProductoNormalServiceImpl implements IProductoNormalService {
                         productoNormal.setMargenGanacia(margenGanancia);
                         productoNormal.setPrecioUnitario(precioUnitario);
 
-                        if(file.isEmpty()){
+                        if(file.isEmpty() || file==null){
                             productoNormal.setImagen(productoNormal.getImagen());
                         }else{
                             if(!productoNormal.getImagen().equalsIgnoreCase("default.jpg")){

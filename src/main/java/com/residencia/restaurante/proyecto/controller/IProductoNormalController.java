@@ -76,7 +76,7 @@ public interface IProductoNormalController {
                                    @RequestParam("costoUnitario") double costoUnitario,
                                    @RequestParam("margenGanacia") double margenGanancia,
                                    @RequestParam("precioUnitario") double precioUnitario,
-                                   @RequestParam("img") MultipartFile file);
+                                   @RequestParam(value = "img",required = false) MultipartFile file);
 
     /**
      * Actualiza los datos de un producto normal existente en el sistema. La información para la actualización
@@ -106,7 +106,7 @@ public interface IProductoNormalController {
                                       @RequestParam("costoUnitario") double costoUnitario,
                                       @RequestParam("margenGanacia") double margenGanancia,
                                       @RequestParam("precioUnitario") double precioUnitario,
-                                      @RequestParam("img") MultipartFile file);
+                                      @RequestParam(value = "img",required = false) MultipartFile file);
 
     /**
      * Obtiene los detalles de un producto normal específico por su identificador.

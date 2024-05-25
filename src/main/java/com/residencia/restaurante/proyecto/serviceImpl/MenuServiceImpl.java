@@ -152,9 +152,15 @@ public class MenuServiceImpl implements IMenuService {
                     menu.setMargenGanancia(margenGanancia);
                     menu.setPrecioVenta(precioVenta);
 
+                    if(file==null || file.isEmpty()){
+                        menu.setImagen("default.jpg");
+                    }else {
+                        String nombreImagen= uploadFileService.guardarImagen(file);
+                        menu.setImagen(nombreImagen);
+                    }
 
-                    String nombreImagen= uploadFileService.guardarImagen(file);
-                    menu.setImagen(nombreImagen);
+
+
                     menuRepository.save(menu);
 
                     ObjectMapper objectMapper= new ObjectMapper();
@@ -421,12 +427,14 @@ public class MenuServiceImpl implements IMenuService {
                     menu.setPrecioVenta(precioVenta);
 
 if(file==null||file.isEmpty()){
-
+    menu.setImagen("default.jpg");
 }else{
     String nombreImagen= uploadFileService.guardarImagen(file);
     menu.setImagen(nombreImagen);
 
 }
+
+
                     menuRepository.save(menu);
                     return new ResponseEntity<Menu>(menu,HttpStatus.OK);
 
@@ -640,7 +648,7 @@ if(file==null||file.isEmpty()){
         cocinaOptional.ifPresent(menu::setCocina);
         categoriaOptional.ifPresent(menu::setCategoria);
 
-        if(file.isEmpty()){
+        if(file.isEmpty() || file==null){
             menu.setImagen(menu.getImagen());
         }else {
             if(!menu.getImagen().equalsIgnoreCase("default.jpg")){
