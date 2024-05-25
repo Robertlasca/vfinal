@@ -8,7 +8,7 @@ import java.net.Socket;
 
 @Service
 public class PrintClient {
-
+/*
 
     private String serverAddress="192.168.5.102";
 
@@ -22,5 +22,5 @@ public class PrintClient {
             outputStream.flush();
             System.out.println("Datos de impresión enviados al servidor.");
         }
-    }
+    }*/
 }

@@ -44,6 +44,12 @@ public class ComanderoServiceImpl implements IComanderoService {
     private ICajaRepository cajaRepository;
 
     @Autowired
+    private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
+
+    @Autowired
+    private IProductoTerminadoRepository productoTerminadoRepository;
+
+    @Autowired
     private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
     @Autowired
     private IUsuarioRepository usuarioRepository;
@@ -115,8 +121,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                     Set<Integer> cocinas = new HashSet<>();
                     Map<Integer, List<String>> productosPorCocina = new HashMap<>();
 
-
-
                     if(!detalleOrdenWrappers.isEmpty()) {
                         for (DetalleOrdenWrapper detalleOrdenWrapper : detalleOrdenWrappers) {
                             System.out.println(detalleOrdenWrapper.getIsMenu());
@@ -174,6 +178,27 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 detalleOrdenMenu.setTotal(menu.getPrecioVenta()*detalleOrdenWrapper.getCantidad());
                                 detalleOrdenMenu.setComentario(detalleOrdenWrapper.getComentario());
                                 detalleOrdenMenu.setEstado("En espera");
+
+                                List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
+                                List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
+
+                                if(!productoTerminadoMenus.isEmpty()){
+                                    for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus){
+                                        double cantidadRegresada= detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad();
+                                        ProductoTerminado productoTerminado= productoTerminadoMenu.getProductoTerminado();
+                                        productoTerminado.setStockActual(productoTerminado.getStockActual()+cantidadRegresada);
+                                        productoTerminadoRepository.save(productoTerminado);
+                                    }
+                                }
+
+                                if(!materiaPrimaMenus.isEmpty()){
+                                    for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
+                                        double cantidadRegresada= detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad();
+                                        Inventario inventario= materiaPrimaMenu.getInventario();
+                                        inventario.setStockActual(inventario.getStockActual()+cantidadRegresada);
+                                        inventarioRepository.save(inventario);
+                                    }
+                                }
                                 detalleOrdenMenuRepository.save(detalleOrdenMenu);
                                 //Descontar stock
 
@@ -187,17 +212,17 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 Optional<ProductoNormal> productoNormalOptional= productoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
 
                                 productoNormalOptional.ifPresent(detalleOrdenProductoNormal::setProductoNormal);
+                                if(productoNormalOptional.isPresent()){
+                                    ProductoNormal productoNormal= productoNormalOptional.get();
+                                    productoNormal.setStockActual(productoNormal.getStockActual()-detalleOrdenWrapper.getCantidad());
+                                    productoNormalRepository.save(productoNormal);
+                                }
                                 detalleOrdenProductoNormal.setOrden(orden);
                                 detalleOrdenProductoNormal.setEstado("En espera");
                                 detalleOrdenProductoNormal.setComentario(detalleOrdenWrapper.getComentario());
                                 detalleOrdenProductoNormal.setTotal(detalleOrdenWrapper.getCantidad()*productoNormalOptional.get().getPrecioUnitario());
 
-                                //Descontar del stock
-                                if(productoNormalOptional.isPresent()){
-                                    ProductoNormal productoNormal=productoNormalOptional.get();
-                                   // productoNormal.setStockActual(productoNormal.getStockActual()-detalleOrdenWrapper.getCantidad());
-                                   // productoNormalRepository.save(productoNormal);
-                                }
+
                                 detalleOrdenProductoNormalRepository.save(detalleOrdenProductoNormal);
 
                             }

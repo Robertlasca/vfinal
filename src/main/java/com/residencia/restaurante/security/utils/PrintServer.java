@@ -10,7 +10,7 @@ import java.net.Socket;
 
 @Component
 public class PrintServer {
-
+/*
     private static final int PORT = 9100;
 
     @PostConstruct
@@ -52,5 +52,5 @@ public class PrintServer {
                 e.printStackTrace();
             }
         }).start();
-    }
+    }*/
 }

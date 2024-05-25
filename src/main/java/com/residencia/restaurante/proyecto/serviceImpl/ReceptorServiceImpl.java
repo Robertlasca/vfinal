@@ -3,14 +3,8 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
-import com.residencia.restaurante.proyecto.entity.Cocina;
-import com.residencia.restaurante.proyecto.entity.DetalleOrdenMenu;
-import com.residencia.restaurante.proyecto.entity.Impresora;
-import com.residencia.restaurante.proyecto.entity.Orden;
-import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
-import com.residencia.restaurante.proyecto.repository.IDetalleOrden_MenuRepository;
-import com.residencia.restaurante.proyecto.repository.IDetalleOrden_ProductoNormalRepository;
-import com.residencia.restaurante.proyecto.repository.IOrdenRepository;
+import com.residencia.restaurante.proyecto.entity.*;
+import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IReceptorService;
 import com.residencia.restaurante.security.utils.TicketOrden;
 import com.residencia.restaurante.security.utils.Utils;
@@ -37,8 +31,18 @@ public class ReceptorServiceImpl implements IReceptorService {
     private IDetalleOrden_ProductoNormalRepository detalleOrdenProductoNormalRepository;
     @Autowired
     private ICocinaRepository cocinaRepository;
+    @Autowired
+    private IProductoTerminadoRepository productoTerminadoRepository;
+    @Autowired
+    private IInventarioRepository inventarioRepository;
 @Autowired
     private  PrintClient printClient;
+
+@Autowired
+private IMateriaPrima_MenuRepository materiaPrimaMenuRepository;
+
+@Autowired
+private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
     @Override
     public ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasPorIdCocina(Integer id) {
         try {
@@ -203,6 +207,27 @@ public class ReceptorServiceImpl implements IReceptorService {
                 Optional<DetalleOrdenMenu> detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(id);
                 if(detalleOrdenMenuOptional.isPresent()){
                     DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
+                   List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
+                   List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
+
+                   if(!productoTerminadoMenus.isEmpty()){
+                       for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus){
+                           double cantidadRegresada= detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad();
+                           ProductoTerminado productoTerminado= productoTerminadoMenu.getProductoTerminado();
+                           productoTerminado.setStockActual(productoTerminado.getStockActual()+cantidadRegresada);
+                           productoTerminadoRepository.save(productoTerminado);
+                       }
+                   }
+
+                   if(!materiaPrimaMenus.isEmpty()){
+                       for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
+                           double cantidadRegresada= detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad();
+                           Inventario inventario= materiaPrimaMenu.getInventario();
+                           inventario.setStockActual(inventario.getStockActual()+cantidadRegresada);
+                           inventarioRepository.save(inventario);
+                       }
+                   }
+
                     detalleOrdenMenu.setEstado("Cancelado");
                     detalleOrdenMenuRepository.save(detalleOrdenMenu);
                     return Utils.getResponseEntity("Estado del platillo cambiado correctamente.",HttpStatus.OK);
@@ -243,7 +268,7 @@ public class ReceptorServiceImpl implements IReceptorService {
             byte[] printData = ticket.toString().getBytes();
 
             // Enviar datos al servidor de impresión
-            printClient.sendPrintJob(printData);
+           // printClient.sendPrintJob(printData);
 
             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
 
