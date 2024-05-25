@@ -80,7 +80,7 @@ public class Ticket {
 
         // Creamos un documento a imprimir, a él se le appendeará el arreglo de bytes
         Doc doc = new SimpleDoc(bytes, flavor, null);
-
+//Hemos llegado
         // Creamos un trabajo de impresión
         DocPrintJob job = selectedService.createPrintJob();
 
