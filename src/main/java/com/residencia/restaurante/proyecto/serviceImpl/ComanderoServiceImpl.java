@@ -538,9 +538,9 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<String> cerrarCuenta(Integer id) {
         try{
-            //Optional<Orden> ordenOptional= ordenRepository.findById(id);
-           // if(ordenOptional.isPresent()){
-              /*  double total= 0;
+            Optional<Orden> ordenOptional= ordenRepository.findById(id);
+           if(ordenOptional.isPresent()){
+               double total= 0;
                 Orden orden= ordenOptional.get();
                 Mesa mesa= orden.getMesa();
                 mesa.setEstado("Disponible");
@@ -552,9 +552,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                 comandaDTO.setOrden(orden);
                 if(!detalleOrdenMenus.isEmpty()){
                     for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
-                        if(!detalleOrdenMenu.getEstado().equalsIgnoreCase("cancelado")){
-
-
+                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado")){
                             DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                             detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                             detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
@@ -586,7 +584,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                     }
                 }
 
-*/
+
                 Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
                 if (impresoraOptional.isPresent()) {
                     System.out.println("No se ha configurado una impresora por defecto.");
@@ -630,8 +628,8 @@ public class ComanderoServiceImpl implements IComanderoService {
             //return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
 
 
-            //}
-            //return Utils.getResponseEntity("No existe la orden.",HttpStatus.BAD_REQUEST);
+            }
+            return Utils.getResponseEntity("No existe la orden.",HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
             e.printStackTrace();

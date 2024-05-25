@@ -323,7 +323,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
     @Override
     public ResponseEntity<String> agregarMateria(String nombre, int idCategoria, int idUsuario, String unidadMedida, double costoUnitario, String inventario, MultipartFile file) {
         try{
-            if(!materiaPrimaExistente1(nombre)){
+            if(!materiaPrimaExistente1(nombre) || nombre.isEmpty() || nombre==null){
                 Optional<CategoriaMateriaPrima> optionalCategoriaMateriaPrima= categoriaMateriaPrimaRepository.findById(idCategoria);
                 if(!optionalCategoriaMateriaPrima.isEmpty()){
                     CategoriaMateriaPrima categoriaMateriaPrima=optionalCategoriaMateriaPrima.get();
