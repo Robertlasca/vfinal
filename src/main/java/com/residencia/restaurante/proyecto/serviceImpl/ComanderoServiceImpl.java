@@ -689,7 +689,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         // Enviar solicitud al servidor de impresión local
                         HttpClient client = HttpClient.newHttpClient();
                         HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create("https://b98ca258d5075a.lhr.life/print"))
+                                .uri(URI.create("https://6a84f0bc845c3b.lhr.life/print"))
                                 .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                                 .header("Content-Type", "application/json")
                                 .build();
