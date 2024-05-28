@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio de Spring Data JPA para la entidad Arqueo.
@@ -18,6 +19,8 @@ public interface IArqueoRepository extends JpaRepository<Arqueo,Integer> {
      * @return True si existe un arqueo activo asociado a la caja, false en caso contrario.
      */
     boolean existsArqueoByEstadoArqueoTrueAndCaja_Id(Integer id);
+
+    Optional<Arqueo> findArqueoByEstadoArqueoTrueAndCaja_Id(Integer id);
 
     /**
      * Busca todos los arqueos activos.

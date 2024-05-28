@@ -10,6 +10,8 @@ import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IComanderoService;
 import com.residencia.restaurante.proyecto.wrapper.DetalleOrdenWrapper;
+import com.residencia.restaurante.proyecto.wrapper.InventarioWrapper;
+import com.residencia.restaurante.proyecto.wrapper.Venta_MedioPagoWrapper;
 import com.residencia.restaurante.security.model.Usuario;
 import com.residencia.restaurante.security.repository.IUsuarioRepository;
 import com.residencia.restaurante.security.utils.TicketComanda;
@@ -25,6 +27,12 @@ import org.springframework.stereotype.Service;
 import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -65,6 +73,14 @@ public class ComanderoServiceImpl implements IComanderoService {
     private IMenuRepository menuRepository;
     @Autowired
     private  IImpresoraRepository impresoraRepository;
+
+    @Autowired
+    private IVenta_MedioPagoRepository ventaMedioPagoRepository;
+    @Autowired
+    private IMedioPagoRepository medioPagoRepository;
+
+    @Autowired
+    private IVentaRepository ventaRepository;
     @Override
     public ResponseEntity<Orden> abrirOrden(Map<String, String> objetoMap) {
        try {
@@ -535,6 +551,201 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> cerrarCuenta(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("subTotal") && objetoMap.containsKey("descuento") && objetoMap.containsKey("totalPagar") && objetoMap.containsKey("idUsuario")){
+                Integer idOrden= Integer.parseInt(objetoMap.get("idOrden"));
+                Optional<Orden> ordenOptional= ordenRepository.findById(idOrden);
+                Optional<Usuario> optionalUsuario= usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
+                if(ordenOptional.isPresent() && optionalUsuario.isPresent()){
+                    double total= 0;
+                    Orden orden= ordenOptional.get();
+                    Optional<Arqueo> arqueoOptional= arqueoRepository.findArqueoByEstadoArqueoTrueAndCaja_Id(orden.getCaja().getId());
+                    if(arqueoOptional.isPresent()){
+                        Usuario usuario= optionalUsuario.get();
+                        Mesa mesa= orden.getMesa();
+                        Arqueo arqueo= arqueoOptional.get();
+                        mesa.setEstado("Disponible");
+                        orden.setEstado("Terminado");
+                        ordenRepository.save(orden);
+                        mesaRepository.save(mesa);
+                        Venta venta= new Venta();
+                        venta.setOrden(orden);
+                        if(objetoMap.containsKey("comentario")){
+                            venta.setComentario(objetoMap.get("comentario"));
+                        }
+                        venta.setUsuario(usuario);
+                        venta.setEstado("Cerrado");
+                        venta.setArqueo(arqueo);
+                        venta.setDescuento(Double.parseDouble(objetoMap.get("descuento")));
+                        venta.setSubTotal(Double.parseDouble(objetoMap.get("subTotal")));
+                        venta.setTotalPagar(Double.parseDouble(objetoMap.get("totalPagar")));
+                        venta.setFechaHoraConsolidacion(LocalDateTime.now());
+                        ventaRepository.save(venta);
+                        List<String[]> paymentMethods = new ArrayList<>();
+
+                        ObjectMapper objectMapper= new ObjectMapper();
+                        try {
+                            List<Venta_MedioPagoWrapper> mediosPago=objectMapper.readValue(objetoMap.get("mediosPago"), new TypeReference<List<Venta_MedioPagoWrapper>>() {});
+                            if(!mediosPago.isEmpty()){
+                                for(Venta_MedioPagoWrapper ventaMedioPagoWrapper: mediosPago){
+                                    Venta_MedioPago ventaMedioPago= new Venta_MedioPago();
+                                    ventaMedioPago.setVenta(venta);
+                                    Optional<MedioPago> medioPagoOptional= medioPagoRepository.findById(ventaMedioPagoWrapper.getId());
+                                    if(medioPagoOptional.isPresent()){
+                                        MedioPago medioPago= medioPagoOptional.get();
+                                        ventaMedioPago.setMedioPago(medioPago);
+                                        paymentMethods.add(new String[]{medioPago.getNombre(), String.valueOf(ventaMedioPagoWrapper.getPagoRecibido())});
+                                    }
+
+
+                                    ventaMedioPago.setPagoRecibido(ventaMedioPagoWrapper.getPagoRecibido());
+                                    ventaMedioPagoRepository.save(ventaMedioPago);
+                                }
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        //Imprimir información
+
+                        List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
+                        List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+                        List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
+                        List<String[]> products =new ArrayList<>();
+                        int contador=0;
+                        ComandaDTO comandaDTO= new ComandaDTO();
+                        comandaDTO.setOrden(orden);
+                        if(!detalleOrdenMenus.isEmpty()){
+                            for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
+                               // if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado")){
+                                    DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                                    detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                                    detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                                    detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                                    detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                                    detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                                    detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                                    detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                                    detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                                    total=total+detalleOrdenMenu.getTotal();
+                                    detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                                    String[] info={String.valueOf(detalleOrdenMenu.getCantidad()),detalleOrdenMenu.getMenu().getNombre(),String.valueOf(detalleOrdenMenu.getTotal())};
+                                    products.add(info);
+                                    contador++;
+                                //}
+                            }
+                        }
+
+                        if(!detalleOrdenProductoNormals.isEmpty()){
+                            for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
+                                DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                                detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
+                                detalleOrdenProductoDTO.setIdProducto(detalleOrdenProductoNormal.getProductoNormal().getId());
+                                detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                                detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getProductoNormal().getNombre());
+                                detalleOrdenProductoDTO.setComentario(detalleOrdenProductoNormal.getComentario());
+                                detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
+                                detalleOrdenProductoDTO.setEstado(detalleOrdenProductoNormal.getEstado());
+                                detalleOrdenProductoDTO.setTotal(detalleOrdenProductoNormal.getTotal());
+                                total=total+detalleOrdenProductoNormal.getTotal();
+                                detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                                String[] info={String.valueOf(detalleOrdenProductoNormal.getCantidad()),detalleOrdenProductoNormal.getProductoNormal().getNombre(),String.valueOf(detalleOrdenProductoNormal.getTotal())};
+                                products.add(info);
+                                contador++;
+                            }
+                        }
+
+                        Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
+                        if (impresoraOptional.isPresent()) {
+                            System.out.println("No se ha configurado una impresora por defecto.");
+                        }
+
+                        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
+                        PrintService selectedService = null;
+
+                        for (PrintService service : printServices) {
+                            if (service.getName().equalsIgnoreCase(impresoraOptional.get().getNombre()) || service.getName().contains(impresoraOptional.get().getDireccionIp())) {
+                                selectedService = service;
+                                break;
+                            }
+                        }
+
+                        TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), usuario.getNombre(), orden.getNombreCliente(), products,
+                                "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
+                                paymentMethods
+                        );
+
+                        String ticketContent = ticket.getContentTicket().toString();
+                        Map<String, String> printRequest = new HashMap<>();
+                        printRequest.put("ticketContent", ticketContent);
+                        printRequest.put("printerName", impresoraOptional.get().getNombre());
+                        printRequest.put("usbPort", impresoraOptional.get().getDireccionIp());
+
+                        String printRequestJson = new ObjectMapper().writeValueAsString(printRequest);
+
+                        // Enviar solicitud al servidor de impresión local
+                        HttpClient client = HttpClient.newHttpClient();
+                        HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create("http://localhost:8082/print"))
+                                .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
+                                .header("Content-Type", "application/json")
+                                .build();
+
+                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                        if (response.statusCode() == 200) {
+                            return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
+                        } else {
+                            return Utils.getResponseEntity("Error al imprimir: " + response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
+/*
+                        if (selectedService == null) {
+                            System.out.println("No se encontró la impresora POS-58 en el puerto USB001.");
+                        }
+
+                        TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), usuario.getNombre(), orden.getNombreCliente(), products,
+                                "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
+                                paymentMethods
+                        );
+                        ticket.print(selectedService);
+                        return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);*/
+                        //ticket.print(selectedService);
+                        // Buscar la impresora por nombre compartido
+                        /*
+                        PrintService printService = findPrintService("POS-58");
+                        if (printService != null) {
+                            ticket.print(printService);
+                            return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
+                        } else {
+                            return Utils.getResponseEntity("No se encontro la impresora",HttpStatus.BAD_REQUEST);
+                        }*/
+
+
+                    }
+                    return Utils.getResponseEntity("El arqueo ya no esta abierto.",HttpStatus.BAD_REQUEST);
+
+
+
+
+
+
+
+
+
+                }
+                return Utils.getResponseEntity("La orden o usuario no existe.",HttpStatus.BAD_REQUEST);
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /*
     @Override
     public ResponseEntity<String> cerrarCuenta(Integer id) {
         try{
@@ -636,7 +847,7 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+*/
     private PrintService findPrintService(String printerName) {
         PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
         for (PrintService printService : printServices) {

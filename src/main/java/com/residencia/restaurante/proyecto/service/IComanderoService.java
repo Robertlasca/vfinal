@@ -23,5 +23,5 @@ public interface IComanderoService {
 
     ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(Integer id);
 
-    ResponseEntity<String> cerrarCuenta(Integer id);
+    ResponseEntity<String> cerrarCuenta(Map<String,String> objetoMap);
 }

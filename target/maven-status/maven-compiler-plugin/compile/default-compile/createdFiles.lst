@@ -75,6 +75,7 @@ com\residencia\restaurante\proyecto\service\IUtensilioService.class
 com\residencia\restaurante\proyecto\controller\IReceptorController.class
 com\residencia\restaurante\proyecto\controllerImpl\RecetaProductoTerminadoControllerImpl.class
 com\residencia\restaurante\proyecto\serviceImpl\ProductoTerminadoServiceImpl.class
+com\residencia\restaurante\security\utils\PrintServer$PrintJobWatcher$1.class
 com\residencia\restaurante\proyecto\serviceImpl\MenuServiceImpl$1.class
 com\residencia\restaurante\proyecto\dto\EstacionDTO.class
 com\residencia\restaurante\proyecto\entity\Almacen.class
@@ -108,6 +109,7 @@ com\residencia\restaurante\proyecto\dto\VentasDTO.class
 com\residencia\restaurante\proyecto\entity\DetalleOrdenMenu.class
 com\residencia\restaurante\proyecto\dto\ProductoTerminadoDto.class
 com\residencia\restaurante\proyecto\controller\IArqueoSaldosController.class
+com\residencia\restaurante\security\utils\PrintServer$PrintJobWatcher.class
 com\residencia\restaurante\proyecto\dto\ProductoDto.class
 com\residencia\restaurante\proyecto\dto\InventarioDTO.class
 com\residencia\restaurante\proyecto\repository\IInventarioRepository.class
@@ -135,6 +137,7 @@ com\residencia\restaurante\proyecto\serviceImpl\ComanderoServiceImpl$1.class
 com\residencia\restaurante\proyecto\entity\MateriaPrima_Menu.class
 com\residencia\restaurante\proyecto\repository\IArqueoSaldosRepository.class
 com\residencia\restaurante\proyecto\dto\MedioPagoDTO.class
+com\residencia\restaurante\proyecto\wrapper\Venta_MedioPagoWrapper.class
 com\residencia\restaurante\proyecto\entity\CategoriaMateriaPrima.class
 com\residencia\restaurante\proyecto\repository\IMateriaPrima_MenuRepository.class
 com\residencia\restaurante\proyecto\controllerImpl\MesaControllerImpl.class
@@ -167,6 +170,7 @@ com\residencia\restaurante\proyecto\controller\IMenuController.class
 com\residencia\restaurante\proyecto\wrapper\IngredientesProductoTerminadoWrapper.class
 com\residencia\restaurante\proyecto\controller\IMesasController.class
 com\residencia\restaurante\proyecto\service\IProductoNormalService.class
+com\residencia\restaurante\proyecto\serviceImpl\ComanderoServiceImpl$3.class
 com\residencia\restaurante\proyecto\serviceImpl\UtensilioServiceImpl$1.class
 com\residencia\restaurante\proyecto\repository\IUtensilioRepository.class
 com\residencia\restaurante\proyecto\dto\DetalleOrdenProductoDTO.class

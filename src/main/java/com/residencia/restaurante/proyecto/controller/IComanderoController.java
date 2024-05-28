@@ -32,8 +32,8 @@ public interface IComanderoController {
     @GetMapping(path = "/obtenerComandaMesa/{id}")
     ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(@PathVariable Integer id);
 
-    @PostMapping(path = "/cerrarCuenta/{id}")
-    ResponseEntity<String> cerrarCuenta(@PathVariable Integer id);
+    @PostMapping(path = "/cerrarCuenta")
+    ResponseEntity<String> cerrarCuenta(@RequestBody(required = true) Map<String, String> objetoMap);
 
 
 

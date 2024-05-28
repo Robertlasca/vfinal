@@ -94,9 +94,9 @@ public class ComanderoControllerImpl implements IComanderoController {
     }
 
     @Override
-    public ResponseEntity<String> cerrarCuenta(Integer id) {
+    public ResponseEntity<String> cerrarCuenta(Map<String,String> objetoMap) {
         try{
-            return comanderoService.cerrarCuenta(id);
+            return comanderoService.cerrarCuenta(objetoMap);
 
         }catch (Exception e){
             e.printStackTrace();

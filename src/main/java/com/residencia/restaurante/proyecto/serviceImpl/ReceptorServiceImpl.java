@@ -258,14 +258,6 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
             );
 
             // Crear ticket de orden
-            TicketOrden ticket = new TicketOrden(
-                    "12345", "Caja 1", "John Doe", "Jane Smith", products,
-                    "10.48", "0.00", "3", "10.48", "20.00", "9.52",
-                    "Cash", "20.00"
-            );
-
-            // Convertir ticket a bytes
-            byte[] printData = ticket.toString().getBytes();
 
             // Enviar datos al servidor de impresión
            // printClient.sendPrintJob(printData);
