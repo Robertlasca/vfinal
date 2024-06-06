@@ -18,4 +18,16 @@ public interface IVentasController {
     @GetMapping(path = "/obtenerDetalleVenta/{id}")
     ResponseEntity<DetalleVentaDTO> obtenerDetalleVenta(@PathVariable Integer id);
 
+    @GetMapping(path = "/obtenerPorCaja/{caja}")
+    ResponseEntity<List<VentasDTO>> obtenerPorCaja(@PathVariable String caja);
+
+    @GetMapping(path = "/obtenerPorArea/{areaServicio}")
+    ResponseEntity<List<VentasDTO>> obtenerPorArea(@PathVariable String areaServicio);
+
+
+    @GetMapping(path = "/obtenerPorArea/{cliente}")
+    ResponseEntity<List<VentasDTO>> obtenerPorCliente(@PathVariable String cliente);
+
+    @GetMapping(path = "/obtenerPorFecha/{fecha}")
+    ResponseEntity<List<VentasDTO>> obtenerPorFecha(@PathVariable String fecha);
 }

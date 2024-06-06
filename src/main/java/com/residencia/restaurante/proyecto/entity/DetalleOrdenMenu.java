@@ -29,6 +29,9 @@ public class DetalleOrdenMenu {
     @JoinColumn(nullable = true,name = "menu_id")
     private Menu menu;
 
+    private String nombreMenu;
+    private double precioMenu=0;
+
     private int cantidad;
 
     private String comentario="Sin comentarios.";

@@ -2,6 +2,9 @@ package com.residencia.restaurante.proyecto.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
+
 /**
  * Representa una materia prima utilizada en el restaurante.
  * Cada materia prima tiene un identificador único, un nombre,
@@ -33,4 +36,6 @@ public class MateriaPrima {
     @ManyToOne
     @JoinColumn(nullable = true,name = "categoria_id")
     private CategoriaMateriaPrima categoriaMateriaPrima;
+
+
 }

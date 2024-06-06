@@ -10,4 +10,12 @@ public interface IVentasService {
     ResponseEntity<List<VentasDTO>> obtenerTodas();
 
     ResponseEntity<DetalleVentaDTO> obtenerDetalleVenta(Integer id);
+
+    ResponseEntity<List<VentasDTO>> obtenerPorCaja(String caja);
+
+    ResponseEntity<List<VentasDTO>> obtenerPorArea(String areaServicio);
+
+    ResponseEntity<List<VentasDTO>> obtenerPorCliente(String cliente);
+
+    ResponseEntity<List<VentasDTO>> obtenerPorFecha(String fecha);
 }

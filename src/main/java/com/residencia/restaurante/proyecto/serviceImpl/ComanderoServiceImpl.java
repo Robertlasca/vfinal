@@ -194,6 +194,8 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 detalleOrdenMenu.setTotal(menu.getPrecioVenta()*detalleOrdenWrapper.getCantidad());
                                 detalleOrdenMenu.setComentario(detalleOrdenWrapper.getComentario());
                                 detalleOrdenMenu.setEstado("En espera");
+                                detalleOrdenMenu.setNombreMenu(menu.getNombre());
+                                detalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
 
                                 List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
                                 List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
@@ -232,7 +234,10 @@ public class ComanderoServiceImpl implements IComanderoService {
                                     ProductoNormal productoNormal= productoNormalOptional.get();
                                     productoNormal.setStockActual(productoNormal.getStockActual()-detalleOrdenWrapper.getCantidad());
                                     productoNormalRepository.save(productoNormal);
+                                    detalleOrdenProductoNormal.setNombreProductoNormal(productoNormal.getNombre());
+                                    detalleOrdenProductoNormal.setPrecioProductoNormal(productoNormal.getPrecioUnitario());
                                 }
+
                                 detalleOrdenProductoNormal.setOrden(orden);
                                 detalleOrdenProductoNormal.setEstado("En espera");
                                 detalleOrdenProductoNormal.setComentario(detalleOrdenWrapper.getComentario());

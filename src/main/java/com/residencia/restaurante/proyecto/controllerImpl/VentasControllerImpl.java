@@ -37,4 +37,48 @@ public class VentasControllerImpl implements IVentasController {
         }
         return new ResponseEntity<>(new DetalleVentaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<VentasDTO>> obtenerPorCaja(String caja) {
+        try {
+            return ventasService.obtenerPorCaja(caja);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<VentasDTO>> obtenerPorArea(String areaServicio) {
+        try {
+            return ventasService.obtenerPorArea(areaServicio);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<VentasDTO>> obtenerPorCliente(String cliente) {
+        try {
+            return ventasService.obtenerPorCliente(cliente);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<VentasDTO>> obtenerPorFecha(String fecha) {
+        try {
+            return ventasService.obtenerPorFecha(fecha);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

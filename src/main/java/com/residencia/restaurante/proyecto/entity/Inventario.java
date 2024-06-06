@@ -45,6 +45,9 @@ public class Inventario {
     private double stockActual;
     @Column(nullable = true)
     private LocalDate fechaIngreso=LocalDate.now();
+
+    @Column(nullable = true)
+    private LocalDate fechaUltimoMovimiento=LocalDate.now();
     @Column(nullable = true)
     private String comentario="Sin comentarios";
 

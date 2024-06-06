@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IInventarioController;
+import com.residencia.restaurante.proyecto.dto.MovimientoInventarioDTO;
 import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import com.residencia.restaurante.proyecto.service.IInventarioService;
@@ -160,5 +161,16 @@ public class InventarioControllerImpl implements IInventarioController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(new HashMap<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<MovimientoInventarioDTO>> listarMovimientos() {
+        try {
+            return inventarioService.listarMovimientos();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

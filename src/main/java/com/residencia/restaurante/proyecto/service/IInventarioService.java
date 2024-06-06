@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.MovimientoInventarioDTO;
 import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import com.residencia.restaurante.proyecto.dto.InventarioDTO;
@@ -69,4 +70,6 @@ public interface IInventarioService {
     ResponseEntity<Map<String,String>> obtenerDatos(Map<String,String> objetoMap);
 
     ResponseEntity<List<Inventario>> obtenerMateriasXCocinaID(Integer id);
+
+    ResponseEntity<List<MovimientoInventarioDTO>> listarMovimientos();
 }

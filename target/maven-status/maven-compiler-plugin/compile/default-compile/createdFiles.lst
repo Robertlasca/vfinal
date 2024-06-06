@@ -25,6 +25,7 @@ com\residencia\restaurante\proyecto\service\IUsuarioParametrosService.class
 com\residencia\restaurante\proyecto\controller\IProductoTerminadoController.class
 com\residencia\restaurante\proyecto\serviceImpl\ImpresoraServiceImpl.class
 com\residencia\restaurante\proyecto\serviceImpl\MateriaPrimaServiceImpl$1.class
+com\residencia\restaurante\proyecto\controllerImpl\ReporteControllerImpl.class
 com\residencia\restaurante\proyecto\repository\IProductoTerminadoRepository.class
 com\residencia\restaurante\security\model\Usuario.class
 com\residencia\restaurante\proyecto\serviceImpl\MedioPagoServiceImpl.class
@@ -148,11 +149,13 @@ com\residencia\restaurante\proyecto\controllerImpl\ProductoNormalControllerImpl.
 com\residencia\restaurante\proyecto\wrapper\InventarioWrapper.class
 com\residencia\restaurante\proyecto\serviceImpl\ArqueoSaldosServiceImpl.class
 com\residencia\restaurante\proyecto\controllerImpl\CocinaControllerImpl.class
+com\residencia\restaurante\proyecto\serviceImpl\IReporteServiceImpl.class
 com\residencia\restaurante\proyecto\controllerImpl\CategoriaMateriaPrimaControllerImpl.class
 com\residencia\restaurante\proyecto\entity\Impresora.class
 com\residencia\restaurante\proyecto\service\IMateriaPrimaService.class
 com\residencia\restaurante\proyecto\entity\AreaServicio.class
 com\residencia\restaurante\proyecto\repository\IProductoTerminado_MenuRepository.class
+com\residencia\restaurante\proyecto\controller\IReporteController.class
 com\residencia\restaurante\proyecto\entity\MovimientosCaja.class
 com\residencia\restaurante\proyecto\serviceImpl\TicketService.class
 com\residencia\restaurante\proyecto\repository\IAlmacenRepository.class
@@ -166,6 +169,7 @@ com\residencia\restaurante\proyecto\entity\Venta.class
 com\residencia\restaurante\proyecto\serviceImpl\ComanderoServiceImpl.class
 com\residencia\restaurante\proyecto\controller\IRecetaProductoTerminadoController.class
 com\residencia\restaurante\proyecto\controller\IVentasController.class
+com\residencia\restaurante\proyecto\dto\MovimientoInventarioDTO.class
 com\residencia\restaurante\proyecto\controller\IMenuController.class
 com\residencia\restaurante\proyecto\wrapper\IngredientesProductoTerminadoWrapper.class
 com\residencia\restaurante\proyecto\controller\IMesasController.class
@@ -192,6 +196,7 @@ com\residencia\restaurante\proyecto\serviceImpl\InventarioServiceImpl.class
 com\residencia\restaurante\proyecto\entity\Cocina_Utensilio.class
 com\residencia\restaurante\proyecto\service\IAlmacenService.class
 com\residencia\restaurante\proyecto\entity\Venta_MedioPago.class
+com\residencia\restaurante\proyecto\service\IReporteService.class
 com\residencia\restaurante\proyecto\repository\IMovimiento_InventarioRepository.class
 com\residencia\restaurante\security\model\ConfirmationToken$ConfirmationTokenBuilder.class
 com\residencia\restaurante\proyecto\controllerImpl\RecetaMenuControllerImpl.class

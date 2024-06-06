@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -104,11 +105,12 @@ public class VentasServiceImpl implements IVentasService {
                     for (DetalleOrdenMenu detalleOrdenMenu:detalleOrdenMenus) {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setEsDetalleMenu("true");
-                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getNombreMenu());
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
                         detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
                         detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                        detalleOrdenProductoDTO.setPrecioUnitario(detalleOrdenMenu.getPrecioMenu());
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
                     }
                 }
@@ -117,11 +119,12 @@ public class VentasServiceImpl implements IVentasService {
                     for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setEsDetalleMenu("false");
-                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getProductoNormal().getNombre());
+                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getNombreProductoNormal());
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
                         detalleOrdenProductoDTO.setTotal(detalleOrdenProductoNormal.getTotal());
                         detalleOrdenProductoDTO.setEstado(detalleOrdenProductoNormal.getEstado());
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
+                        detalleOrdenProductoDTO.setPrecioUnitario(detalleOrdenProductoNormal.getPrecioProductoNormal());
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
                     }
                 }
@@ -142,4 +145,151 @@ public class VentasServiceImpl implements IVentasService {
         }
         return new ResponseEntity<DetalleVentaDTO>(new DetalleVentaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<VentasDTO>> obtenerPorCaja(String caja) {
+        try {
+            List<Venta> ventaList= ventaRepository.findAll();
+            List<VentasDTO> ventasDTOS=new ArrayList<>();
+            if(!ventaList.isEmpty()){
+                for (Venta venta:ventaList){
+                    if(venta.getArqueo().getCaja().getNombre().equalsIgnoreCase(caja) && venta.getArqueo().getCaja().getVisibilidad()){
+                    VentasDTO ventasDTO= new VentasDTO();
+                    ventasDTO.setId(venta.getId());
+                    ventasDTO.setCliente(venta.getOrden().getNombreCliente());
+                    ventasDTO.setComentario(venta.getComentario());
+                    ventasDTO.setMesa(venta.getOrden().getMesa().getNombre());
+                    ventasDTO.setEstado(venta.getEstado());
+                    ventasDTO.setAreaServicio(venta.getOrden().getMesa().getAreaServicio().getNombre());
+                    ventasDTO.setUsuario(venta.getUsuario().getNombre());
+                    ventasDTO.setDescuento(venta.getDescuento());
+                    ventasDTO.setFechaHora(venta.getFechaHoraConsolidacion());
+                    ventasDTO.setFechaHoraApertura(venta.getOrden().getFechaHoraApertura());
+                    ventasDTO.setTotalPagar(venta.getTotalPagar());
+                    ventasDTO.setSubTotal(venta.getSubTotal());
+                    ventasDTO.setOrdenId(venta.getOrden().getId());
+                    ventasDTOS.add(ventasDTO);
+                    }
+                }
+                return new ResponseEntity<List<VentasDTO>>(ventasDTOS,HttpStatus.OK);
+
+            }
+            return new ResponseEntity<List<VentasDTO>>(ventasDTOS,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<VentasDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<VentasDTO>> obtenerPorArea(String areaServicio) {
+        try {
+            List<Venta> ventaList= ventaRepository.findAll();
+            List<VentasDTO> ventasDTOS=new ArrayList<>();
+            if(!ventaList.isEmpty()){
+                for (Venta venta:ventaList){
+                    if(venta.getOrden().getMesa().getAreaServicio().getNombre().equalsIgnoreCase(areaServicio) && venta.getOrden().getMesa().getAreaServicio().isDisponibilidad()){
+                        VentasDTO ventasDTO= new VentasDTO();
+                        ventasDTO.setId(venta.getId());
+                        ventasDTO.setCliente(venta.getOrden().getNombreCliente());
+                        ventasDTO.setComentario(venta.getComentario());
+                        ventasDTO.setMesa(venta.getOrden().getMesa().getNombre());
+                        ventasDTO.setEstado(venta.getEstado());
+                        ventasDTO.setAreaServicio(venta.getOrden().getMesa().getAreaServicio().getNombre());
+                        ventasDTO.setUsuario(venta.getUsuario().getNombre());
+                        ventasDTO.setDescuento(venta.getDescuento());
+                        ventasDTO.setFechaHora(venta.getFechaHoraConsolidacion());
+                        ventasDTO.setFechaHoraApertura(venta.getOrden().getFechaHoraApertura());
+                        ventasDTO.setTotalPagar(venta.getTotalPagar());
+                        ventasDTO.setSubTotal(venta.getSubTotal());
+                        ventasDTO.setOrdenId(venta.getOrden().getId());
+                        ventasDTOS.add(ventasDTO);
+                    }
+                }
+                return new ResponseEntity<List<VentasDTO>>(ventasDTOS,HttpStatus.OK);
+
+            }
+            return new ResponseEntity<List<VentasDTO>>(ventasDTOS,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<VentasDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<VentasDTO>> obtenerPorCliente(String cliente) {
+        try {
+            List<Venta> ventaList= ventaRepository.findAll();
+
+            List<VentasDTO> ventasDTOS=new ArrayList<>();
+            if(!ventaList.isEmpty()){
+                for (Venta venta:ventaList){
+                    if(venta.getOrden().getNombreCliente().equalsIgnoreCase(cliente)){
+                        VentasDTO ventasDTO= new VentasDTO();
+                        ventasDTO.setId(venta.getId());
+                        ventasDTO.setCliente(venta.getOrden().getNombreCliente());
+                        ventasDTO.setComentario(venta.getComentario());
+                        ventasDTO.setMesa(venta.getOrden().getMesa().getNombre());
+                        ventasDTO.setEstado(venta.getEstado());
+                        ventasDTO.setAreaServicio(venta.getOrden().getMesa().getAreaServicio().getNombre());
+                        ventasDTO.setUsuario(venta.getUsuario().getNombre());
+                        ventasDTO.setDescuento(venta.getDescuento());
+                        ventasDTO.setFechaHora(venta.getFechaHoraConsolidacion());
+                        ventasDTO.setFechaHoraApertura(venta.getOrden().getFechaHoraApertura());
+                        ventasDTO.setTotalPagar(venta.getTotalPagar());
+                        ventasDTO.setSubTotal(venta.getSubTotal());
+                        ventasDTO.setOrdenId(venta.getOrden().getId());
+                        ventasDTOS.add(ventasDTO);
+                    }
+                }
+                return new ResponseEntity<List<VentasDTO>>(ventasDTOS,HttpStatus.OK);
+
+            }
+            return new ResponseEntity<List<VentasDTO>>(ventasDTOS,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<VentasDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<VentasDTO>> obtenerPorFecha(String fecha) {
+        try {
+            LocalDate fechaActual= LocalDate.parse(fecha);
+            List<Venta> ventaList= ventaRepository.findAll();
+            List<VentasDTO> ventasDTOS=new ArrayList<>();
+            if(!ventaList.isEmpty()){
+                for (Venta venta:ventaList){
+                    if(venta.getFechaHoraConsolidacion().toLocalDate().equals(fechaActual)){
+                        VentasDTO ventasDTO= new VentasDTO();
+                        ventasDTO.setId(venta.getId());
+                        ventasDTO.setCliente(venta.getOrden().getNombreCliente());
+                        ventasDTO.setComentario(venta.getComentario());
+                        ventasDTO.setMesa(venta.getOrden().getMesa().getNombre());
+                        ventasDTO.setEstado(venta.getEstado());
+                        ventasDTO.setAreaServicio(venta.getOrden().getMesa().getAreaServicio().getNombre());
+                        ventasDTO.setUsuario(venta.getUsuario().getNombre());
+                        ventasDTO.setDescuento(venta.getDescuento());
+                        ventasDTO.setFechaHora(venta.getFechaHoraConsolidacion());
+                        ventasDTO.setFechaHoraApertura(venta.getOrden().getFechaHoraApertura());
+                        ventasDTO.setTotalPagar(venta.getTotalPagar());
+                        ventasDTO.setSubTotal(venta.getSubTotal());
+                        ventasDTO.setOrdenId(venta.getOrden().getId());
+                        ventasDTOS.add(ventasDTO);
+                    }
+                }
+                return new ResponseEntity<List<VentasDTO>>(ventasDTOS,HttpStatus.OK);
+
+            }
+            return new ResponseEntity<List<VentasDTO>>(ventasDTOS,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<VentasDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.MovimientoInventarioDTO;
 import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import com.residencia.restaurante.proyecto.dto.InventarioDTO;
@@ -94,4 +95,7 @@ public interface IInventarioController {
      */
     @GetMapping(path = "/obtenerDatosMostrar")
     ResponseEntity<Map<String,String>> obtenerDatos(@RequestBody(required = true) Map<String,String> objetoMap);
+
+    @GetMapping(path = "/movimientosInventario")
+    ResponseEntity<List<MovimientoInventarioDTO>> listarMovimientos();
 }

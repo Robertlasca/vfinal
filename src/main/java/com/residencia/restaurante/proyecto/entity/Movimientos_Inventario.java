@@ -28,6 +28,8 @@ public class Movimientos_Inventario {
     @JoinColumn(name = "almacen_id",nullable = true)
     private Almacen almacen;
 
+    private String nombreMateria;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id",nullable = true)
     private Usuario usuario;

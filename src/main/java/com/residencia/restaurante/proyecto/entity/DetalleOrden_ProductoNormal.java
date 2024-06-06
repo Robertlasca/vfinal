@@ -29,6 +29,9 @@ public class DetalleOrden_ProductoNormal {
     @JoinColumn(nullable = true,name = "productoNormal_id")
     private ProductoNormal productoNormal;
 
+    private String nombreProductoNormal;
+    private double precioProductoNormal=0;
+
     private int cantidad;
 
     private String comentario="Sin comentario";

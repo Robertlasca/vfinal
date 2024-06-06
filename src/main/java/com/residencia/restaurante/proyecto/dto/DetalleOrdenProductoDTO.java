@@ -17,4 +17,5 @@ public class DetalleOrdenProductoDTO {
     String comentario;
     String estado;
     String esDetalleMenu;
+    double precioUnitario;
 }

@@ -14,6 +14,5 @@ public class InventarioWrapper {
     private Integer almacenId;
     private double stockMinimo;
     private double stockMaximo;
-    private double stockActual;
 
 }

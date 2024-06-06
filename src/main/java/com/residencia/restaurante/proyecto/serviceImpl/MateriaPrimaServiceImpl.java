@@ -219,7 +219,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                                         Usuario usuario=optionalUsuario.get();
                                         inventario1.setUsuario(usuario);
                                     }
-                                    inventario1.setStockActual(inventario.getStockActual());
                                     inventario1.setStockMax(inventario.getStockMaximo());
                                     inventario1.setStockMin(inventario.getStockMinimo());
 
@@ -367,7 +366,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                                     Usuario usuario=optionalUsuario.get();
                                     inventario1.setUsuario(usuario);
                                 }
-                                inventario1.setStockActual(inventarioWrapper.getStockActual());
+                                inventario1.setStockActual(0);
                                 inventario1.setStockMax(inventarioWrapper.getStockMaximo());
                                 inventario1.setStockMin(inventarioWrapper.getStockMinimo());
                                 System.out.println("Listo");

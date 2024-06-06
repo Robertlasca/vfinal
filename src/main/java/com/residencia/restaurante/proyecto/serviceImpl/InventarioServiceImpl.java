@@ -1,6 +1,7 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.MovimientoInventarioDTO;
 import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.IAlmacenRepository;
 import com.residencia.restaurante.proyecto.repository.IInventarioRepository;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,7 @@ public class InventarioServiceImpl implements IInventarioService {
 
     @Autowired
     IMateriaPrimaRepository materiaPrimaRepository;
+
     /**
      * Lista los inventarios según su estado de stock.
      * @return ResponseEntity<List<InventarioDTO>> Una lista de inventarios con su estado.
@@ -57,7 +60,19 @@ public class InventarioServiceImpl implements IInventarioService {
             // Agregar inventarios con estado "Insuficiente" a la lista
             for (Inventario inventario : inventariosMenorMinimo) {
                 InventarioDTO inventarioDTO = new InventarioDTO();
-                inventarioDTO.setInventario(inventario);
+                inventarioDTO.setNombreMateria(inventario.getMateriaPrima().getNombre());
+                inventarioDTO.setId(inventario.getId());
+                inventarioDTO.setStockActual(inventario.getStockActual());
+                inventarioDTO.setCostoUnitario(inventario.getMateriaPrima().getCostoUnitario());
+                inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
+                inventarioDTO.setStockMaximo(inventario.getStockMax());
+                inventarioDTO.setStockMinimo(inventario.getStockMin());
+                inventarioDTO.setCostoTotal(inventario.getStockActual()*inventario.getMateriaPrima().getCostoUnitario());
+                if(inventario.getFechaUltimoMovimiento()==null){
+                    inventarioDTO.setFechaUtimoMovimiento("Sin fecha");
+                }else{
+                    inventarioDTO.setFechaUtimoMovimiento(String.valueOf(inventario.getFechaUltimoMovimiento()));
+                }
                 inventarioDTO.setEstado("Insuficiente");
                 inventariosConEstado.add(inventarioDTO);
             }
@@ -66,7 +81,19 @@ public class InventarioServiceImpl implements IInventarioService {
             // Agregar inventarios con estado "Excedido" a la lista
             for (Inventario inventario : inventariosMayorMaximo) {
                 InventarioDTO inventarioDTO = new InventarioDTO();
-                inventarioDTO.setInventario(inventario);
+                inventarioDTO.setNombreMateria(inventario.getMateriaPrima().getNombre());
+                inventarioDTO.setId(inventario.getId());
+                inventarioDTO.setStockActual(inventario.getStockActual());
+                inventarioDTO.setCostoUnitario(inventario.getMateriaPrima().getCostoUnitario());
+                inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
+                inventarioDTO.setStockMaximo(inventario.getStockMax());
+                inventarioDTO.setStockMinimo(inventario.getStockMin());
+                inventarioDTO.setCostoTotal(inventario.getStockActual()*inventario.getMateriaPrima().getCostoUnitario());
+                if(inventario.getFechaUltimoMovimiento()==null){
+                    inventarioDTO.setFechaUtimoMovimiento("Sin fecha");
+                }else{
+                    inventarioDTO.setFechaUtimoMovimiento(String.valueOf(inventario.getFechaUltimoMovimiento()));
+                }
                 inventarioDTO.setEstado("Excedido");
                 inventariosConEstado.add(inventarioDTO);
             }
@@ -74,7 +101,19 @@ public class InventarioServiceImpl implements IInventarioService {
 
             for (Inventario inventario : inventariosEntreMinimoYMaximo) {
                 InventarioDTO inventarioDTO = new InventarioDTO();
-                inventarioDTO.setInventario(inventario);
+                inventarioDTO.setNombreMateria(inventario.getMateriaPrima().getNombre());
+                inventarioDTO.setId(inventario.getId());
+                inventarioDTO.setStockActual(inventario.getStockActual());
+                inventarioDTO.setCostoUnitario(inventario.getMateriaPrima().getCostoUnitario());
+                inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
+                inventarioDTO.setStockMaximo(inventario.getStockMax());
+                inventarioDTO.setStockMinimo(inventario.getStockMin());
+                inventarioDTO.setCostoTotal(inventario.getStockActual()*inventario.getMateriaPrima().getCostoUnitario());
+                if(inventario.getFechaUltimoMovimiento()==null){
+                    inventarioDTO.setFechaUtimoMovimiento("Sin fecha");
+                }else{
+                    inventarioDTO.setFechaUtimoMovimiento(String.valueOf(inventario.getFechaUltimoMovimiento()));
+                }
                 inventarioDTO.setEstado("Suficiente");
                 inventariosConEstado.add(inventarioDTO);
             }
@@ -118,6 +157,8 @@ public class InventarioServiceImpl implements IInventarioService {
                     movimientosInventario.setStockAnterior(stockAnterior);
                     movimientosInventario.setTipoMovimiento(objetoMap.get("tipoMovimiento"));
                     movimientosInventario.setComentario(objetoMap.get("comentario"));
+                    movimientosInventario.setNombreMateria(inventario.getMateriaPrima().getNombre());
+                    inventario.setFechaUltimoMovimiento(LocalDate.now());
                     Optional<Usuario> usuarioOptional=usuarioRepository.findById(Integer.parseInt(objetoMap.get("usuarioId")));
                     if(!usuarioOptional.isEmpty()){
                         Usuario usuario=usuarioOptional.get();
@@ -173,8 +214,11 @@ public class InventarioServiceImpl implements IInventarioService {
                        movimientosInventario.setAlmacen(almacen);
                        movimientosInventario.setStockActual(stockActual);
                        movimientosInventario.setStockAnterior(stockAnterior);
+                       movimientosInventario.setNombreMateria(inventario.getMateriaPrima().getNombre());
                        movimientosInventario.setTipoMovimiento(objetoMap.get("tipoMovimiento"));
                        movimientosInventario.setComentario(objetoMap.get("comentario"));
+                       inventario.setFechaUltimoMovimiento(LocalDate.now());
+
                        Optional<Usuario> usuarioOptional=usuarioRepository.findById(Integer.parseInt(objetoMap.get("usuarioId")));
                        if(!usuarioOptional.isEmpty()){
                            Usuario usuario=usuarioOptional.get();
@@ -212,7 +256,9 @@ public class InventarioServiceImpl implements IInventarioService {
                 Optional<Inventario> optionalDestino=inventarioRepository.findInventarioByAlmacen_IdAndMateriaPrima_Id(Integer.parseInt(objetoMap.get("idDestino")),Integer.parseInt(objetoMap.get("idMateria")));
                 if(!optionalOrigen.isEmpty()&&!optionalDestino.isEmpty()){
                     Inventario origen=optionalOrigen.get();
+                    origen.setFechaUltimoMovimiento(LocalDate.now());
                     Inventario destino=optionalDestino.get();
+                    destino.setFechaUltimoMovimiento(LocalDate.now());
                     Double cantidad= Double.parseDouble(objetoMap.get("cantidad"));
 
                     if(cantidad<origen.getStockActual()){
@@ -233,6 +279,7 @@ public class InventarioServiceImpl implements IInventarioService {
                         movimientosInventario1.setStockActual(stockActual1);
                         movimientosInventario1.setStockAnterior(stockAnterior1);
                         movimientosInventario1.setTipoMovimiento("Salida");
+                        movimientosInventario1.setNombreMateria(origen.getMateriaPrima().getNombre());
                         movimientosInventario1.setComentario("Salida por transferencia.");
                         Optional<Usuario> usuarioOptional=usuarioRepository.findById(Integer.parseInt(objetoMap.get("usuarioId")));
                         if(!usuarioOptional.isEmpty()){
@@ -244,6 +291,7 @@ public class InventarioServiceImpl implements IInventarioService {
                         movimientosInventario2.setStockActual(stockActual2);
                         movimientosInventario2.setStockAnterior(stockAnterior2);
                         movimientosInventario2.setTipoMovimiento("Entrada");
+                        movimientosInventario2.setNombreMateria(origen.getMateriaPrima().getNombre());
                         movimientosInventario2.setComentario("Entrada por transferencia");
 
                         movimientoInventarioRepository.save(movimientosInventario1);
@@ -431,6 +479,33 @@ public class InventarioServiceImpl implements IInventarioService {
             e.printStackTrace();
         }
         return new ResponseEntity<List<Inventario>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<MovimientoInventarioDTO>> listarMovimientos() {
+        try {
+            List<Movimientos_Inventario> movimientosInventarios= movimientoInventarioRepository.findAll();
+            List<MovimientoInventarioDTO> movimientoInventarioDTOS= new ArrayList<>();
+            System.out.println("Cantidad de movimientos:"+movimientosInventarios.size());
+            for (Movimientos_Inventario movimientosInventario: movimientosInventarios) {
+                MovimientoInventarioDTO movimientoInventarioDTOO=new MovimientoInventarioDTO();
+                movimientoInventarioDTOO.setFecha(movimientosInventario.getFechaMovimiento());
+                movimientoInventarioDTOO.setStockAnterior(movimientosInventario.getStockAnterior());
+                movimientoInventarioDTOO.setStockActual(movimientosInventario.getStockActual());
+                movimientoInventarioDTOO.setDiferencia(movimientosInventario.getStockActual()-movimientosInventario.getStockAnterior());
+                movimientoInventarioDTOO.setNombreAlmacen(movimientosInventario.getAlmacen().getNombre());
+                movimientoInventarioDTOO.setNombreMateria(movimientosInventario.getNombreMateria());
+                movimientoInventarioDTOS.add(movimientoInventarioDTOO);
+
+
+            }
+
+            return new ResponseEntity<List<MovimientoInventarioDTO>>(movimientoInventarioDTOS,HttpStatus.OK);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<MovimientoInventarioDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean validarMap(Map<String,String> objetoMap){
