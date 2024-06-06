@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.CajaDTO;
+import com.residencia.restaurante.proyecto.dto.InventarioDTO;
 import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.IAlmacenRepository;
@@ -304,19 +305,33 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
      * @return ResponseEntity<MateriaPrima> Materia prima solicitada.
      */
     @Override
-    public ResponseEntity<MateriaPrima> obtenerMateriaPrimaId(Integer id) {
+    public ResponseEntity<MateriaPrimaDTO> obtenerMateriaPrimaId(Integer id) {
         try {
             Optional<MateriaPrima> materiaPrimaOptional=materiaPrimaRepository.findById(id);
 
+
             if(materiaPrimaOptional.isPresent()){
                 MateriaPrima materiaPrima= materiaPrimaOptional.get();
-                return new ResponseEntity<>(materiaPrima,HttpStatus.OK);
+                List<Inventario> inventarioList= inventarioRepository.getAllByMateriaPrima_Id(materiaPrima.getId());
+                List<InventarioDTO> inventarioDTOS= new ArrayList<>();
+                for (Inventario inventario:inventarioList) {
+                    InventarioDTO inventarioDTO= new InventarioDTO();
+                    inventarioDTO.setId(inventario.getId());
+                    inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
+                    inventarioDTO.setStockMinimo(inventario.getStockMin());
+                    inventarioDTO.setStockMaximo(inventario.getStockMax());
+                    inventarioDTOS.add(inventarioDTO);
+                }
+                MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
+                materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
+                materiaPrimaDTO.setInventarioDTOS(inventarioDTOS);
+                return new ResponseEntity<MateriaPrimaDTO>(materiaPrimaDTO,HttpStatus.OK);
             }
-            return new ResponseEntity<>(new MateriaPrima(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<MateriaPrimaDTO>(new MateriaPrimaDTO(),HttpStatus.BAD_REQUEST);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<MateriaPrima>(new MateriaPrima(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<MateriaPrimaDTO>(new MateriaPrimaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

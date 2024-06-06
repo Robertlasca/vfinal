@@ -15,4 +15,5 @@ public class MateriaPrimaDTO {
     MateriaPrima materiaPrimaDTO;
     String estado;
     List<String> almacenes;
+    List<InventarioDTO> inventarioDTOS;
 }

@@ -82,7 +82,7 @@ public interface IMateriaPrimaController {
      * @return ResponseEntity con los detalles de la materia prima solicitada y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerMateriaPrima/{id}")
-    ResponseEntity<MateriaPrima> obtenerMateriaPrimaId(@PathVariable Integer id);
+    ResponseEntity<MateriaPrimaDTO> obtenerMateriaPrimaId(@PathVariable Integer id);
 
     @PostMapping(path = "/agregarMateriaPrima")
     ResponseEntity<String> agregarMateria(@RequestParam("nombre") String nombre,

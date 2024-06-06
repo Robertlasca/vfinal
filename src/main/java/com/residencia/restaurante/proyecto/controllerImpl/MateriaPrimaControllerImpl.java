@@ -134,13 +134,13 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
      * @return ResponseEntity con la materia prima solicitada y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<MateriaPrima> obtenerMateriaPrimaId(Integer id) {
+    public ResponseEntity<MateriaPrimaDTO> obtenerMateriaPrimaId(Integer id) {
         try {
             return materiaPrimaService.obtenerMateriaPrimaId(id);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<>(new MateriaPrima(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new MateriaPrimaDTO(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

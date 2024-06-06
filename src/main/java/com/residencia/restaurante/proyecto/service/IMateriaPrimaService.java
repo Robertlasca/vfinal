@@ -57,7 +57,7 @@ public interface IMateriaPrimaService {
      * @param id El ID de la materia prima.
      * @return ResponseEntity con la materia prima correspondiente al ID.
      */
-    ResponseEntity<MateriaPrima> obtenerMateriaPrimaId(Integer id);
+    ResponseEntity<MateriaPrimaDTO> obtenerMateriaPrimaId(Integer id);
 
     ResponseEntity<String> agregarMateria(String nombre, int idCategoria, int idUsuario, String unidadMedida, double costoUnitario, String inventario, MultipartFile file);
 
