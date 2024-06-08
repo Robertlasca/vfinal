@@ -173,5 +173,26 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
         return new ResponseEntity<>(0,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<String> editarStockMM(Map<String, String> objetoMap) {
+        try {
+            return materiaPrimaService.editarStockMM(objetoMap);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> eliminarInventario(Integer id) {
+        try {
+            return materiaPrimaService.eliminarInventario(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 }

@@ -242,6 +242,7 @@ public class MenuServiceImpl implements IMenuService {
                         MateriaPrima materiaPrima= materiaPrimaMenu.getInventario().getMateriaPrima();
                         double costo= calcularCostoProduccion(materiaPrima.getCostoUnitario());
                         RecetaDTO recetaDTO= new RecetaDTO();
+                        System.out.println("Id del inventario"+materiaPrimaMenu.getInventario().getId());
                         recetaDTO.setEsIngrediente(true);
                         recetaDTO.setId(materiaPrimaMenu.getId());
                         recetaDTO.setUnidadMedida(materiaPrima.getUnidadMedida());

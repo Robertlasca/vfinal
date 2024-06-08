@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.repository;
 
+import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima_Menu;
 import com.residencia.restaurante.proyecto.entity.Menu;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,6 @@ public interface IMateriaPrima_MenuRepository extends JpaRepository<MateriaPrima
     Double calcularCostoIngredientesPorMenu(Integer menuId);
 
     List<MateriaPrima_Menu> findByMenuId(Integer idProducto);
+
+    List<MateriaPrima_Menu> getAllByInventario(Inventario inventario);
 }

@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.repository;
 
+import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima_ProductoTerminado;
 import com.residencia.restaurante.proyecto.entity.ProductoTerminado;
 import jakarta.persistence.EntityManager;
@@ -23,4 +24,6 @@ public interface IMateriaPrima_ProductoTerminadoRepository extends JpaRepository
 
 
     List<MateriaPrima_ProductoTerminado> findAllByProductoTerminado(ProductoTerminado producto);
+
+    List<MateriaPrima_ProductoTerminado> getAllByInventario(Inventario inventario);
 }

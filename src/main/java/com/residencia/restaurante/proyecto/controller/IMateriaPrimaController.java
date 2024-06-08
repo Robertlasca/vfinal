@@ -100,8 +100,15 @@ public interface IMateriaPrimaController {
                                           @RequestParam("costoUnitario") double costoUnitario,
                                           @RequestParam(value = "img",required = false) MultipartFile file);
 
+
+
     @GetMapping(path = "/totalMateriasPrimas")
     ResponseEntity<Integer> calcularTotalMateriasPrimas();
 
+    @PostMapping(path = "/editarStockMM")
+    ResponseEntity<String> editarStockMM(@RequestBody(required = true) Map<String,String> objetoMap);
+
+    @PostMapping(path = "/eliminarInventario/{id}")
+    ResponseEntity<String> eliminarInventario(@PathVariable(required = true)  Integer id);
 
 }

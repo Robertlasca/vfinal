@@ -7,10 +7,7 @@ import com.residencia.restaurante.proyecto.dto.CajaDTO;
 import com.residencia.restaurante.proyecto.dto.InventarioDTO;
 import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.*;
-import com.residencia.restaurante.proyecto.repository.IAlmacenRepository;
-import com.residencia.restaurante.proyecto.repository.ICategoriaMateriaPrimaRepository;
-import com.residencia.restaurante.proyecto.repository.IInventarioRepository;
-import com.residencia.restaurante.proyecto.repository.IMateriaPrimaRepository;
+import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IMateriaPrimaService;
 import com.residencia.restaurante.proyecto.wrapper.InventarioWrapper;
 import com.residencia.restaurante.security.model.Usuario;
@@ -31,7 +28,6 @@ import java.util.Optional;
 public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
     @Autowired
     IMateriaPrimaRepository materiaPrimaRepository;
-
     @Autowired
     IAlmacenRepository almacenRepository;
     @Autowired
@@ -42,6 +38,22 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
     IInventarioRepository inventarioRepository;
     @Autowired
     private UploadFileService uploadFileService;
+    @Autowired
+    private IMateriaPrima_ProductoTerminadoRepository materiaPrimaProductoTerminadoRepository;
+    @Autowired
+    private  IMateriaPrima_MenuRepository materiaPrimaMenuRepository;
+
+     @Autowired
+     private IMenuRepository menuRepository;
+
+     @Autowired
+     private IProductoTerminadoRepository productoTerminadoRepository;
+
+    @Autowired
+    MenuServiceImpl menuServiceImpl;
+
+    @Autowired
+    ProductoTerminadoServiceImpl productoTerminadoServiceImpl;
     /**
      * Obtiene todas las materias primas activas.
      * @return ResponseEntity<List<MateriaPrima>> Lista de materias primas activas.
@@ -49,6 +61,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
     @Override
     public ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasActivas() {
         try {
+
             List<MateriaPrimaDTO> materiaConEstado = new ArrayList<>();
             List<String> almacenes=new ArrayList<>();
             for (MateriaPrima materiaPrima : materiaPrimaRepository.getAllByVisibilidadTrue()) {
@@ -509,6 +522,70 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
             e.printStackTrace();
         }
         return new ResponseEntity<Integer>(0,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> editarStockMM(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("id")&& objetoMap.containsKey("stockMin") && objetoMap.containsKey("stockMax")){
+                Optional<Inventario> optionalInventario=inventarioRepository.findById(Integer.parseInt(objetoMap.get("id")));
+                if(optionalInventario.isPresent()){
+                    double stockMin=Double.parseDouble(objetoMap.get("stockMin"));
+                    double stockMax=Double.parseDouble(objetoMap.get("stockMax"));
+                    if(stockMin<stockMax){
+                    //Si se pide validar que el stock minimo sea menor al mayor
+                    Inventario inventario= optionalInventario.get();
+                    inventario.setStockMin(stockMin);
+                    inventario.setStockMax(stockMax);
+                    inventarioRepository.save(inventario);
+                    return Utils.getResponseEntity("Stock actualizado.",HttpStatus.OK);
+                    }
+                    return Utils.getResponseEntity("El stock mínimo no puede ser mayor al stock máximo.",HttpStatus.BAD_REQUEST);
+                }
+                return Utils.getResponseEntity("El inventario no existe.",HttpStatus.BAD_REQUEST);
+
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> eliminarInventario(Integer id) {
+        try {
+            Optional<Inventario> optionalInventario= inventarioRepository.findById(id);
+
+            if(optionalInventario.isPresent()){
+                Inventario inventario= optionalInventario.get();
+                List<MateriaPrima_Menu> materiaPrimaMenus= materiaPrimaMenuRepository.getAllByInventario(inventario);
+                List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByInventario(inventario);
+
+                if(!materiaPrimaMenus.isEmpty()){
+                    for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
+                        Menu menu= materiaPrimaMenu.getMenu();
+                        materiaPrimaMenuRepository.delete(materiaPrimaMenu);
+                        menu.setCostoProduccionDirecto(menuServiceImpl.calcularCostoTotalMenu(menu.getId()));
+                        menuRepository.save(menu);
+                    }
+                }
+
+                if(!materiaPrimaProductoTerminados.isEmpty()){
+                    materiaPrimaProductoTerminadoRepository.deleteAll(materiaPrimaProductoTerminados);
+                }
+
+                inventarioRepository.delete(inventario);
+                return Utils.getResponseEntity("Inventario eliminado con éxito.",HttpStatus.OK);
+
+            }
+            return Utils.getResponseEntity("No existe el inventario.",HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     private boolean materiaPrimaExistente1(String nombre) {

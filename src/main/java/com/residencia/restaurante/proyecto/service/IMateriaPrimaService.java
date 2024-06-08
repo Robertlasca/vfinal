@@ -66,4 +66,8 @@ public interface IMateriaPrimaService {
     ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasIdCategoria(Integer id);
 
     ResponseEntity<Integer> calcularTotalMateriasPrimas();
+
+    ResponseEntity<String> editarStockMM(Map<String, String> objetoMap);
+
+    ResponseEntity<String> eliminarInventario(Integer id);
 }
