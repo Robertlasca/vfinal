@@ -15,7 +15,8 @@ import java.util.Map;
  * así como para la creación, actualización y cambio de estado de los productos normales.
  */
 @RequestMapping(path = "/productoNormal")
-public interface IProductoNormalController {
+public interface
+IProductoNormalController {
 
     /**
      * Obtiene una lista de todos los productos normales activos en el sistema.

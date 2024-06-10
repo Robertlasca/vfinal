@@ -27,6 +27,9 @@ import org.springframework.stereotype.Service;
 import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -194,8 +197,8 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 detalleOrdenMenu.setTotal(menu.getPrecioVenta()*detalleOrdenWrapper.getCantidad());
                                 detalleOrdenMenu.setComentario(detalleOrdenWrapper.getComentario());
                                 detalleOrdenMenu.setEstado("En espera");
-                                detalleOrdenMenu.setNombreMenu(menu.getNombre());
-                                detalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
+                                //detalleOrdenMenu.setNombreMenu(menu.getNombre());
+                                //etalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
 
                                 List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
                                 List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
@@ -282,8 +285,8 @@ public class ComanderoServiceImpl implements IComanderoService {
                             List<String> productos = entry.getValue();
                             System.out.println("Cocina ID: " + cocinaId);
                             System.out.println("Productos: " + productos);
-                            TicketComanda ticket = new TicketComanda(orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre(), orden.getUsuario().getNombre(), productos);
-                            ticket.print(selectedService);
+                            //TicketComanda ticket = new TicketComanda(orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre(), orden.getUsuario().getNombre(), productos);
+                           // ticket.print(selectedService);
                             // Aquí puedes llamar a tu método de impresión o realizar otras operaciones
                         }
                         return Utils.getResponseEntity("Platillos asignados correctamente.",HttpStatus.OK);
@@ -616,13 +619,14 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                         //Imprimir información
 
-                        List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
-                        List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+                        //List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
+                        //List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
                         List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
                         List<String[]> products =new ArrayList<>();
                         int contador=0;
                         ComandaDTO comandaDTO= new ComandaDTO();
                         comandaDTO.setOrden(orden);
+                        /*
                         if(!detalleOrdenMenus.isEmpty()){
                             for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
                                // if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado")){
@@ -643,7 +647,9 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 //}
                             }
                         }
+                        */
 
+/*
                         if(!detalleOrdenProductoNormals.isEmpty()){
                             for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
                                 DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
@@ -662,7 +668,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 contador++;
                             }
                         }
-
+*/
                         Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
                         if (impresoraOptional.isPresent()) {
                             System.out.println("No se ha configurado una impresora por defecto.");
@@ -677,13 +683,24 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 break;
                             }
                         }
-
+/*
                         TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), usuario.getNombre(), orden.getNombreCliente(), products,
+                                "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
+                                paymentMethods
+                        );*/
+
+                        TicketOrden ticket = new TicketOrden(String.valueOf(1), String.valueOf("terraza"), usuario.getNombre(), "Pedro", products,
                                 "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
                                 paymentMethods
                         );
 
                         String ticketContent = ticket.getContentTicket().toString();
+                        // Obtener datos necesarios para la impresión
+                        int printerPort = 9100; // Puerto estándar para impresoras de red
+
+                        // Imprimir el ticket
+                        boolean success = printTicket(ticketContent, "192.168.0.100", printerPort);
+                        /*
                         Map<String, String> printRequest = new HashMap<>();
                         printRequest.put("ticketContent", ticketContent);
                         printRequest.put("printerName", impresoraOptional.get().getNombre());
@@ -699,11 +716,11 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 .header("Content-Type", "application/json")
                                 .build();
 
-                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                        if (response.statusCode() == 200) {
+                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());*/
+                        if (success) {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
                         } else {
-                            return Utils.getResponseEntity("Error al imprimir: " + response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
+                            return Utils.getResponseEntity("Error al imprimir: ",HttpStatus.INTERNAL_SERVER_ERROR);
                         }
 /*
                         if (selectedService == null) {
@@ -748,6 +765,34 @@ public class ComanderoServiceImpl implements IComanderoService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private boolean printTicket(String ticketContent, String printerIP, int printerPort) {
+        try {
+            // Crear un socket para conectarse a la impresora
+            Socket printerSocket = new Socket(printerIP, printerPort);
+
+            // Obtener el OutputStream del socket para enviar los datos de impresión
+            OutputStream outputStream = printerSocket.getOutputStream();
+
+            // Enviar los datos de impresión a la impresora
+            outputStream.write(ticketContent.getBytes());
+            // Aquí enviamos el comando de corte automático
+            // Esto puede variar dependiendo del modelo y fabricante de la impresora
+            String cutCommand = "\n" + (char)29 + (char)86 + (char)66 + (char)0;
+            outputStream.write(cutCommand.getBytes());
+
+            outputStream.flush();
+
+            // Cerrar el OutputStream y el socket
+            outputStream.close();
+            printerSocket.close();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /*
