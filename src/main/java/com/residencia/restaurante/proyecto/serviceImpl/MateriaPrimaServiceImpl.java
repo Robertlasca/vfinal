@@ -3,6 +3,7 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.dto.CajaDTO;
 import com.residencia.restaurante.proyecto.dto.InventarioDTO;
 import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
@@ -385,7 +386,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                     materiaPrima.setCostoUnitario(costoUnitario);
                     materiaPrima.setUnidadMedida(unidadMedida);
                     materiaPrima.setNombre(nombre);
-
                     if(file==null||file.isEmpty()){
                         materiaPrima.setImagen("default.jpg");
                     }else{
@@ -394,6 +394,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                     }
                     materiaPrimaRepository.save(materiaPrima);
                     //Asignar materia prima a los almacenes
+
                     ObjectMapper objectMapper= new ObjectMapper();
                     try {
                         List<InventarioWrapper> listaInventario=objectMapper.readValue(inventario, new TypeReference<List<InventarioWrapper>>() {});
@@ -415,8 +416,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                                 inventario1.setStockActual(0);
                                 inventario1.setStockMax(inventarioWrapper.getStockMaximo());
                                 inventario1.setStockMin(inventarioWrapper.getStockMinimo());
-                                System.out.println("Listo");
-
                                 inventarioRepository.save(inventario1);
 
 
@@ -448,11 +447,9 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
             Optional<MateriaPrima> optional= materiaPrimaRepository.findById(id);
             if (optional.isPresent()){
                 if(optional.get().getNombre().equalsIgnoreCase(nombre)){
-
                     MateriaPrima materiaPrima=optional.get();
                     materiaPrima.setNombre(nombre);
                     materiaPrima.setCostoUnitario(costoUnitario);
-
                     Optional<CategoriaMateriaPrima> optionalCategoriaMateriaPrima=categoriaMateriaPrimaRepository.findById(idCategoria);
                         if(!optionalCategoriaMateriaPrima.isEmpty()){
                             CategoriaMateriaPrima categoriaMateriaPrima=optionalCategoriaMateriaPrima.get();
@@ -470,9 +467,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
 
                     materiaPrimaRepository.save(materiaPrima);
                     return Utils.getResponseEntity("Materia prima actualizada.",HttpStatus.OK);
-
-
-
                 }else{
                     if(!materiaPrimaExistente1(nombre)){
                         MateriaPrima materiaPrima=optional.get();
@@ -501,7 +495,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 }
             }
             return Utils.getResponseEntity("No existe la materia prima.",HttpStatus.BAD_REQUEST);
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -520,7 +513,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 }else{
                     materiaPrimaDTO.setEstado("No visible");
                 }
-
                 materiaConEstado.add(materiaPrimaDTO);
             }
             return new ResponseEntity<List<MateriaPrimaDTO>>(materiaConEstado, HttpStatus.OK);
@@ -602,6 +594,76 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
 
+    }
+    @Override
+    public ResponseEntity<List<AlmacenDTO>> listarAlmacenesPorIdMateriaPrima(Integer id) {
+        try {
+            List<Almacen> almacens= inventarioRepository.findAlmacenesNotRelatedToMateriaPrima(id);
+            List<AlmacenDTO> almacenDTOS= new ArrayList<>();
+            for (Almacen almacen:almacens) {
+                AlmacenDTO almacenDTO= new AlmacenDTO();
+                almacenDTO.setAlmacen(almacen);
+                almacenDTOS.add(almacenDTO);
+            }
+            return new ResponseEntity<List<AlmacenDTO>>(almacenDTOS,HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<AlmacenDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> agregarInventario(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("idMateria") && objetoMap.containsKey("inventario")){
+                Optional<MateriaPrima> optionalMateriaPrima= materiaPrimaRepository.findById(Integer.parseInt(objetoMap.get("idMateria")));
+                if(!optionalMateriaPrima.isEmpty()){
+                    MateriaPrima materiaPrima= optionalMateriaPrima.get();
+
+                    ObjectMapper objectMapper= new ObjectMapper();
+                    try {
+                        List<InventarioWrapper> listaInventario=objectMapper.readValue(objetoMap.get("inventario"), new TypeReference<List<InventarioWrapper>>() {});
+                        if(!listaInventario.isEmpty()){
+                            for(InventarioWrapper inventarioWrapper: listaInventario){
+                                Inventario inventario1=new Inventario();
+                                inventario1.setMateriaPrima(materiaPrima);
+
+                                Optional<Almacen> optionalAlmacen= almacenRepository.findById(inventarioWrapper.getAlmacenId());
+                                if(!optionalAlmacen.isEmpty()){
+                                    Almacen almacen=optionalAlmacen.get();
+                                    inventario1.setAlmacen(almacen);
+                                }
+
+
+                                Optional<Usuario> optionalUsuario=usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
+                                if(!optionalUsuario.isEmpty()){
+                                    Usuario usuario=optionalUsuario.get();
+                                    inventario1.setUsuario(usuario);
+                                }
+
+                                inventario1.setStockActual(0);
+                                inventario1.setStockMax(inventarioWrapper.getStockMaximo());
+                                inventario1.setStockMin(inventarioWrapper.getStockMinimo());
+
+                                inventarioRepository.save(inventario1);
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    return Utils.getResponseEntity("Inventario agregado.",HttpStatus.OK);
+
+                }
+                return Utils.getResponseEntity("No existe la materia prima no existe.",HttpStatus.BAD_REQUEST);
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private boolean materiaPrimaExistente1(String nombre) {

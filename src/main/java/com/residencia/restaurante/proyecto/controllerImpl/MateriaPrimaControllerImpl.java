@@ -2,8 +2,11 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IMateriaPrimaController;
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
+import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
+import com.residencia.restaurante.proyecto.repository.IInventarioRepository;
 import com.residencia.restaurante.proyecto.service.IMateriaPrimaService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +26,8 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
 
     @Autowired
     IMateriaPrimaService materiaPrimaService;
-
+    @Autowired
+    IInventarioRepository inventarioRepository;
     /**
      * Obtiene la lista de materias primas activas.
      *
@@ -126,6 +130,27 @@ public class MateriaPrimaControllerImpl implements IMateriaPrimaController {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<AlmacenDTO>> listarAlmacenesPorIdMateriaPrima(Integer id) {
+        try {
+            return materiaPrimaService.listarAlmacenesPorIdMateriaPrima(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<AlmacenDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> agregarInventario(Map<String, String> objetoMap) {
+        try {
+            return materiaPrimaService.agregarInventario(objetoMap);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
     /**
      * Obtiene una materia prima por su ID.

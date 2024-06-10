@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.repository;
 
+import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.Inventario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -59,4 +60,6 @@ public interface IInventarioRepository extends JpaRepository<Inventario,Integer>
     @Query("SELECT inv FROM Inventario inv WHERE inv.stockActual >= inv.stockMin AND inv.stockActual <= inv.stockMax")
     List<Inventario> findInventarioByStockActualEntreMinimoYMaximo();
 
+    @Query("SELECT a FROM Almacen a WHERE a.id NOT IN (SELECT i.almacen.id FROM Inventario i WHERE i.materiaPrima.id = :materiaPrimaId) AND a.visibilidad=true")
+    List<Almacen> findAlmacenesNotRelatedToMateriaPrima(Integer materiaPrimaId);
 }

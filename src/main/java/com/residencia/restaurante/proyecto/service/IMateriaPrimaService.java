@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import org.springframework.http.ResponseEntity;
@@ -70,4 +71,8 @@ public interface IMateriaPrimaService {
     ResponseEntity<String> editarStockMM(Map<String, String> objetoMap);
 
     ResponseEntity<String> eliminarInventario(Integer id);
+
+    ResponseEntity<List<AlmacenDTO>> listarAlmacenesPorIdMateriaPrima(Integer id);
+
+    ResponseEntity<String> agregarInventario(Map<String, String> objetoMap);
 }

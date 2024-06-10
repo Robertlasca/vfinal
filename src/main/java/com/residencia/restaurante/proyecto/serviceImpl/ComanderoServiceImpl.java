@@ -128,14 +128,10 @@ public class ComanderoServiceImpl implements IComanderoService {
               //  if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
                 Optional<Orden> optional=ordenRepository.findById(Integer.parseInt(objetoMap.get("idOrden")));
                 if (optional.isPresent()){
+
                     Orden orden= optional.get();
-
-
-                ObjectMapper objectMapper = new ObjectMapper();
-
-                    List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(objetoMap.get("detalleOrden"), new TypeReference<List<DetalleOrdenWrapper>>() {
-                    });
-
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(objetoMap.get("detalleOrden"), new TypeReference<List<DetalleOrdenWrapper>>() {});
 
                     Set<Integer> cocinas = new HashSet<>();
                     Map<Integer, List<String>> productosPorCocina = new HashMap<>();
@@ -147,19 +143,16 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 //Verificar si es un menu con producto terminados.
                                 DetalleOrdenMenu detalleOrdenMenu = new DetalleOrdenMenu();
                                 Optional<Menu> menuOptional = menuRepository.findById(detalleOrdenWrapper.getIdProducto());
-
                                 Menu menu = new Menu();
                                 Integer cocinaId = 0;
                                 if (menuOptional.isPresent()) {
                                     menu = menuOptional.get();
                                     cocinaId=menuOptional.get().getCocina().getId();
                                 }
-
                                 if (!cocinas.contains(menu.getCocina().getId())){
                                     cocinas.add(cocinaId);
                                     productosPorCocina.put(cocinaId, new ArrayList<>());
                                 }
-
                                 // Añadir el producto a la lista correspondiente a la cocina
                                 List<String> productos = productosPorCocina.get(cocinaId);
                                 menu.getNombre();
@@ -226,12 +219,11 @@ public class ComanderoServiceImpl implements IComanderoService {
 
 
                             }
-                            if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("false")){
 
+                            if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("false")){
                                 DetalleOrden_ProductoNormal detalleOrdenProductoNormal= new DetalleOrden_ProductoNormal();
                                 detalleOrdenProductoNormal.setCantidad(detalleOrdenWrapper.getCantidad());
                                 Optional<ProductoNormal> productoNormalOptional= productoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
-
                                 productoNormalOptional.ifPresent(detalleOrdenProductoNormal::setProductoNormal);
                                 if(productoNormalOptional.isPresent()){
                                     ProductoNormal productoNormal= productoNormalOptional.get();
@@ -240,13 +232,10 @@ public class ComanderoServiceImpl implements IComanderoService {
                                     detalleOrdenProductoNormal.setNombreProductoNormal(productoNormal.getNombre());
                                     detalleOrdenProductoNormal.setPrecioProductoNormal(productoNormal.getPrecioUnitario());
                                 }
-
                                 detalleOrdenProductoNormal.setOrden(orden);
                                 detalleOrdenProductoNormal.setEstado("En espera");
                                 detalleOrdenProductoNormal.setComentario(detalleOrdenWrapper.getComentario());
                                 detalleOrdenProductoNormal.setTotal(detalleOrdenWrapper.getCantidad()*productoNormalOptional.get().getPrecioUnitario());
-
-
                                 detalleOrdenProductoNormalRepository.save(detalleOrdenProductoNormal);
 
                             }
@@ -380,8 +369,6 @@ public class ComanderoServiceImpl implements IComanderoService {
 
             }
             return new ResponseEntity<List<ProductoDto>>(productoDtos,HttpStatus.OK);
-
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -413,7 +400,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                         productoDto.setImagen(menu.getImagen());
                         productoDto.setPrecio(menu.getPrecioVenta());
                     }
-
                 }else {
                     Optional<ProductoNormal> productoNormalOptional= productoNormalRepository.findById(id);
                     if(productoNormalOptional.isPresent()){
@@ -423,9 +409,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         productoDto.setNombre(productoNormal.getNombre());
                         productoDto.setImagen(productoNormal.getImagen());
                         productoDto.setPrecio(productoDto.getPrecio());
-
                     }
-
                 }
 
                 return new ResponseEntity<ProductoDto>(productoDto,HttpStatus.OK);

@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.dto.MateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.MateriaPrima;
@@ -17,7 +18,6 @@ import java.util.Map;
  */
 @RequestMapping("/materiaPrima")
 public interface IMateriaPrimaController {
-
     /**
      * Obtiene una lista de todas las materias primas activas en el sistema.
      *
@@ -25,7 +25,6 @@ public interface IMateriaPrimaController {
      */
     @GetMapping(path = "/materiasPrimasActivas")
     ResponseEntity<List<MateriaPrimaDTO>> obtenerMateriasPrimasActivas();
-
     /**
      * Obtiene una lista de todas las materias primas que actualmente no están activas en el sistema.
      *
@@ -64,7 +63,6 @@ public interface IMateriaPrimaController {
      */
     @PostMapping(path = "/agregar")
     ResponseEntity<String> agregar(@RequestBody(required = true) Map<String, String> objetoMap);
-
     /**
      * Actualiza los datos de una materia prima existente en el sistema. La información para la actualización
      * se pasa en el cuerpo de la solicitud.
@@ -74,7 +72,11 @@ public interface IMateriaPrimaController {
      */
     @PostMapping(path = "/actualizar")
     ResponseEntity<String> actualizar(@RequestBody(required = true) Map<String, String> objetoMap);
+    @GetMapping(path = "/listarAlmacenesPorIdMateriaPrima/{id}")
+    ResponseEntity<List<AlmacenDTO>> listarAlmacenesPorIdMateriaPrima(@PathVariable Integer id);
 
+    @PostMapping(path = "/agregarInventario")
+    ResponseEntity<String> agregarInventario(@RequestBody(required = true) Map<String,String> objetoMap);
     /**
      * Obtiene los detalles de una materia prima específica por su identificador.
      *
@@ -99,8 +101,6 @@ public interface IMateriaPrimaController {
                                           @RequestParam("idCategoria") int idCategoria,
                                           @RequestParam("costoUnitario") double costoUnitario,
                                           @RequestParam(value = "img",required = false) MultipartFile file);
-
-
 
     @GetMapping(path = "/totalMateriasPrimas")
     ResponseEntity<Integer> calcularTotalMateriasPrimas();
