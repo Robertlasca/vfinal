@@ -69,12 +69,25 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
                 materiaPrimaDTO.setEstado("Visible");
                 List<Inventario> inventarios= inventarioRepository.getAllByMateriaPrima_Id(materiaPrima.getId());
+                List<InventarioDTO> inventarioDTOS= new ArrayList<>();
                 if(!inventarios.isEmpty()){
                     for (Inventario inventario:inventarios) {
                         almacenes.add(inventario.getAlmacen().getNombre());
+
+                        InventarioDTO inventarioDTO= new InventarioDTO();
+                        inventarioDTO.setId(inventario.getId());
+                        inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
+                        inventarioDTO.setStockMinimo(inventario.getStockMin());
+                        inventarioDTO.setStockMaximo(inventario.getStockMax());
+                        inventarioDTOS.add(inventarioDTO);
                     }
 
+
                 }
+
+
+                materiaPrimaDTO.setInventarioDTOS(inventarioDTOS);
+                materiaPrimaDTO.setInventarioDTOS(inventarioDTOS);
                 materiaPrimaDTO.setAlmacenes(almacenes);
 
 
@@ -100,18 +113,21 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
                 materiaPrimaDTO.setEstado("No visible");
                 List<Inventario> inventarios= inventarioRepository.getAllByMateriaPrima_Id(materiaPrima.getId());
+                List<InventarioDTO> inventarioDTOS= new ArrayList<>();
                 if(!inventarios.isEmpty()){
                     for (Inventario inventario:inventarios) {
                         almacenes.add(inventario.getAlmacen().getNombre());
+
+                        InventarioDTO inventarioDTO= new InventarioDTO();
+                        inventarioDTO.setId(inventario.getId());
+                        inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
+                        inventarioDTO.setStockMinimo(inventario.getStockMin());
+                        inventarioDTO.setStockMaximo(inventario.getStockMax());
+                        inventarioDTOS.add(inventarioDTO);
                     }
-
                 }
+                materiaPrimaDTO.setInventarioDTOS(inventarioDTOS);
                 materiaPrimaDTO.setAlmacenes(almacenes);
-
-
-
-
-
                 materiaConEstado.add(materiaPrimaDTO);
             }
             return new ResponseEntity<List<MateriaPrimaDTO>>(materiaConEstado, HttpStatus.OK);
@@ -139,12 +155,22 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                     materiaPrimaDTO.setEstado("No visible");
                 }
                 List<Inventario> inventarios= inventarioRepository.getAllByMateriaPrima_Id(materiaPrima.getId());
+                List<InventarioDTO> inventarioDTOS= new ArrayList<>();
                 if(!inventarios.isEmpty()){
                     for (Inventario inventario:inventarios) {
                         almacenes.add(inventario.getAlmacen().getNombre());
+
+                        InventarioDTO inventarioDTO= new InventarioDTO();
+                        inventarioDTO.setId(inventario.getId());
+                        inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
+                        inventarioDTO.setStockMinimo(inventario.getStockMin());
+                        inventarioDTO.setStockMaximo(inventario.getStockMax());
+                        inventarioDTOS.add(inventarioDTO);
                     }
 
                 }
+
+                materiaPrimaDTO.setInventarioDTOS(inventarioDTOS);
                 materiaPrimaDTO.setAlmacenes(almacenes);
 
                 materiaConEstado.add(materiaPrimaDTO);
@@ -172,11 +198,8 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                     }else{
                         materiaPrima.setVisibilidad(true);
                     }
-
                     materiaPrimaRepository.save(materiaPrima);
-
                     return Utils.getResponseEntity("El estado de la materia prima ha sido cambiada.",HttpStatus.OK);
-
                 }
                 return Utils.getResponseEntity("La materia prima no existe.",HttpStatus.BAD_REQUEST);
 
@@ -368,13 +391,8 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                     }else{
                         String nombreImagen= uploadFileService.guardarImagen(file);
                         materiaPrima.setImagen(nombreImagen);
-
                     }
-
-
-
                     materiaPrimaRepository.save(materiaPrima);
-
                     //Asignar materia prima a los almacenes
                     ObjectMapper objectMapper= new ObjectMapper();
                     try {
@@ -477,8 +495,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                         }
                         materiaPrimaRepository.save(materiaPrima);
                         return Utils.getResponseEntity("Materia prima actualizada.",HttpStatus.OK);
-
-
 
                     }
                     return Utils.getResponseEntity("No puedes asignarle este nombre.",HttpStatus.BAD_REQUEST);
