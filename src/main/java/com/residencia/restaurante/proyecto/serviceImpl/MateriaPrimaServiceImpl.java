@@ -74,7 +74,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 if(!inventarios.isEmpty()){
                     for (Inventario inventario:inventarios) {
                         almacenes.add(inventario.getAlmacen().getNombre());
-
                         InventarioDTO inventarioDTO= new InventarioDTO();
                         inventarioDTO.setId(inventario.getId());
                         inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
@@ -82,8 +81,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                         inventarioDTO.setStockMaximo(inventario.getStockMax());
                         inventarioDTOS.add(inventarioDTO);
                     }
-
-
                 }
 
 
@@ -159,14 +156,22 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 List<InventarioDTO> inventarioDTOS= new ArrayList<>();
                 if(!inventarios.isEmpty()){
                     for (Inventario inventario:inventarios) {
-                        almacenes.add(inventario.getAlmacen().getNombre());
+                        if (inventario.getAlmacen() != null) {
 
-                        InventarioDTO inventarioDTO= new InventarioDTO();
-                        inventarioDTO.setId(inventario.getId());
-                        inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
-                        inventarioDTO.setStockMinimo(inventario.getStockMin());
-                        inventarioDTO.setStockMaximo(inventario.getStockMax());
-                        inventarioDTOS.add(inventarioDTO);
+                            almacenes.add(inventario.getAlmacen().getNombre());
+
+                            InventarioDTO inventarioDTO= new InventarioDTO();
+                            inventarioDTO.setId(inventario.getId());
+                            inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
+                            inventarioDTO.setStockMinimo(inventario.getStockMin());
+                            inventarioDTO.setStockMaximo(inventario.getStockMax());
+                            inventarioDTOS.add(inventarioDTO);
+                        }else{
+                            inventarioRepository.delete(inventario);
+                        }
+
+
+
                     }
 
                 }
@@ -633,7 +638,6 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                                     Almacen almacen=optionalAlmacen.get();
                                     inventario1.setAlmacen(almacen);
                                 }
-
 
                                 Optional<Usuario> optionalUsuario=usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
                                 if(!optionalUsuario.isEmpty()){

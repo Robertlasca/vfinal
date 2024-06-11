@@ -165,23 +165,28 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                         }
 
-
-
-
                     }
 
                     if(!detalleOrdenWrappers.isEmpty()){
                         for (DetalleOrdenWrapper detalleOrdenWrapper: detalleOrdenWrappers) {
-                            System.out.println(detalleOrdenWrapper.getIsMenu());
                             if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("true")){
-                                //Verificar si es un menu con producto terminados o
-                                DetalleOrdenMenu detalleOrdenMenu= new DetalleOrdenMenu();
                                 Optional<Menu> menuOptional= menuRepository.findById(detalleOrdenWrapper.getIdProducto());
-
                                 Menu menu= new Menu();
                                 if(menuOptional.isPresent()){
                                     menu= menuOptional.get();
                                 }
+                                //Verificamos la existencia de la relación de una orden y un menú mediante su id
+                                Optional<DetalleOrdenMenu> detalleOrdenMenuOptional= detalleOrdenMenuRepository.findDetalleOrdenMenuByOrden_IdAndMenu_Id(orden.getId(),detalleOrdenWrapper.getIdProducto());
+                                if(detalleOrdenMenuOptional.isPresent()){
+                                    DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
+                                    detalleOrdenMenu.setCantidad(detalleOrdenMenu.getCantidad()+detalleOrdenWrapper.getCantidad());
+                                    detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                                    descontarStockMenu(menu,detalleOrdenMenu);
+
+                                }else {
+                                //Verificar si es un menu con producto terminados o
+                                DetalleOrdenMenu detalleOrdenMenu= new DetalleOrdenMenu();
+
 
 
                                 detalleOrdenMenu.setMenu(menu);
@@ -191,32 +196,11 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 detalleOrdenMenu.setComentario(detalleOrdenWrapper.getComentario());
                                 detalleOrdenMenu.setEstado("En espera");
                                 //detalleOrdenMenu.setNombreMenu(menu.getNombre());
-                                //etalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
-
-                                List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
-                                List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
-
-                                if(!productoTerminadoMenus.isEmpty()){
-                                    for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus){
-                                        double cantidadRegresada= detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad();
-                                        ProductoTerminado productoTerminado= productoTerminadoMenu.getProductoTerminado();
-                                        productoTerminado.setStockActual(productoTerminado.getStockActual()+cantidadRegresada);
-                                        productoTerminadoRepository.save(productoTerminado);
-                                    }
+                                //detalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
+                                    detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                                    descontarStockMenu(menu,detalleOrdenMenu);
                                 }
-
-                                if(!materiaPrimaMenus.isEmpty()){
-                                    for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
-                                        double cantidadRegresada= detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad();
-                                        Inventario inventario= materiaPrimaMenu.getInventario();
-                                        inventario.setStockActual(inventario.getStockActual()+cantidadRegresada);
-                                        inventarioRepository.save(inventario);
-                                    }
-                                }
-                                detalleOrdenMenuRepository.save(detalleOrdenMenu);
                                 //Descontar stock
-
-
 
                             }
 
@@ -295,6 +279,31 @@ public class ComanderoServiceImpl implements IComanderoService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void descontarStockMenu(Menu menu,DetalleOrdenMenu detalleOrdenMenu){
+
+        List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
+        List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
+
+        if(!productoTerminadoMenus.isEmpty()){
+            for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus){
+                double cantidadRegresada= detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad();
+                ProductoTerminado productoTerminado= productoTerminadoMenu.getProductoTerminado();
+                productoTerminado.setStockActual(productoTerminado.getStockActual()+cantidadRegresada);
+                productoTerminadoRepository.save(productoTerminado);
+            }
+        }
+
+        if(!materiaPrimaMenus.isEmpty()){
+            for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
+                double cantidadRegresada= detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad();
+                Inventario inventario= materiaPrimaMenu.getInventario();
+                inventario.setStockActual(inventario.getStockActual()+cantidadRegresada);
+                inventarioRepository.save(inventario);
+            }
+        }
+
     }
 
     public String validarStock(String detalleOrdenJson) {
@@ -683,7 +692,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         int printerPort = 9100; // Puerto estándar para impresoras de red
 
                         // Imprimir el ticket
-                        boolean success = printTicket(ticketContent, "192.168.0.100", printerPort);
+                        boolean success = printTicket(ticketContent, "192.168.1.100", printerPort);
                         /*
                         Map<String, String> printRequest = new HashMap<>();
                         printRequest.put("ticketContent", ticketContent);

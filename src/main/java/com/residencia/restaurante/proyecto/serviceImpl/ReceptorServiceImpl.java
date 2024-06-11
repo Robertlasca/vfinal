@@ -65,7 +65,6 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                             detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                             detalleOrdenProductoDTO.setEsDetalleMenu("true");
                             comandaDTOList.add(detalleOrdenProductoDTO);
-
                         }
                     }
                     return new ResponseEntity<List<DetalleOrdenProductoDTO>>(comandaDTOList,HttpStatus.OK);
@@ -175,7 +174,6 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<String> cambiarPlatilloTerminado(Integer id) {
         try {
@@ -244,12 +242,9 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<String> cerrarCuenta() {
         try {
-
-
             // Datos de prueba para imprimir
             List<String[]> products = List.of(
                     new String[]{"2", "Burger", "5.99"},
