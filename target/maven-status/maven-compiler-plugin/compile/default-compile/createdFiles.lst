@@ -80,7 +80,6 @@ com\residencia\restaurante\proyecto\serviceImpl\MenuServiceImpl$1.class
 com\residencia\restaurante\proyecto\dto\EstacionDTO.class
 com\residencia\restaurante\proyecto\entity\Almacen.class
 com\residencia\restaurante\proyecto\serviceImpl\EmailService.class
-com\residencia\restaurante\security\utils\TicketRequest.class
 com\residencia\restaurante\RestauranteApplication.class
 com\residencia\restaurante\proyecto\controller\IUsuarioParametrosController.class
 com\residencia\restaurante\proyecto\wrapper\RecetaWrapper.class
@@ -156,7 +155,6 @@ com\residencia\restaurante\proyecto\entity\AreaServicio.class
 com\residencia\restaurante\proyecto\repository\IProductoTerminado_MenuRepository.class
 com\residencia\restaurante\proyecto\controller\IReporteController.class
 com\residencia\restaurante\proyecto\entity\MovimientosCaja.class
-com\residencia\restaurante\proyecto\serviceImpl\TicketService.class
 com\residencia\restaurante\proyecto\repository\IAlmacenRepository.class
 com\residencia\restaurante\proyecto\repository\IMenuRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\MenuServiceImpl$2.class
@@ -189,7 +187,6 @@ com\residencia\restaurante\proyecto\controller\IComanderoController.class
 com\residencia\restaurante\proyecto\service\IArqueoService.class
 com\residencia\restaurante\proyecto\service\IRecetaProductoTerminadoService.class
 com\residencia\restaurante\proyecto\constantes\Constantes.class
-com\residencia\restaurante\proyecto\controllerImpl\TicketController.class
 com\residencia\restaurante\proyecto\entity\MateriaPrima_ProductoTerminado.class
 com\residencia\restaurante\proyecto\serviceImpl\InventarioServiceImpl.class
 com\residencia\restaurante\proyecto\entity\Cocina_Utensilio.class
@@ -218,7 +215,6 @@ com\residencia\restaurante\proyecto\dto\MateriaPrimaDTO.class
 com\residencia\restaurante\proyecto\service\IImpresoraService.class
 com\residencia\restaurante\proyecto\wrapper\DetalleOrdenWrapper.class
 com\residencia\restaurante\proyecto\entity\Caja.class
-com\residencia\restaurante\proyecto\serviceImpl\PrintClient.class
 com\residencia\restaurante\proyecto\serviceImpl\ArqueoServiceImpl$1.class
 com\residencia\restaurante\security\model\Usuario_Rol.class
 com\residencia\restaurante\proyecto\controllerImpl\ArqueoControllerImpl.class

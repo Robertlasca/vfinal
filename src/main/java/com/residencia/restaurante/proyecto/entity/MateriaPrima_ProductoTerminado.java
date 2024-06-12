@@ -26,10 +26,6 @@ public class MateriaPrima_ProductoTerminado {
     @JoinColumn(name = "productoTerminado_id",nullable = true)
     private ProductoTerminado productoTerminado;
 
-    @ManyToOne
-    @JoinColumn(name = "materiaPrima_id",nullable = true)
-    private MateriaPrima materiaPrima;
-
 
     @ManyToOne
     @JoinColumn(name = "inventario_id",nullable = true)

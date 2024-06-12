@@ -35,8 +35,7 @@ public class ReceptorServiceImpl implements IReceptorService {
     private IProductoTerminadoRepository productoTerminadoRepository;
     @Autowired
     private IInventarioRepository inventarioRepository;
-@Autowired
-    private  PrintClient printClient;
+
 
 @Autowired
 private IMateriaPrima_MenuRepository materiaPrimaMenuRepository;

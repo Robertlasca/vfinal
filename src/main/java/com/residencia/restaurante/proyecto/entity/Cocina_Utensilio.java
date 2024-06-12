@@ -19,10 +19,8 @@ public class Cocina_Utensilio {
     @ManyToOne
     @JoinColumn(nullable = true,name = "cocina_id")
     private Cocina cocina;
-
     @ManyToOne
     @JoinColumn(nullable = true,name = "utensilio_id")
     private Utensilio utensilio;
-
     private int cantidad;
 }

@@ -42,7 +42,7 @@ public class Inventario {
 
     private double stockMin;
 
-    private double stockActual;
+    private double stockActual=0;
     @Column(nullable = true)
     private LocalDate fechaIngreso=LocalDate.now();
 

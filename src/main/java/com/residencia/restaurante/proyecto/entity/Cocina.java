@@ -24,4 +24,7 @@ public class Cocina {
     private String descripcion;
     @Column(nullable = true)
     private boolean visibilidad=true;
+    @ManyToOne
+    @JoinColumn(nullable = true,name = "impresora_id")
+    private Impresora impresora;
 }

@@ -24,10 +24,6 @@ public class MateriaPrima_Menu {
     @JoinColumn(name = "menu_id",nullable = true)
     private Menu menu;
 
-    @ManyToOne
-    @JoinColumn(name = "materiaPrima_id",nullable = true)
-    private MateriaPrima materiaPrima;
-
     private double cantidad;
 
     @ManyToOne
