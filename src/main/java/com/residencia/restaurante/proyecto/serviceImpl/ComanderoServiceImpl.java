@@ -692,11 +692,11 @@ public class ComanderoServiceImpl implements IComanderoService {
                         int printerPort = 9100; // Puerto estándar para impresoras de red
 
                         // Imprimir el ticket
-                        boolean success = printTicket(ticketContent, "192.168.1.100", printerPort);
-                        /*
+                       // boolean success = printTicket(ticketContent, "restaurante.zapto.org", printerPort);
+
                         Map<String, String> printRequest = new HashMap<>();
                         printRequest.put("ticketContent", ticketContent);
-                        printRequest.put("printerName", impresoraOptional.get().getNombre());
+                        printRequest.put("printerIp", "192.168.1.100");
                         printRequest.put("usbPort", impresoraOptional.get().getDireccionIp());
 
                         String printRequestJson = new ObjectMapper().writeValueAsString(printRequest);
@@ -704,13 +704,13 @@ public class ComanderoServiceImpl implements IComanderoService {
                         // Enviar solicitud al servidor de impresión local
                         HttpClient client = HttpClient.newHttpClient();
                         HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create("https://19a8116ec84092.lhr.life/print"))
+                                .uri(URI.create("https://67b5-2806-10ae-10-4b65-889c-99b4-a753-8fbc.ngrok-free.app/print"))
                                 .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                                 .header("Content-Type", "application/json")
                                 .build();
 
-                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());*/
-                        if (success) {
+                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                        if (response.statusCode()==200) {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
                         } else {
                             return Utils.getResponseEntity("Error al imprimir: ",HttpStatus.INTERNAL_SERVER_ERROR);
@@ -728,14 +728,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);*/
                         //ticket.print(selectedService);
                         // Buscar la impresora por nombre compartido
-                        /*
-                        PrintService printService = findPrintService("POS-58");
-                        if (printService != null) {
-                            ticket.print(printService);
-                            return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
-                        } else {
-                            return Utils.getResponseEntity("No se encontro la impresora",HttpStatus.BAD_REQUEST);
-                        }*/
+
 
 
                     }

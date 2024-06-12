@@ -1,18 +1,11 @@
 package com.residencia.restaurante.security.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.print.*;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.event.PrintJobAdapter;
-import javax.print.event.PrintJobEvent;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.Map;
 
 @RestController
@@ -22,15 +15,11 @@ public class PrintServer {
     @PostMapping
     public ResponseEntity<String> print(@RequestBody Map<String, String> printRequest) {
         try {
-            //String ticketContent = printRequest.get("ticketContent");
+            String ticketContent = printRequest.get("ticketContent");
+            String printerIp = printRequest.get("printerIp");
 
-            String printerName = printRequest.get("printerName");
-            String usbPort = printRequest.get("usbPort");
-
-
-            System.out.println(printRequest.get("ticketContent"));
             // Lógica para imprimir el ticket
-            boolean success = printTicket(printRequest.get("ticketContent"), printerName, usbPort);
+            boolean success = printTicket(ticketContent, printerIp, 9100);
 
             if (success) {
                 return new ResponseEntity<>("Impreso correctamente", HttpStatus.OK);
@@ -43,86 +32,27 @@ public class PrintServer {
         }
     }
 
-    private boolean printTicket(String ticketContent, String printerName, String usbPort) {
-        try {
-            // Buscar la impresora por nombre o puerto USB
-            PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
-            PrintService selectedService = null;
+    private boolean printTicket(String ticketContent, String printerIp, int printerPort) {
+        try (Socket socket = new Socket(printerIp, printerPort)) {
+            OutputStream out = socket.getOutputStream();
+            out.write(ticketContent.getBytes());
+            out.flush();
 
-            for (PrintService service : printServices) {
-                if (service.getName().equalsIgnoreCase(printerName) || service.getName().contains(usbPort)) {
-                    selectedService = service;
-                    break;
-                }
-            }
 
-            if (selectedService == null) {
-                System.out.println("No se encontró la impresora con el nombre especificado o el puerto USB.");
-                return false;
-            }
 
-            // Configurar el trabajo de impresión
-            DocPrintJob job = selectedService.createPrintJob();
-            byte[] bytes = ticketContent.getBytes();
-            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
-            Doc doc = new SimpleDoc(bytes, flavor, null);
-            PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+            // Aquí enviamos el comando de corte automático
+            // Esto puede variar dependiendo del modelo y fabricante de la impresora
+            String cutCommand = "\n" + (char)29 + (char)86 + (char)66 + (char)0;
+            out.write(cutCommand.getBytes());
 
-            // Crear un listener para esperar hasta que la impresión se complete
-            PrintJobWatcher pjw = new PrintJobWatcher(job);
-            job.print(doc, pras);
-            pjw.waitForDone();
+            out.flush();
+
+            // Cerrar el OutputStream y el socket
+            out.close();
             return true;
-
-        } catch (PrintException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
-        }
-    }
-
-    // Clase auxiliar para esperar a que el trabajo de impresión se complete
-    class PrintJobWatcher {
-        private boolean done = false;
-
-        PrintJobWatcher(DocPrintJob job) {
-            job.addPrintJobListener(new PrintJobAdapter() {
-                @Override
-                public void printJobCompleted(PrintJobEvent pje) {
-                    allDone();
-                }
-
-                @Override
-                public void printJobFailed(PrintJobEvent pje) {
-                    allDone();
-                }
-
-                @Override
-                public void printJobCanceled(PrintJobEvent pje) {
-                    allDone();
-                }
-
-                @Override
-                public void printJobNoMoreEvents(PrintJobEvent pje) {
-                    allDone();
-                }
-
-                private void allDone() {
-                    synchronized (PrintJobWatcher.this) {
-                        done = true;
-                        PrintJobWatcher.this.notify();
-                    }
-                }
-            });
-        }
-
-        public synchronized void waitForDone() {
-            try {
-                while (!done) {
-                    wait();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

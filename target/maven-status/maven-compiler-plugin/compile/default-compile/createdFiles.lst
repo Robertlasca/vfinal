@@ -76,7 +76,6 @@ com\residencia\restaurante\proyecto\service\IUtensilioService.class
 com\residencia\restaurante\proyecto\controller\IReceptorController.class
 com\residencia\restaurante\proyecto\controllerImpl\RecetaProductoTerminadoControllerImpl.class
 com\residencia\restaurante\proyecto\serviceImpl\ProductoTerminadoServiceImpl.class
-com\residencia\restaurante\security\utils\PrintServer$PrintJobWatcher$1.class
 com\residencia\restaurante\proyecto\serviceImpl\MenuServiceImpl$1.class
 com\residencia\restaurante\proyecto\dto\EstacionDTO.class
 com\residencia\restaurante\proyecto\entity\Almacen.class
@@ -111,7 +110,6 @@ com\residencia\restaurante\proyecto\dto\VentasDTO.class
 com\residencia\restaurante\proyecto\entity\DetalleOrdenMenu.class
 com\residencia\restaurante\proyecto\dto\ProductoTerminadoDto.class
 com\residencia\restaurante\proyecto\controller\IArqueoSaldosController.class
-com\residencia\restaurante\security\utils\PrintServer$PrintJobWatcher.class
 com\residencia\restaurante\proyecto\dto\ProductoDto.class
 com\residencia\restaurante\proyecto\dto\InventarioDTO.class
 com\residencia\restaurante\proyecto\repository\IInventarioRepository.class
