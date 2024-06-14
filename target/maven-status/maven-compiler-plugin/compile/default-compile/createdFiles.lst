@@ -31,6 +31,7 @@ com\residencia\restaurante\security\model\Usuario.class
 com\residencia\restaurante\proyecto\serviceImpl\MedioPagoServiceImpl.class
 com\residencia\restaurante\proyecto\repository\IMedioPagoRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\RecetaMenuServiceImpl.class
+com\residencia\restaurante\security\utils\ValidarStock.class
 com\residencia\restaurante\proyecto\controller\IArqueoController.class
 com\residencia\restaurante\proyecto\controller\IUtensilioController.class
 com\residencia\restaurante\proyecto\repository\IDetalleOrden_MenuRepository.class

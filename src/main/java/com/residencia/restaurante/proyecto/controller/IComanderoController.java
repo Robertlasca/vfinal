@@ -35,6 +35,9 @@ public interface IComanderoController {
     @PostMapping(path = "/cerrarCuenta")
     ResponseEntity<String> cerrarCuenta(@RequestBody(required = true) Map<String, String> objetoMap);
 
+    @GetMapping(path = "/validarStock")
+    ResponseEntity<String> validarStocks(@RequestBody(required = true)String productos);
+
 
 
 

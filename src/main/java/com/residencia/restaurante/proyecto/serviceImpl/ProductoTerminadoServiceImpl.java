@@ -232,16 +232,16 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
     }
 
     private double calcularCosto(ProductoTerminado productoTerminado) {
+
         List<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminados= materiaPrimaProductoTerminadoRepository.getAllByProductoTerminado(productoTerminado);
         double costoTotal=0;
         if(!materiaPrimaProductoTerminados.isEmpty()){
             for (MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado:materiaPrimaProductoTerminados) {
+                System.out.println("Materia prima id"+materiaPrimaProductoTerminado.getProductoTerminado());
+                System.out.println("Inventario id"+materiaPrimaProductoTerminado.getInventario().getAlmacen());
                 MateriaPrima materiaPrima= materiaPrimaProductoTerminado.getInventario().getMateriaPrima();
                 double costo= calcularCostoProduccion(materiaPrima.getCostoUnitario());
                 costoTotal=costoTotal+rendondearADos((materiaPrimaProductoTerminado.getCantidad()*1000)*costo);
-
-
-
 
             }
         }
@@ -251,6 +251,7 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
 
     @Override
     public ResponseEntity<String> agregar(String nombre, String unidadMedida, String descripcion, double stockMax, double stockMin, MultipartFile file, int idCategoria, String materias) {
+
         try {
             if(!productoTerminadoRepository.existsByNombreLikeIgnoreCase(nombre) || !nombre.isEmpty() ){
 

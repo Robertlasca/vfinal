@@ -5,8 +5,10 @@ import com.residencia.restaurante.proyecto.dto.EstacionDTO;
 import com.residencia.restaurante.proyecto.dto.InventarioDTO;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.Cocina;
+import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
+import com.residencia.restaurante.proyecto.repository.IImpresoraRepository;
 import com.residencia.restaurante.proyecto.service.ICocinaService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ import java.util.Optional;
 public class CocinaServiceImpl implements ICocinaService {
     @Autowired
     ICocinaRepository cocinaRepository;
+
+    @Autowired
+    IImpresoraRepository impresoraRepository;
     /**
      * Obtiene una lista de todas las cocinas activas.
      * @return Lista de cocinas activas con estado HTTP correspondiente.
@@ -225,6 +230,7 @@ public class CocinaServiceImpl implements ICocinaService {
         boolean disponibidad=true;
         boolean estado=true;
 
+
         if(esAgregado){
             Optional<Cocina> cocinaOptional= cocinaRepository.findById(Integer.parseInt(objetoMap.get("id")));
 
@@ -233,6 +239,14 @@ public class CocinaServiceImpl implements ICocinaService {
 
         }else {
             cocina.setVisibilidad(true);
+        }
+
+        Optional<Impresora> impresoraOptional= impresoraRepository.findById(Integer.parseInt(objetoMap.get("idImpresora")));
+        if(impresoraOptional.isPresent()){
+            Impresora impresora= impresoraOptional.get();
+            cocina.setImpresora(impresora);
+
+            cocinaRepository.save(cocina);
         }
 
         cocina.setNombre(objetoMap.get("nombre"));
