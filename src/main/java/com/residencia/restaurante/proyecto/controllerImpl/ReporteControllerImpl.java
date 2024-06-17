@@ -3,6 +3,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 import com.residencia.restaurante.proyecto.controller.IReporteController;
 import com.residencia.restaurante.proyecto.service.IReporteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -55,6 +56,22 @@ public class ReporteControllerImpl implements IReporteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al imprimir el documento");
         }
     }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadPDF(Map<String, String> objetoMap) {
+        return reporteService.downloadPDF(objetoMap);
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteInventarioAgotandose(Map<String, String> objetoMap) {
+        return reporteService.descargarReporteInventarioAgotandose(objetoMap);
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteInventarioAgotandoseXAlmacen(Map<String, String> objetoMap) {
+        return reporteService.descargarReporteInventarioAgotandoseXAlmacen(objetoMap);
+    }
+
 
     private boolean enviarSolicitudDeImpresion() {
         try {

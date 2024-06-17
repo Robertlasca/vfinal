@@ -75,7 +75,6 @@ public class VentasControllerImpl implements IVentasController {
     public ResponseEntity<List<VentasDTO>> obtenerPorFecha(String fecha) {
         try {
             return ventasService.obtenerPorFecha(fecha);
-
         }catch (Exception e){
             e.printStackTrace();
         }

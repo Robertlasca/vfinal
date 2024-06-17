@@ -62,4 +62,7 @@ public interface IInventarioRepository extends JpaRepository<Inventario,Integer>
 
     @Query("SELECT a FROM Almacen a WHERE a.id NOT IN (SELECT i.almacen.id FROM Inventario i WHERE i.materiaPrima.id = :materiaPrimaId) AND a.visibilidad=true")
     List<Almacen> findAlmacenesNotRelatedToMateriaPrima(Integer materiaPrimaId);
+
+    @Query("SELECT i FROM Inventario i WHERE i.almacen.id = :almacenId AND i.stockActual < i.stockMin")
+    List<Inventario> inventariosInsuficientePorAlmacen(Integer almacenId);
 }

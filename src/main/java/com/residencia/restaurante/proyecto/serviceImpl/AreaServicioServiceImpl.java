@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class AreaServicioServiceImpl implements IAreaServicioService {
+public class
+AreaServicioServiceImpl implements IAreaServicioService {
     @Autowired
     private IAreaServicioRepository areaServicioRepository;
      @Autowired

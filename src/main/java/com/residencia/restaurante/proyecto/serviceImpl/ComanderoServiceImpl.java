@@ -60,6 +60,8 @@ public class ComanderoServiceImpl implements IComanderoService {
 
     @Autowired
     private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
+
+
     @Autowired
     private IUsuarioRepository usuarioRepository;
     @Autowired
@@ -136,105 +138,116 @@ public class ComanderoServiceImpl implements IComanderoService {
                     Set<Integer> cocinas = new HashSet<>();
                     Map<Integer, List<String>> productosPorCocina = new HashMap<>();
 
-                    if(!detalleOrdenWrappers.isEmpty()){
-                        for (DetalleOrdenWrapper detalleOrdenWrapper: detalleOrdenWrappers) {
-                            if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esDetalleOrdenMenu")){
-                                Optional<DetalleOrdenMenu> detalleOrdenMenuOptional=detalleOrdenMenuRepository.findById(detalleOrdenWrapper.getIdProducto());
-                                if(detalleOrdenMenuOptional.isPresent()){
-                                    //Solo dos operaciones sumar o restar
-                                    DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
-                                    Integer cocinaId =90000;
-                                    //Para el caso en el que se agrega a la nueva comanda
-                                    if(detalleOrdenMenu.getCantidad()<detalleOrdenWrapper.getCantidad()){
-                                        cocinaId=detalleOrdenMenu.getMenu().getCocina().getId();
-                                        int cantidad= detalleOrdenMenu.getCantidad()-detalleOrdenWrapper.getCantidad();
-                                        // Añadir el producto a la lista correspondiente a la cocina
-                                        List<String> productos = productosPorCocina.get(cocinaId);
-                                        String productoDetalle = detalleOrdenMenu.getMenu().getNombre() + cantidad +  detalleOrdenWrapper.getComentario();
-                                        productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al
-                                        descontarOAgregarStockMenu(detalleOrdenMenu.getMenu(),detalleOrdenMenu,detalleOrdenWrapper.getCantidad(),"descontar");
+                    if(!detalleOrdenWrappers.isEmpty()) {
+                        if (validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("Si hay suficientes stock")){
+                            for (DetalleOrdenWrapper detalleOrdenWrapper : detalleOrdenWrappers) {
+                                if (detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esDetalleOrdenMenu")) {
+                                    Optional<DetalleOrdenMenu> detalleOrdenMenuOptional = detalleOrdenMenuRepository.findById(detalleOrdenWrapper.getIdProducto());
+                                    if (detalleOrdenMenuOptional.isPresent()) {
+                                        //Solo dos operaciones sumar o restar
+                                        DetalleOrdenMenu detalleOrdenMenu = detalleOrdenMenuOptional.get();
+                                        Integer cocinaId = 90000;
+                                        //Para el caso en el que se agrega a la nueva comanda
+                                        if (detalleOrdenMenu.getCantidad() < detalleOrdenWrapper.getCantidad()) {
+                                            cocinaId = detalleOrdenMenu.getMenu().getCocina().getId();
+                                            int cantidad = detalleOrdenWrapper.getCantidad()-detalleOrdenMenu.getCantidad() ;
+                                            // Añadir el producto a la lista correspondiente a la cocina
 
+                                            List<String> productos = productosPorCocina.get(cocinaId);
+                                            String productoDetalle = detalleOrdenMenu.getMenu().getNombre() + cantidad + detalleOrdenWrapper.getComentario();
+                                            productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al
+
+                                        }
+                                        descontarOAgregarStockMenu(detalleOrdenMenu.getMenu(), detalleOrdenMenu, detalleOrdenWrapper.getCantidad());
+                                    }
+                                }
+                                if (detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esMenu")) {
+                                    Optional<Menu> menuOptional = menuRepository.findById(detalleOrdenWrapper.getIdProducto());
+                                    Menu menu = new Menu();
+                                    Integer cocinaId = 9000;
+                                    if (menuOptional.isPresent()) {
+                                        menu = menuOptional.get();
+                                        cocinaId = menuOptional.get().getCocina().getId();
                                     }
 
+                                    if (!cocinas.contains(menu.getCocina().getId())) {
+                                        cocinas.add(cocinaId);
+                                        productosPorCocina.put(cocinaId, new ArrayList<>());
+                                    }
+
+                                    // Añadir el producto a la lista correspondiente a la cocina
+                                    List<String> productos = productosPorCocina.get(cocinaId);
+                                    String productoDetalle = menu.getNombre() + detalleOrdenWrapper.getCantidad() + detalleOrdenWrapper.getComentario();
+                                    productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al producto
+
+                                    //Verificamos la existencia de la relación de una orden y un menú mediante su id
+                                    Optional<DetalleOrdenMenu> detalleOrdenMenuOptional = detalleOrdenMenuRepository.findDetalleOrdenMenuByOrden_IdAndMenu_Id(orden.getId(), detalleOrdenWrapper.getIdProducto());
+                                    if (detalleOrdenMenuOptional.isPresent()) {
+                                        DetalleOrdenMenu detalleOrdenMenu = detalleOrdenMenuOptional.get();
+                                        detalleOrdenMenu.setCantidad(detalleOrdenMenu.getCantidad() + detalleOrdenWrapper.getCantidad());
+                                        detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                                        descontarStockMenu(menu, detalleOrdenMenu);
+
+                                    } else {
+                                        //Verificar si es un menu con producto terminados o
+                                        DetalleOrdenMenu detalleOrdenMenu = new DetalleOrdenMenu();
+
+                                        detalleOrdenMenu.setMenu(menu);
+                                        detalleOrdenMenu.setOrden(orden);
+                                        detalleOrdenMenu.setCantidad(detalleOrdenWrapper.getCantidad());
+                                        detalleOrdenMenu.setTotal(menu.getPrecioVenta() * detalleOrdenWrapper.getCantidad());
+                                        detalleOrdenMenu.setComentario(detalleOrdenWrapper.getComentario());
+                                        detalleOrdenMenu.setEstado("En espera");
+                                        detalleOrdenMenu.setNombreMenu(menu.getNombre());
+                                        detalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
+                                        detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                                        descontarStockMenu(menu, detalleOrdenMenu);
+                                    }
 
                                 }
+
+                                if (detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esProductoNormal")) {
+                                    DetalleOrden_ProductoNormal detalleOrdenProductoNormal = new DetalleOrden_ProductoNormal();
+                                    detalleOrdenProductoNormal.setCantidad(detalleOrdenWrapper.getCantidad());
+                                    Optional<ProductoNormal> productoNormalOptional = productoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
+                                    productoNormalOptional.ifPresent(detalleOrdenProductoNormal::setProductoNormal);
+                                    if (productoNormalOptional.isPresent()) {
+                                        ProductoNormal productoNormal = productoNormalOptional.get();
+                                        productoNormal.setStockActual(productoNormal.getStockActual() - detalleOrdenWrapper.getCantidad());
+                                        productoNormalRepository.save(productoNormal);
+                                        detalleOrdenProductoNormal.setNombreProductoNormal(productoNormal.getNombre());
+                                        detalleOrdenProductoNormal.setPrecioProductoNormal(productoNormal.getPrecioUnitario());
+                                    }
+                                    detalleOrdenProductoNormal.setOrden(orden);
+                                    detalleOrdenProductoNormal.setEstado("En espera");
+                                    detalleOrdenProductoNormal.setComentario(detalleOrdenWrapper.getComentario());
+                                    detalleOrdenProductoNormal.setTotal(detalleOrdenWrapper.getCantidad() * productoNormalOptional.get().getPrecioUnitario());
+                                    detalleOrdenProductoNormalRepository.save(detalleOrdenProductoNormal);
+
+                                }
+
+                                if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esDetalleOrdenProducto")){
+                                    Optional<DetalleOrden_ProductoNormal> detalleOrdenProductoNormal= detalleOrdenProductoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
+
+                                    if(detalleOrdenProductoNormal.isPresent()){
+                                        DetalleOrden_ProductoNormal detalleOrdenProductoNormal1= detalleOrdenProductoNormal.get();
+                                        descontarOAgregarStockProductoNormal(detalleOrdenProductoNormal1.getProductoNormal(),detalleOrdenProductoNormal1,detalleOrdenWrapper.getCantidad());
+                                    }
+
+                                }
+
+
                             }
-                            if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esMenu")){
-                                Optional<Menu> menuOptional= menuRepository.findById(detalleOrdenWrapper.getIdProducto());
-                                Menu menu= new Menu();
-                                Integer cocinaId = 9000;
-                                if(menuOptional.isPresent()){
-                                    menu= menuOptional.get();
-                                    cocinaId=menuOptional.get().getCocina().getId();
-                                }
-
-                                if (!cocinas.contains(menu.getCocina().getId())){
-                                    cocinas.add(cocinaId);
-                                    productosPorCocina.put(cocinaId, new ArrayList<>());
-                                }
-
-                                // Añadir el producto a la lista correspondiente a la cocina
-                                List<String> productos = productosPorCocina.get(cocinaId);
-                                String productoDetalle = menu.getNombre() + detalleOrdenWrapper.getCantidad() +  detalleOrdenWrapper.getComentario();
-                                productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al producto
-
-                                //Verificamos la existencia de la relación de una orden y un menú mediante su id
-                                Optional<DetalleOrdenMenu> detalleOrdenMenuOptional= detalleOrdenMenuRepository.findDetalleOrdenMenuByOrden_IdAndMenu_Id(orden.getId(),detalleOrdenWrapper.getIdProducto());
-                                if(detalleOrdenMenuOptional.isPresent()){
-                                    DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
-                                    detalleOrdenMenu.setCantidad(detalleOrdenMenu.getCantidad()+detalleOrdenWrapper.getCantidad());
-                                    detalleOrdenMenuRepository.save(detalleOrdenMenu);
-                                    descontarStockMenu(menu,detalleOrdenMenu);
-
-                                }else {
-                                //Verificar si es un menu con producto terminados o
-                                DetalleOrdenMenu detalleOrdenMenu= new DetalleOrdenMenu();
-
-                                detalleOrdenMenu.setMenu(menu);
-                                detalleOrdenMenu.setOrden(orden);
-                                detalleOrdenMenu.setCantidad(detalleOrdenWrapper.getCantidad());
-                                detalleOrdenMenu.setTotal(menu.getPrecioVenta()*detalleOrdenWrapper.getCantidad());
-                                detalleOrdenMenu.setComentario(detalleOrdenWrapper.getComentario());
-                                detalleOrdenMenu.setEstado("En espera");
-                                detalleOrdenMenu.setNombreMenu(menu.getNombre());
-                                detalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
-                                    detalleOrdenMenuRepository.save(detalleOrdenMenu);
-                                    descontarStockMenu(menu,detalleOrdenMenu);
-                                }
-
-                            }
-
-                            if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("false")){
-                                DetalleOrden_ProductoNormal detalleOrdenProductoNormal= new DetalleOrden_ProductoNormal();
-                                detalleOrdenProductoNormal.setCantidad(detalleOrdenWrapper.getCantidad());
-                                Optional<ProductoNormal> productoNormalOptional= productoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
-                                productoNormalOptional.ifPresent(detalleOrdenProductoNormal::setProductoNormal);
-                                if(productoNormalOptional.isPresent()){
-                                    ProductoNormal productoNormal= productoNormalOptional.get();
-                                    productoNormal.setStockActual(productoNormal.getStockActual()-detalleOrdenWrapper.getCantidad());
-                                    productoNormalRepository.save(productoNormal);
-                                    detalleOrdenProductoNormal.setNombreProductoNormal(productoNormal.getNombre());
-                                    detalleOrdenProductoNormal.setPrecioProductoNormal(productoNormal.getPrecioUnitario());
-                                }
-                                detalleOrdenProductoNormal.setOrden(orden);
-                                detalleOrdenProductoNormal.setEstado("En espera");
-                                detalleOrdenProductoNormal.setComentario(detalleOrdenWrapper.getComentario());
-                                detalleOrdenProductoNormal.setTotal(detalleOrdenWrapper.getCantidad()*productoNormalOptional.get().getPrecioUnitario());
-                                detalleOrdenProductoNormalRepository.save(detalleOrdenProductoNormal);
-
-                            }
 
 
-
-
-                        }
-
-
-                        if(imprimirComandas(productosPorCocina,orden.getNombreCliente(),orden.getMesa().getAreaServicio().getNombre(),orden.getUsuario().getNombre())==200){
+                        if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre(), orden.getUsuario().getNombre()) == 200) {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
-                        }else {
-                            return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.",HttpStatus.BAD_REQUEST);
+                        } else {
+                            return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
                         }
+
+                    }
+                        return Utils.getResponseEntity(validarStock(objetoMap.get("detalleOrden")),HttpStatus.BAD_REQUEST);
 
 
                     }
@@ -253,6 +266,15 @@ public class ComanderoServiceImpl implements IComanderoService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void descontarOAgregarStockProductoNormal(ProductoNormal productoNormal, DetalleOrden_ProductoNormal detalleOrdenProductoNormal1, int cantidad) {
+        int cantidadRegresada=detalleOrdenProductoNormal1.getCantidad();
+        int cantidadQuitar= cantidad;
+
+        ProductoNormal productoNormal1=productoNormal;
+        productoNormal1.setStockActual((productoNormal1.getStockActual()+cantidadRegresada)-cantidadQuitar);
+        productoNormalRepository.save(productoNormal1);
     }
 
     private  int imprimirComandas(Map<Integer, List<String>> productosPorCocina,String cliente,String areaServicio,String usuario) throws IOException, InterruptedException {
@@ -297,10 +319,10 @@ public class ComanderoServiceImpl implements IComanderoService {
         return 0;
     }
 
-    private void descontarOAgregarStockMenu(Menu menu, DetalleOrdenMenu detalleOrdenMenu, int cantidad, String descontar){
+    private void descontarOAgregarStockMenu(Menu menu, DetalleOrdenMenu detalleOrdenMenu, int cantidad){
         List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
         List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
-        if(descontar.equalsIgnoreCase("descontar")){
+
             if(!productoTerminadoMenus.isEmpty()){
                 for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus){
                     double cantidadRegresada= detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad();
@@ -320,7 +342,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                 }
             }
 
-        }
+
 
 
 
@@ -354,20 +376,21 @@ public class ComanderoServiceImpl implements IComanderoService {
     public String validarStock(String detalleOrdenJson) {
         ObjectMapper objectMapper = new ObjectMapper();
         ValidarStock validarStock= new ValidarStock();
+        ValidarStock validarStockTerminado= new ValidarStock();
+        ValidarStock validarStockProductoNormal= new ValidarStock();
         try {
             List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(detalleOrdenJson, new TypeReference<List<DetalleOrdenWrapper>>() {});
-            Map<Integer, Double> necesidadIngredientes = new HashMap<>(); // ID de Inventario y cantidad total requerida
-            ValidarStock inventarioMateriaPrima= new ValidarStock();
 
             for (DetalleOrdenWrapper detalle : detalleOrdenWrappers) {
+
                 if (detalle.getIsMenu().equalsIgnoreCase("esMenu")) {
+
                     List<MateriaPrima_Menu> ingredientesMenu = materiaPrimaMenuRepository.findByMenuId(detalle.getIdProducto());
+                    List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.findAllByMenuId(detalle.getIdProducto());
+
                     for (MateriaPrima_Menu ingrediente : ingredientesMenu) {
                         int inventarioId = ingrediente.getInventario().getId();
-
                         double descontandoStock = ingrediente.getInventario().getStockActual()-(ingrediente.getCantidad() * detalle.getCantidad());
-                        System.out.println("Stock actual"+ingrediente.getInventario().getStockActual());
-                        System.out.println("Stock a quitar"+ingrediente.getCantidad() * detalle.getCantidad());
                         if(descontandoStock<=0){
                             return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el inventario en el almacen"+ingrediente.getInventario().getAlmacen().getNombre()+".Hace falta ingresar mas "+ingrediente.getInventario().getMateriaPrima().getNombre();
                         }else {
@@ -383,19 +406,154 @@ public class ComanderoServiceImpl implements IComanderoService {
                             }
                         }
 
-                       // inventarioMateriaPrima.agregarSiNoExiste(inventarioId,cantidadNecesaria)
+                    }
+                    //Validar stock para los productos terminados
+                    if(!productoTerminadoMenus.isEmpty()){
+
+                        for (ProductoTerminado_Menu ingrediente : productoTerminadoMenus) {
+                            double descontandoStock = ingrediente.getProductoTerminado().getStockActual()-(ingrediente.getCantidad() * detalle.getCantidad());
+                            if(descontandoStock<=0){
+                                return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el producto terminado"+ingrediente.getProductoTerminado().getNombre();
+                            }else {
+                                if(validarStockTerminado.agregarSiNoExiste(ingrediente.getProductoTerminado().getId(),descontandoStock)){
+
+                                }else {
+                                    if (validarStockTerminado.obtenerCantidadPorId(ingrediente.getProductoTerminado().getId())-(ingrediente.getCantidad() * detalle.getCantidad()) >0){
+                                        validarStockTerminado.actualizar(ingrediente.getProductoTerminado().getId(), validarStockTerminado.obtenerCantidadPorId(ingrediente.getProductoTerminado().getId())-(ingrediente.getCantidad() * detalle.getCantidad()));
+                                    }else{
+                                        return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el producto terminado"+ingrediente.getProductoTerminado().getNombre();
+                                    }
+
+                                }
+                            }
+
+                        }
+
                     }
 
-                    return "Si hay suficiente stock.";
+
+                }
+
+                if(detalle.getIsMenu().equalsIgnoreCase("esDetalleMenu")){
+                    Optional<DetalleOrdenMenu> detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(detalle.getIdProducto());
+                    if(detalleOrdenMenuOptional.isPresent()){
+                        DetalleOrdenMenu detalleOrdenMenu = detalleOrdenMenuOptional.get();
+                        int cantidad= detalle.getCantidad()-detalleOrdenMenu.getCantidad();
+                        //Si ya esta agregado ya no se verifica
+                        if(cantidad>0) {
+                            List<MateriaPrima_Menu> ingredientesMenu = materiaPrimaMenuRepository.findByMenuId(detalleOrdenMenu.getMenu().getId());
+                            List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.findAllByMenuId(detalleOrdenMenu.getMenu().getId());
+                            if(!ingredientesMenu.isEmpty()){
+
+                            for (MateriaPrima_Menu ingrediente : ingredientesMenu) {
+                                double descontandoStock = ingrediente.getInventario().getStockActual()-(ingrediente.getCantidad() * cantidad);
+                                if(descontandoStock<=0){
+                                    return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el inventario en el almacen"+ingrediente.getInventario().getAlmacen().getNombre()+".Hace falta ingresar mas "+ingrediente.getInventario().getMateriaPrima().getNombre();
+                                }else {
+                                    if(validarStock.agregarSiNoExiste(ingrediente.getInventario().getId(),descontandoStock)){
+
+                                    }else {
+                                        if (validarStock.obtenerCantidadPorId(ingrediente.getInventario().getId())-(ingrediente.getCantidad() * cantidad) >0){
+                                            validarStock.actualizar(ingrediente.getInventario().getId(), validarStock.obtenerCantidadPorId(ingrediente.getInventario().getId())-(ingrediente.getCantidad() * cantidad));
+                                        }else{
+                                            return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el inventario en el almacen"+ingrediente.getInventario().getAlmacen().getNombre()+".Hace falta ingresar mas "+ingrediente.getInventario().getMateriaPrima().getNombre();
+                                        }
+
+                                    }
+                                }
+
+                            }
+
+                            }
+                            //producto terminado
+                            if(!productoTerminadoMenus.isEmpty()){
+                                for (ProductoTerminado_Menu ingrediente : productoTerminadoMenus) {
+                                    int inventarioId = ingrediente.getProductoTerminado().getId();
+                                    double descontandoStock = ingrediente.getProductoTerminado().getStockActual()-(ingrediente.getCantidad() * cantidad);
+                                    if(descontandoStock<=0){
+                                        return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el producto terminado"+ingrediente.getProductoTerminado().getNombre();
+                                    }else {
+                                        if(validarStockTerminado.agregarSiNoExiste(ingrediente.getProductoTerminado().getId(),descontandoStock)){
+                                        }else {
+                                            if (validarStockTerminado.obtenerCantidadPorId(ingrediente.getProductoTerminado().getId())-(ingrediente.getCantidad() * cantidad) >0){
+                                                validarStockTerminado.actualizar(ingrediente.getProductoTerminado().getId(), validarStockTerminado.obtenerCantidadPorId(ingrediente.getProductoTerminado().getId())-(ingrediente.getCantidad() * cantidad));
+                                            }else{
+                                                return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el producto terminado"+ingrediente.getProductoTerminado().getNombre();
+                                            }
+
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+
+                if (detalle.getIsMenu().equalsIgnoreCase("esProductoNormal")){
+                    Optional<ProductoNormal> productoNormalOptional= productoNormalRepository.findById(detalle.getIdProducto());
+                    if(productoNormalOptional.isPresent()){
+                        ProductoNormal productoNormal= productoNormalOptional.get();
+
+                        double descontandoStock = productoNormal.getStockActual()-detalle.getCantidad();
+                        if(descontandoStock<=0){
+                            return "No hay suficiente stock para el producto"+productoNormal.getNombre();
+                        }else {
+                            if(validarStockProductoNormal.agregarSiNoExiste(productoNormal.getId(),descontandoStock)){
+
+                            }else {
+                                if ((validarStockProductoNormal.obtenerCantidadPorId(productoNormal.getId())-detalle.getCantidad()) >0){
+                                    validarStockProductoNormal.actualizar(productoNormal.getId(), validarStock.obtenerCantidadPorId(productoNormal.getId())-detalle.getCantidad());
+                                }else{
+                                    return "No hay suficiente stock para el producto"+productoNormal.getNombre();
+                                }
+
+                            }
+                        }
+
+                    }
+                }
+
+                if(detalle.getIsMenu().equalsIgnoreCase("esDetalleOrdenProducto")){
+                    Optional<DetalleOrden_ProductoNormal> detalleOrdenProductoOptional= detalleOrdenProductoNormalRepository.findById(detalle.getIdProducto());
+                    if(detalleOrdenProductoOptional.isPresent()){
+                        DetalleOrden_ProductoNormal detalleOrdenProductoNormal= detalleOrdenProductoOptional.get();
+                        ProductoNormal productoNormal= detalleOrdenProductoNormal.getProductoNormal();
+                        int cantidad = detalle.getCantidad()-detalleOrdenProductoNormal.getCantidad();
+                        //Si ya esta agregado ya no se verifica
+                        if(cantidad>0) {
+
+                            double descontandoStock = productoNormal.getStockActual()-cantidad;
+                            if(descontandoStock<=0){
+                                return "No hay suficiente stock para el producto"+productoNormal.getNombre();
+                            }else {
+                                if(validarStockProductoNormal.agregarSiNoExiste(productoNormal.getId(),descontandoStock)){
+
+                                }else {
+                                    if ((validarStockProductoNormal.obtenerCantidadPorId(productoNormal.getId())-cantidad) >0){
+                                        validarStockProductoNormal.actualizar(productoNormal.getId(), validarStock.obtenerCantidadPorId(productoNormal.getId())-cantidad);
+                                    }else{
+                                        return "No hay suficiente stock para el producto"+productoNormal.getNombre();
+                                    }
+
+                                }
+                            }
+
+
+                        }
+                    }
                 }
             }
+            return "Si hay suficiente stock";
 
 
         } catch (Exception e) {
             e.printStackTrace();
             return "Error al procesar el pedido.";
         }
-        return "hola";
+
     }
 
 
@@ -413,11 +571,9 @@ public class ComanderoServiceImpl implements IComanderoService {
                     productoDto.setImagen(productoNormal.getImagen());
                     productoDto.setPrecio(productoNormal.getPrecioUnitario());
                     productoDto.setMenu(false);
-
                     productoDtos.add(productoDto);
                 }
             }
-
             if(!menuList.isEmpty()){
                 for (Menu menu:menuList) {
                     ProductoDto productoDto= new ProductoDto();
@@ -428,7 +584,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                     productoDto.setMenu(true);
                     productoDtos.add(productoDto);
                 }
-
             }
             return new ResponseEntity<List<ProductoDto>>(productoDtos,HttpStatus.OK);
         }catch (Exception e){
@@ -643,6 +798,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         ObjectMapper objectMapper= new ObjectMapper();
                         try {
                             List<Venta_MedioPagoWrapper> mediosPago=objectMapper.readValue(objetoMap.get("mediosPago"), new TypeReference<List<Venta_MedioPagoWrapper>>() {});
+
                             if(!mediosPago.isEmpty()){
                                 for(Venta_MedioPagoWrapper ventaMedioPagoWrapper: mediosPago){
                                     Venta_MedioPago ventaMedioPago= new Venta_MedioPago();
@@ -665,17 +821,17 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                         //Imprimir información
 
-                        //List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
-                        //List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+                        List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
+                        List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
                         List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
                         List<String[]> products =new ArrayList<>();
                         int contador=0;
                         ComandaDTO comandaDTO= new ComandaDTO();
                         comandaDTO.setOrden(orden);
-                        /*
+
                         if(!detalleOrdenMenus.isEmpty()){
                             for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
-                               // if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado")){
+                                if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado")){
                                     DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                                     detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                                     detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
@@ -690,12 +846,12 @@ public class ComanderoServiceImpl implements IComanderoService {
                                     String[] info={String.valueOf(detalleOrdenMenu.getCantidad()),detalleOrdenMenu.getMenu().getNombre(),String.valueOf(detalleOrdenMenu.getTotal())};
                                     products.add(info);
                                     contador++;
-                                //}
+                                }
                             }
                         }
-                        */
 
-/*
+
+
                         if(!detalleOrdenProductoNormals.isEmpty()){
                             for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
                                 DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
@@ -714,37 +870,18 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 contador++;
                             }
                         }
-*/
-                        Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
-                        if (impresoraOptional.isPresent()) {
-                            System.out.println("No se ha configurado una impresora por defecto.");
-                        }
 
-                        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
-                        PrintService selectedService = null;
 
-                        for (PrintService service : printServices) {
-                            if (service.getName().equalsIgnoreCase(impresoraOptional.get().getNombre()) || service.getName().contains(impresoraOptional.get().getDireccionIp())) {
-                                selectedService = service;
-                                break;
-                            }
-                        }
-/*
+                        Impresora impresora1= orden.getCaja().getImpresora();
+
                         TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), usuario.getNombre(), orden.getNombreCliente(), products,
                                 "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
                                 paymentMethods
-                        );*/
-
-                        TicketOrden ticket = new TicketOrden(String.valueOf(1), String.valueOf("terraza"), usuario.getNombre(), "Pedro", products,
-                                "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
-                                paymentMethods
                         );
-
                         String ticketContent = ticket.getContentTicket().toString();
-                                              Map<String, String> printRequest = new HashMap<>();
+                        Map<String, String> printRequest = new HashMap<>();
                         printRequest.put("ticketContent", ticketContent);
-                        printRequest.put("printerIp", "192.168.1.100");
-                        printRequest.put("usbPort", impresoraOptional.get().getDireccionIp());
+                        printRequest.put("printerIp", impresora1.getDireccionIp());
 
                         String printRequestJson = new ObjectMapper().writeValueAsString(printRequest);
 
@@ -760,34 +897,35 @@ public class ComanderoServiceImpl implements IComanderoService {
                         if (response.statusCode()==200) {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
                         } else {
+                            Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
+                            if (impresoraOptional.isPresent()) {
+                                Impresora impresora= impresoraOptional.get();
+                                Map<String, String> printRequest1 = new HashMap<>();
+                                printRequest.put("ticketContent", ticketContent);
+                                printRequest.put("printerIp", impresora.getDireccionIp());
+
+                                String printRequestJson1 = new ObjectMapper().writeValueAsString(printRequest1);
+
+                                // Enviar solicitud al servidor de impresión local
+                                HttpClient client1 = HttpClient.newHttpClient();
+                                HttpRequest request1 = HttpRequest.newBuilder()
+                                        .uri(URI.create("https://67b5-2806-10ae-10-4b65-889c-99b4-a753-8fbc.ngrok-free.app/print"))
+                                        .POST(HttpRequest.BodyPublishers.ofString(printRequestJson1, StandardCharsets.UTF_8))
+                                        .header("Content-Type", "application/json")
+                                        .build();
+
+                                HttpResponse<String> response1 = client1.send(request1, HttpResponse.BodyHandlers.ofString());
+
+                            }
                             return Utils.getResponseEntity("Error al imprimir: ",HttpStatus.INTERNAL_SERVER_ERROR);
                         }
-/*
-                        if (selectedService == null) {
-                            System.out.println("No se encontró la impresora POS-58 en el puerto USB001.");
-                        }
 
-                        TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), usuario.getNombre(), orden.getNombreCliente(), products,
-                                "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
-                                paymentMethods
-                        );
-                        ticket.print(selectedService);
-                        return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);*/
-                        //ticket.print(selectedService);
-                        // Buscar la impresora por nombre compartido
+
 
 
 
                     }
                     return Utils.getResponseEntity("El arqueo ya no esta abierto.",HttpStatus.BAD_REQUEST);
-
-
-
-
-
-
-
-
 
                 }
                 return Utils.getResponseEntity("La orden o usuario no existe.",HttpStatus.BAD_REQUEST);
@@ -809,110 +947,5 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-
-    /*
-    @Override
-    public ResponseEntity<String> cerrarCuenta(Integer id) {
-        try{
-            Optional<Orden> ordenOptional= ordenRepository.findById(id);
-           if(ordenOptional.isPresent()){
-               double total= 0;
-                Orden orden= ordenOptional.get();
-                Mesa mesa= orden.getMesa();
-                mesa.setEstado("Disponible");
-                mesaRepository.save(mesa);
-                List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
-                List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
-                List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
-                ComandaDTO comandaDTO= new ComandaDTO();
-                comandaDTO.setOrden(orden);
-                if(!detalleOrdenMenus.isEmpty()){
-                    for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
-                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado")){
-                            DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
-                            detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
-                            detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                            detalleOrdenProductoDTO.setEsDetalleMenu("true");
-                            detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
-                            detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
-                            detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
-                            detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
-                            detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
-                            total=total+detalleOrdenMenu.getTotal();
-                            detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
-                        }
-                    }
-                }
-
-                if(!detalleOrdenProductoNormals.isEmpty()){
-                    for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
-                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
-                        detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
-                        detalleOrdenProductoDTO.setIdProducto(detalleOrdenProductoNormal.getProductoNormal().getId());
-                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
-                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getProductoNormal().getNombre());
-                        detalleOrdenProductoDTO.setComentario(detalleOrdenProductoNormal.getComentario());
-                        detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
-                        detalleOrdenProductoDTO.setEstado(detalleOrdenProductoNormal.getEstado());
-                        detalleOrdenProductoDTO.setTotal(detalleOrdenProductoNormal.getTotal());
-                        total=total+detalleOrdenProductoNormal.getTotal();
-                        detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
-                    }
-                }
-
-
-                Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
-                if (impresoraOptional.isPresent()) {
-                    System.out.println("No se ha configurado una impresora por defecto.");
-                }
-
-                PrintService[] printServices = PrintServiceLookup.lookupPrintServices(DocFlavor.BYTE_ARRAY.AUTOSENSE, null);
-                PrintService selectedService = null;
-
-                for (PrintService service : printServices) {
-                    if (service.getName().equalsIgnoreCase(impresoraOptional.get().getNombre()) || service.getName().contains(impresoraOptional.get().getDireccionIp())) {
-                        selectedService = service;
-                        break;
-                    }
-                }
-
-                if (selectedService == null) {
-                    System.out.println("No se encontró la impresora POS-58 en el puerto USB001.");
-                }
-
-            List<String[]> products = List.of(
-                    new String[]{"2", "Burger", "5.99"},
-                    new String[]{"1", "Fries", "2.99"},
-                    new String[]{"3", "Soda", "1.50"}
-            );
-
-            TicketOrden ticket = new TicketOrden(
-                    "12345", "Caja 1", "John Doe", "Jane Smith", products,
-                    "10.48", "0.00", "3", "10.48", "20.00", "9.52",
-                    "Cash", "20.00"
-            );
-            //ticket.print(selectedService);
-            // Buscar la impresora por nombre compartido
-            PrintService printService = findPrintService("POS-58");
-            if (printService != null) {
-                ticket.print(printService);
-                return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
-            } else {
-                return Utils.getResponseEntity("No se encontro la impresora",HttpStatus.BAD_REQUEST);
-            }
-
-            //return Utils.getResponseEntity("Impreso correctamente",HttpStatus.OK);
-
-
-            }
-            return Utils.getResponseEntity("No existe la orden.",HttpStatus.BAD_REQUEST);
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-*/
 
 }

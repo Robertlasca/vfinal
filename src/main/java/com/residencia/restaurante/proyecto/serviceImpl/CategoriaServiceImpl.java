@@ -306,6 +306,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
 
             categoria.setId(Integer.parseInt(objetoMap.get("id")));
             categoriaOptional.ifPresent(value -> categoria.setVisibilidad(value.isVisibilidad()));
+            categoriaOptional.ifPresent(value -> categoria.setPertenece(value.getPertenece()));
 
         }else {
             categoria.setVisibilidad(true);

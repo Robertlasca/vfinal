@@ -22,9 +22,8 @@ public class Almacen {
     private String nombre;
     @Column(length = 50, nullable = true)
     private  String descripcion;
-@Column(nullable = true)
+    @Column(nullable = true)
     private boolean visibilidad=true;
-
     @OneToOne
     @JoinColumn(nullable = true,name = "cocina_id")
     private Cocina cocina;
