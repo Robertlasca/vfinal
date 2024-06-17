@@ -33,4 +33,6 @@ public interface ICategoriaRepository extends JpaRepository<Categoria,Integer> {
      */
     boolean existsCategoriaByNombreLikeIgnoreCase(String nombre);
 
+    boolean existsCategoriaByNombreLikeIgnoreCaseAndPerteneceLikeIgnoreCase(String nombre, String pertenece);
+
 }

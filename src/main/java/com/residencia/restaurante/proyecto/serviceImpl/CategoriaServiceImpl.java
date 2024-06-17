@@ -121,6 +121,8 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 Optional<Categoria> categoriaOptional= categoriaRepository.findById(Integer.parseInt(objetoMap.get("id")));
                 if(!categoriaOptional.isEmpty()){
                     Categoria categoria= categoriaOptional.get();
+                    categoria.setNombre(categoria.getNombre());
+                    categoria.setPertenece(categoria.getPertenece());
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
                         categoria.setVisibilidad(false);
                     }else{
@@ -153,7 +155,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
         try {
 
             if(validarCategoriaMap(objetoMap,false)){
-                if(!categoriaExistente(objetoMap)){
+                if(!categoriaRepository.existsCategoriaByNombreLikeIgnoreCaseAndPerteneceLikeIgnoreCase(objetoMap.get("nombre"),objetoMap.get("pertenece"))){
                     categoriaRepository.save(obtenerCategoriaDesdeMap(objetoMap,false));
                     return Utils.getResponseEntity("Categoría guardada exitosamente.",HttpStatus.OK);
                 }
@@ -187,7 +189,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
                             categoriaRepository.save(obtenerCategoriaDesdeMap(objetoMap,true));
                             return Utils.getResponseEntity("Categoría actualizada",HttpStatus.OK);
                         }
-                        return Utils.getResponseEntity("No puedes asignarle este nombre.",HttpStatus.BAD_REQUEST);
+                        return Utils.getResponseEntity("No puedes asignarle este nombre por que ya esta registrado.",HttpStatus.BAD_REQUEST);
                     }
 
                 }
