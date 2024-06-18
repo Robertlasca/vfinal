@@ -86,9 +86,9 @@ public class MenuControllerImpl implements IMenuController {
     }
 
     @Override
-    public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
+    public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
         try {
-            return menuService.agregarMenu(nombre,descripcion,margenGanancia,precioVenta,file,idCategoria,idCocina);
+            return menuService.agregarMenu(nombre,descripcion,precioVenta,file,idCategoria,idCocina);
 
         }catch (Exception e){
          e.printStackTrace();

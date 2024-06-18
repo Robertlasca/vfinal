@@ -46,7 +46,6 @@ public interface IMenuController {
     @PostMapping(path = "/agregarMenu")
     ResponseEntity<Menu> agregarMenu(@RequestParam("nombre") String nombre,
                                      @RequestParam("descripcion") String descripcion,
-                                     @RequestParam("margenGanancia") double margenGanancia,
                                      @RequestParam("precioVenta") double precioVenta,
                                      @RequestParam(value = "img",required = false) MultipartFile file,
                                      @RequestParam("idCategoria") int idCategoria,

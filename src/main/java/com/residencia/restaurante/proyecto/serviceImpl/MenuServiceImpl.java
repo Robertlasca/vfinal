@@ -410,7 +410,7 @@ public class MenuServiceImpl implements IMenuService {
     }
 
     @Override
-    public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
+    public ResponseEntity<Menu> agregarMenu(String nombre, String descripcion, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
         try {
             if(!menuRepository.existsByNombreLikeIgnoreCase(nombre) || nombre.isEmpty() || nombre==null){
                 if(validarCategoriaId(idCategoria)){
@@ -424,7 +424,6 @@ public class MenuServiceImpl implements IMenuService {
                     menu.setVisibilidad(true);
                     menu.setDependent(false);
                     menu.setCostoProduccionDirecto(0);
-                    menu.setMargenGanancia(margenGanancia);
                     menu.setPrecioVenta(precioVenta);
 
 if(file==null||file.isEmpty()){
@@ -455,7 +454,7 @@ if(file==null||file.isEmpty()){
     @Override
     public ResponseEntity<String> crearReceta(Map<String, String> objetoMap) {
         try {
-            if(objetoMap.containsKey("idMenu") && objetoMap.containsKey("receta")){
+            if(objetoMap.containsKey("idMenu") && objetoMap.containsKey("receta") && objetoMap.containsKey("margenGanancia")){
                 Optional<Menu> menuOptional= menuRepository.findById(Integer.parseInt(objetoMap.get("idMenu")));
                 if(menuOptional.isPresent()){
                     Menu menu= menuOptional.get();
@@ -492,6 +491,8 @@ if(file==null||file.isEmpty()){
                                 }
                             }
                             menu.setCostoProduccionDirecto(calcularCostoTotalMenu(menu.getId()));
+                            menu.setMargenGanancia(Double.parseDouble(objetoMap.get("margenGanacia")));
+                            menu.setDependent(true);
                             menuRepository.save(menu);
                             return Utils.getResponseEntity("Menú  guardado correctamente.",HttpStatus.OK);
                         }
