@@ -3,9 +3,7 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.dto.CategoriaDTO;
-import com.residencia.restaurante.proyecto.entity.Almacen;
-import com.residencia.restaurante.proyecto.entity.Categoria;
-import com.residencia.restaurante.proyecto.entity.Cocina;
+import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.ICategoriaRepository;
 import com.residencia.restaurante.proyecto.repository.IMenuRepository;
 import com.residencia.restaurante.proyecto.repository.IProductoNormalRepository;
@@ -125,6 +123,38 @@ public class CategoriaServiceImpl implements ICategoriaService {
                     categoria.setPertenece(categoria.getPertenece());
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
                         categoria.setVisibilidad(false);
+                        List<Menu> menuList= menuRepository.getAllByCategoriaId(categoria.getId());
+                        List<ProductoNormal> productoNormalList= productoNormalRepository.getAllByCategoriaId(categoria.getId());
+                        List<ProductoTerminado> productoTerminadoList=productoTerminadoRepository.getAllByCategoriaId(categoria.getId());
+                        Optional<Categoria> categoriaOptional1= categoriaRepository.findCategoriaByNombreLikeIgnoreCase("Sin categoría.");
+
+                        if(categoriaOptional1.isPresent()){
+                            Categoria categoria1= categoriaOptional1.get();
+                            if(!menuList.isEmpty()){
+                                for (Menu menu:menuList) {
+                                    menu.setCategoria(categoria1);
+                                    menuRepository.save(menu);
+                                }
+                            }
+
+                            if(!productoNormalList.isEmpty()){
+                                for (ProductoNormal productoNormal:productoNormalList){
+                                    productoNormal.setCategoria(categoria1);
+                                    productoNormalRepository.save(productoNormal);
+                                }
+
+                            }
+
+                            if (!productoTerminadoList.isEmpty()){
+                                for (ProductoTerminado productoTerminado: productoTerminadoList) {
+                                    productoTerminado.setCategoria(categoria1);
+                                    productoTerminadoRepository.save(productoTerminado);
+                                }
+
+                            }
+
+                        }
+
                     }else{
                         categoria.setVisibilidad(true);
                     }
@@ -230,7 +260,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
     public ResponseEntity<List<CategoriaDTO>> obtenerCategoriasMenu() {
         try {
             List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
-            for (Categoria categoria : categoriaRepository.getAllByVisibilidadTrueAndPerteneceEqualsIgnoreCase("M")) {
+            for (Categoria categoria : categoriaRepository.getAllByPerteneceEqualsIgnoreCase("M")) {
                 CategoriaDTO categoriaDTO= new CategoriaDTO();
                 int cantidadTerminado= Math.toIntExact(productoTerminadoRepository.countByCategoriaId(categoria.getId()));
                 int cantidadNormal= Math.toIntExact(productoNormalRepository.countByCategoriaId(categoria.getId()));
@@ -254,7 +284,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
     public ResponseEntity<List<CategoriaDTO>> obtenerCategoriasProductoTerminado() {
         try {
             List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
-            for (Categoria categoria : categoriaRepository.getAllByVisibilidadTrueAndPerteneceEqualsIgnoreCase("T")) {
+            for (Categoria categoria : categoriaRepository.getAllByPerteneceEqualsIgnoreCase("T")) {
                 CategoriaDTO categoriaDTO= new CategoriaDTO();
                 int cantidadTerminado= Math.toIntExact(productoTerminadoRepository.countByCategoriaId(categoria.getId()));
                 int cantidadNormal= Math.toIntExact(productoNormalRepository.countByCategoriaId(categoria.getId()));
@@ -278,7 +308,7 @@ public class CategoriaServiceImpl implements ICategoriaService {
     public ResponseEntity<List<CategoriaDTO>> obtenerCategoriasProductoNormal() {
         try {
             List<CategoriaDTO> categoriaConEstado = new ArrayList<>();
-            for (Categoria categoria : categoriaRepository.getAllByVisibilidadTrueAndPerteneceEqualsIgnoreCase("N")) {
+            for (Categoria categoria : categoriaRepository.getAllByPerteneceEqualsIgnoreCase("N")) {
                 CategoriaDTO categoriaDTO= new CategoriaDTO();
                 int cantidadTerminado= Math.toIntExact(productoTerminadoRepository.countByCategoriaId(categoria.getId()));
                 int cantidadNormal= Math.toIntExact(productoNormalRepository.countByCategoriaId(categoria.getId()));

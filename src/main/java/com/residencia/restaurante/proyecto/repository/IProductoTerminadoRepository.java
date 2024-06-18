@@ -17,6 +17,7 @@ public interface IProductoTerminadoRepository extends JpaRepository<ProductoTerm
     List<ProductoTerminado> getAllByVisibilidadFalse();
 
 
+
     /**
      * Encuentra todos los registros de inventario con stock actual menor que el stock mínimo.
      * @return Lista de registros de inventario con stock actual menor que el stock mínimo.

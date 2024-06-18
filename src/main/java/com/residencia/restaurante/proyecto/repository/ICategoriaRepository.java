@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio de Spring Data JPA para la entidad Categoria.
@@ -25,6 +26,7 @@ public interface ICategoriaRepository extends JpaRepository<Categoria,Integer> {
     List<Categoria> getAllByVisibilidadFalse();
 
     List<Categoria> getAllByVisibilidadTrueAndPerteneceEqualsIgnoreCase(String pertenece);
+    List<Categoria> getAllByPerteneceEqualsIgnoreCase(String pertenece);
 
     /**
      * Verifica si existe una categoría con el nombre especificado (ignorando mayúsculas y minúsculas).
@@ -32,6 +34,8 @@ public interface ICategoriaRepository extends JpaRepository<Categoria,Integer> {
      * @return true si existe una categoría con el nombre especificado, false de lo contrario.
      */
     boolean existsCategoriaByNombreLikeIgnoreCase(String nombre);
+
+    Optional<Categoria> findCategoriaByNombreLikeIgnoreCase(String nombre);
 
     boolean existsCategoriaByNombreLikeIgnoreCaseAndPerteneceLikeIgnoreCase(String nombre, String pertenece);
 
