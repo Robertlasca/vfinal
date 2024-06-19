@@ -305,6 +305,9 @@ public class MenuServiceImpl implements IMenuService {
                 recetaDTO.setId(inventario.getId());
                 recetaDTO.setEsIngrediente(true);
                 recetaDTO.setNombre(inventario.getMateriaPrima().getNombre());
+                //Precio por gramo
+                recetaDTO.setCostoProduccion(calcularCostoProduccion(inventario.getMateriaPrima().getCostoUnitario()));
+                recetaDTO.setUnidadMedida(inventario.getMateriaPrima().getUnidadMedida());
                 recetasUnicas.put(recetaDTO.getNombre(), recetaDTO);
             }
 
@@ -314,6 +317,11 @@ public class MenuServiceImpl implements IMenuService {
                 recetaDTO.setId(materiaPrimaProductoTerminado.getProductoTerminado().getId());
                 recetaDTO.setEsIngrediente(false);
                 recetaDTO.setNombre(materiaPrimaProductoTerminado.getProductoTerminado().getNombre());
+                //Precio por gramo
+                double precio=rendondearADos(calcularCostoProduccionTotal(materiaPrimaProductoTerminado.getProductoTerminado().getId()));
+                double costoProduccionXUnidad= rendondearADos(precio/1000);
+                recetaDTO.setCostoProduccion(calcularCostoProduccion(costoProduccionXUnidad));
+                recetaDTO.setUnidadMedida(materiaPrimaProductoTerminado.getProductoTerminado().getUnidadMedida());
                 recetasUnicas.put(recetaDTO.getNombre(), recetaDTO);
             }
 

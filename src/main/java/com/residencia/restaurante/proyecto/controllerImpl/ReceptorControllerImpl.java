@@ -3,6 +3,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IReceptorController;
 import com.residencia.restaurante.proyecto.dto.ComandaDTO;
+import com.residencia.restaurante.proyecto.dto.DatosComandaDTO;
 import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
 import com.residencia.restaurante.proyecto.service.IReceptorService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -19,14 +20,14 @@ public class ReceptorControllerImpl implements IReceptorController {
     @Autowired
     private IReceptorService receptorService;
     @Override
-    public ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasPorIdCocina(Integer id) {
+    public ResponseEntity<List<DatosComandaDTO>> obtenerComandasPorIdCocina(Integer id) {
         try {
 
             return receptorService.obtenerComandasPorIdCocina(id);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<DetalleOrdenProductoDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

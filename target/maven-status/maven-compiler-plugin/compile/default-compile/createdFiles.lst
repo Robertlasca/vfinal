@@ -216,6 +216,7 @@ com\residencia\restaurante\proyecto\dto\MateriaPrimaDTO.class
 com\residencia\restaurante\proyecto\service\IImpresoraService.class
 com\residencia\restaurante\proyecto\wrapper\DetalleOrdenWrapper.class
 com\residencia\restaurante\proyecto\entity\Caja.class
+com\residencia\restaurante\proyecto\dto\DatosComandaDTO.class
 com\residencia\restaurante\proyecto\serviceImpl\ArqueoServiceImpl$1.class
 com\residencia\restaurante\security\model\Usuario_Rol.class
 com\residencia\restaurante\proyecto\controllerImpl\ArqueoControllerImpl.class

@@ -267,7 +267,12 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 int cantidadMenu= Math.toIntExact(menuRepository.countByCategoriaId(categoria.getId()));
                 categoriaDTO.setCantidadProductos(cantidadTerminado+cantidadNormal+cantidadMenu);
                 categoriaDTO.setCategoria(categoria);
-                categoriaDTO.setEstado("Visible");
+                if(categoria.isVisibilidad()){
+                    categoriaDTO.setEstado("Visible");
+                }else {
+                    categoriaDTO.setEstado("No visible");
+                }
+
 
                 categoriaConEstado.add(categoriaDTO);
             }
@@ -291,7 +296,11 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 int cantidadMenu= Math.toIntExact(menuRepository.countByCategoriaId(categoria.getId()));
                 categoriaDTO.setCantidadProductos(cantidadTerminado+cantidadNormal+cantidadMenu);
                 categoriaDTO.setCategoria(categoria);
-                categoriaDTO.setEstado("Visible");
+                if(categoria.isVisibilidad()){
+                    categoriaDTO.setEstado("Visible");
+                }else {
+                    categoriaDTO.setEstado("No visible");
+                }
 
                 categoriaConEstado.add(categoriaDTO);
             }
@@ -315,7 +324,11 @@ public class CategoriaServiceImpl implements ICategoriaService {
                 int cantidadMenu= Math.toIntExact(menuRepository.countByCategoriaId(categoria.getId()));
                 categoriaDTO.setCantidadProductos(cantidadTerminado+cantidadNormal+cantidadMenu);
                 categoriaDTO.setCategoria(categoria);
-                categoriaDTO.setEstado("Visible");
+                if(categoria.isVisibilidad()){
+                    categoriaDTO.setEstado("Visible");
+                }else {
+                    categoriaDTO.setEstado("No visible");
+                }
 
                 categoriaConEstado.add(categoriaDTO);
             }
