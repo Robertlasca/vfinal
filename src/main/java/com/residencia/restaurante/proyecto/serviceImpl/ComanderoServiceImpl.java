@@ -154,7 +154,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                                             // Añadir el producto a la lista correspondiente a la cocina
 
                                             List<String> productos = productosPorCocina.get(cocinaId);
-                                            String productoDetalle = detalleOrdenMenu.getMenu().getNombre() + cantidad + detalleOrdenWrapper.getComentario();
+                                            String productoDetalle ="C"+cantidad+"  "+ detalleOrdenMenu.getMenu().getNombre()  +"  "+ detalleOrdenWrapper.getComentario();
                                             productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al
 
                                         }
@@ -177,7 +177,7 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                                     // Añadir el producto a la lista correspondiente a la cocina
                                     List<String> productos = productosPorCocina.get(cocinaId);
-                                    String productoDetalle = menu.getNombre() + detalleOrdenWrapper.getCantidad() + detalleOrdenWrapper.getComentario();
+                                    String productoDetalle = "C"+detalleOrdenWrapper.getCantidad()+"   "+menu.getNombre() +  "   "+detalleOrdenWrapper.getComentario();
                                     productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al producto
 
                                     //Verificamos la existencia de la relación de una orden y un menú mediante su id
@@ -295,9 +295,9 @@ public class ComanderoServiceImpl implements IComanderoService {
                 printRequest.put("ticketContent", ticketContent);
                 if(cocinaOptional.isPresent()){
                     printRequest.put("nombreIm",cocinaOptional.get().getImpresora().getNombre());
-                    if(cocinaOptional.get().getImpresora().getDireccionIp()!=null||cocinaOptional.get().getImpresora().getDireccionIp().length()!=0 ){
-                        printRequest.put("printerIp",cocinaOptional.get().getImpresora().getDireccionIp());
-                    }
+                    //if(cocinaOptional.get().getImpresora().getDireccionIp()!=null||cocinaOptional.get().getImpresora().getDireccionIp().length()!=0 ){
+                      //  printRequest.put("printerIp",cocinaOptional.get().getImpresora().getDireccionIp());
+                    //}
 
                 }
 
@@ -305,7 +305,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                 // Enviar solicitud al servidor de impresión local
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("https://f72a-189-129-48-107.ngrok-free.app/print"))
+                        .uri(URI.create("https://61da-189-129-48-107.ngrok-free.app/print"))
                         .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                         .header("Content-Type", "application/json")
                         .build();

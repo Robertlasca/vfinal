@@ -25,11 +25,11 @@ public class PrintServer {
 
             // Lógica para imprimir el ticket
             boolean success;
-           if (printerIp != null && !printerIp.isEmpty()) {
-                success = printTicketByIp(ticketContent, printerIp, 9100);
-            } else {
+           //if (printerIp != null && !printerIp.isEmpty()) {
+             //   success = printTicketByIp(ticketContent, printerIp, 9100);
+            //} else {
                 success = printTicketByName(ticketContent, nombre);
-           }
+           //}
 
             if (success) {
                 return new ResponseEntity<>("Impreso correctamente", HttpStatus.OK);

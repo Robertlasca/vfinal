@@ -13,6 +13,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+
+import lombok.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import lombok.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -29,28 +44,28 @@ public class TicketComanda {
         String date = dateFormat.format(new Date());
         String time = timeFormat.format(new Date());
 
+        // Caracteres de control para estilos de texto y formato de impresión
+        String esc = "\u001B";
+        String gs = "\u001D";
+        String reset = esc + "@";  // Reset
+        String doubleHeightWidthOn = gs + "!" + "\u0011";  // Doble altura y anchura
+        String doubleHeightWidthOff = gs + "!" + "\u0000";  // Tamaño normal
+        String invertOn = gs + "B" + "\u0001";  // Invertir color (fondo negro, texto blanco)
+        String invertOff = gs + "B" + "\u0000";  // Color normal (fondo blanco, texto negro)
+        String alignCenter = esc + "a" + "\u0001";  // Alinear al centro
+        String alignRight = esc + "a" + "\u0002";  // Alinear a la derecha
+        String alignLeft = esc + "a" + "\u0000";  // Alinear a la izquierda
+
         this.contentTicket =
-                "Cliente: " + customerName + "  Área: " + serviceArea + "\n" +
-                        "Fecha: " + date + "  Hora: " + time + "\n" +
-                        "Mesero: " + waiter + "\n" +
+                reset +
+                        alignCenter + invertOn + doubleHeightWidthOn + customerName+"("+serviceArea+")" + doubleHeightWidthOff + invertOff + "\n" +
+                        alignRight + "Fecha: " + date + "  Hora: " + time + "\n" +
+                        alignLeft + "Mesero: " + waiter + "\n" +
                         "=============================\n" +
-                        "PRODUCTOS\n" +
+                        alignCenter + invertOn + doubleHeightWidthOn + "PRODUCTOS" + doubleHeightWidthOff + invertOff + "\n" +
                         "=============================\n" +
                         String.join("\n", products) + "\n" +
-                        "=============================\n";
+                        "=============================\n" +
+                        reset;
     }
-
-    public void print(PrintService selectedService) {
-        try {
-            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
-            byte[] bytes = this.contentTicket.getBytes();
-            Doc doc = new SimpleDoc(bytes, flavor, null);
-            DocPrintJob job = selectedService.createPrintJob();
-            PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-            job.print(doc, pras);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
