@@ -139,7 +139,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                     Map<Integer, List<String>> productosPorCocina = new HashMap<>();
 
                     if(!detalleOrdenWrappers.isEmpty()) {
-                        if (validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("Si hay suficientes stock")){
+                        if (validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("Si hay suficiente stock")){
                             for (DetalleOrdenWrapper detalleOrdenWrapper : detalleOrdenWrappers) {
                                 if (detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esDetalleOrdenMenu")) {
                                     Optional<DetalleOrdenMenu> detalleOrdenMenuOptional = detalleOrdenMenuRepository.findById(detalleOrdenWrapper.getIdProducto());
@@ -181,14 +181,14 @@ public class ComanderoServiceImpl implements IComanderoService {
                                     productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al producto
 
                                     //Verificamos la existencia de la relación de una orden y un menú mediante su id
-                                    Optional<DetalleOrdenMenu> detalleOrdenMenuOptional = detalleOrdenMenuRepository.findDetalleOrdenMenuByOrden_IdAndMenu_Id(orden.getId(), detalleOrdenWrapper.getIdProducto());
-                                    if (detalleOrdenMenuOptional.isPresent()) {
-                                        DetalleOrdenMenu detalleOrdenMenu = detalleOrdenMenuOptional.get();
-                                        detalleOrdenMenu.setCantidad(detalleOrdenMenu.getCantidad() + detalleOrdenWrapper.getCantidad());
-                                        detalleOrdenMenuRepository.save(detalleOrdenMenu);
-                                        descontarStockMenu(menu, detalleOrdenMenu);
+                                    //Optional<DetalleOrdenMenu> detalleOrdenMenuOptional = detalleOrdenMenuRepository.findDetalleOrdenMenuByOrden_IdAndMenu_Id(orden.getId(), detalleOrdenWrapper.getIdProducto());
+                                    //if (detalleOrdenMenuOptional.isPresent()) {
+                                       // DetalleOrdenMenu detalleOrdenMenu = detalleOrdenMenuOptional.get();
+                                        //detalleOrdenMenu.setCantidad(detalleOrdenMenu.getCantidad() + detalleOrdenWrapper.getCantidad());
+                                        //detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                                        //descontarStockMenu(menu, detalleOrdenMenu);
 
-                                    } else {
+                                    //} else {
                                         //Verificar si es un menu con producto terminados o
                                         DetalleOrdenMenu detalleOrdenMenu = new DetalleOrdenMenu();
 
@@ -202,7 +202,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                                         detalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
                                         detalleOrdenMenuRepository.save(detalleOrdenMenu);
                                         descontarStockMenu(menu, detalleOrdenMenu);
-                                    }
+                                    //}
 
                                 }
 
@@ -281,36 +281,37 @@ public class ComanderoServiceImpl implements IComanderoService {
         HttpResponse<String> response=null;
         for (Map.Entry<Integer, List<String>> entry : productosPorCocina.entrySet()) {
             //El número de veces que quieres que e imprima la comanda
-            for(int i=0;i<2;i++){
+
                 Integer cocinaId = entry.getKey();
                 List<String> productos = entry.getValue();
                 System.out.println("Cocina ID: " + cocinaId);
                 System.out.println("Productos: " + productos);
                 TicketComanda ticket = new TicketComanda(cliente, areaServicio, usuario, productos);
-                String ticketContent = null;
+                String ticketContent = ticket.getContentTicket();
                 // ticket.print(selectedService);
                 Optional<Cocina> cocinaOptional= cocinaRepository.findById(cocinaId);
                 Optional<Impresora> impresoraOptional1= impresoraRepository.getImpresoraByPorDefectoTrue();
                 Map<String, String> printRequest = new HashMap<>();
                 printRequest.put("ticketContent", ticketContent);
                 if(cocinaOptional.isPresent()){
+                    printRequest.put("nombreIm",cocinaOptional.get().getImpresora().getNombre());
+                    if(cocinaOptional.get().getImpresora().getDireccionIp()!=null||cocinaOptional.get().getImpresora().getDireccionIp().length()!=0 ){
+                        printRequest.put("printerIp",cocinaOptional.get().getImpresora().getDireccionIp());
+                    }
 
-                    printRequest.put("printerIp",cocinaOptional.get().getImpresora().getDireccionIp());
-                }else {
-                    printRequest.put("printerIp",impresoraOptional1.get().getDireccionIp());
                 }
 
                 String printRequestJson = new ObjectMapper().writeValueAsString(printRequest);
                 // Enviar solicitud al servidor de impresión local
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("https://67b5-2806-10ae-10-4b65-889c-99b4-a753-8fbc.ngrok-free.app/print"))
+                        .uri(URI.create("https://f72a-189-129-48-107.ngrok-free.app/print"))
                         .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                         .header("Content-Type", "application/json")
                         .build();
 
                 response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            }
+
 
         }
         if(response!=null){
@@ -386,39 +387,49 @@ public class ComanderoServiceImpl implements IComanderoService {
                 if (detalle.getIsMenu().equalsIgnoreCase("esMenu")) {
 
                     List<MateriaPrima_Menu> ingredientesMenu = materiaPrimaMenuRepository.findByMenuId(detalle.getIdProducto());
-                    List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.findAllByMenuId(detalle.getIdProducto());
+                    List<ProductoTerminado_Menu> productoTerminadoMenus = productoTerminadoMenuRepository.findAllByMenuId(detalle.getIdProducto());
+
+                    if (!ingredientesMenu.isEmpty()) {
+
 
                     for (MateriaPrima_Menu ingrediente : ingredientesMenu) {
                         int inventarioId = ingrediente.getInventario().getId();
-                        double descontandoStock = ingrediente.getInventario().getStockActual()-(ingrediente.getCantidad() * detalle.getCantidad());
-                        if(descontandoStock<=0){
-                            return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el inventario en el almacen"+ingrediente.getInventario().getAlmacen().getNombre()+".Hace falta ingresar mas "+ingrediente.getInventario().getMateriaPrima().getNombre();
-                        }else {
-                            if(validarStock.agregarSiNoExiste(ingrediente.getInventario().getId(),descontandoStock)){
+                        double descontandoStock = ingrediente.getInventario().getStockActual() - (ingrediente.getCantidad() * detalle.getCantidad());
+                        if (descontandoStock <= 0) {
+                            return "No hay suficiente stock para preparar los platillos" + ingrediente.getMenu().getNombre() + ". Ya que no hay suficiente stock en el inventario en el almacen" + ingrediente.getInventario().getAlmacen().getNombre() + ".Hace falta ingresar mas " + ingrediente.getInventario().getMateriaPrima().getNombre();
+                        } else {
+                            if (validarStock.agregarSiNoExiste(ingrediente.getInventario().getId(), descontandoStock)) {
 
-                            }else {
-                                if (validarStock.obtenerCantidadPorId(ingrediente.getInventario().getId())-(ingrediente.getCantidad() * detalle.getCantidad()) >0){
-                                    validarStock.actualizar(ingrediente.getInventario().getId(), validarStock.obtenerCantidadPorId(ingrediente.getInventario().getId())-(ingrediente.getCantidad() * detalle.getCantidad()));
-                                }else{
-                                    return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el inventario en el almacen"+ingrediente.getInventario().getAlmacen().getNombre()+".Hace falta ingresar mas "+ingrediente.getInventario().getMateriaPrima().getNombre();
+                            } else {
+                                if (validarStock.obtenerCantidadPorId(ingrediente.getInventario().getId()) - (ingrediente.getCantidad() * detalle.getCantidad()) > 0) {
+                                    validarStock.actualizar(ingrediente.getInventario().getId(), validarStock.obtenerCantidadPorId(ingrediente.getInventario().getId()) - (ingrediente.getCantidad() * detalle.getCantidad()));
+                                } else {
+                                    return "No hay suficiente stock para preparar los platillos" + ingrediente.getMenu().getNombre() + ". Ya que no hay suficiente stock en el inventario en el almacen" + ingrediente.getInventario().getAlmacen().getNombre() + ".Hace falta ingresar mas " + ingrediente.getInventario().getMateriaPrima().getNombre();
                                 }
 
                             }
                         }
 
                     }
+                }
                     //Validar stock para los productos terminados
                     if(!productoTerminadoMenus.isEmpty()){
 
                         for (ProductoTerminado_Menu ingrediente : productoTerminadoMenus) {
                             double descontandoStock = ingrediente.getProductoTerminado().getStockActual()-(ingrediente.getCantidad() * detalle.getCantidad());
-                            if(descontandoStock<=0){
+                            System.out.println("Cantidad descontando"+descontandoStock);
+                            if(descontandoStock<=1){
+                                System.out.println("Entre 1");
                                 return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el producto terminado"+ingrediente.getProductoTerminado().getNombre();
                             }else {
+                                System.out.println("Entre 2");
                                 if(validarStockTerminado.agregarSiNoExiste(ingrediente.getProductoTerminado().getId(),descontandoStock)){
+                                    System.out.println("Entre 4");
 
                                 }else {
-                                    if (validarStockTerminado.obtenerCantidadPorId(ingrediente.getProductoTerminado().getId())-(ingrediente.getCantidad() * detalle.getCantidad()) >0){
+                                    System.out.println("Entre 5");
+                                    System.out.println("Esta es la cantidad obtenida"+(validarStockTerminado.obtenerCantidadPorId(ingrediente.getProductoTerminado().getId())-(ingrediente.getCantidad() * detalle.getCantidad())));
+                                    if (validarStockTerminado.obtenerCantidadPorId(ingrediente.getProductoTerminado().getId())-(ingrediente.getCantidad() * detalle.getCantidad()) >1){
                                         validarStockTerminado.actualizar(ingrediente.getProductoTerminado().getId(), validarStockTerminado.obtenerCantidadPorId(ingrediente.getProductoTerminado().getId())-(ingrediente.getCantidad() * detalle.getCantidad()));
                                     }else{
                                         return "No hay suficiente stock para preparar los platillos"+ingrediente.getMenu().getNombre()+". Ya que no hay suficiente stock en el producto terminado"+ingrediente.getProductoTerminado().getNombre();

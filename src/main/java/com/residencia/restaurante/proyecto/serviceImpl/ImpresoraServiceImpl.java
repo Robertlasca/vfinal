@@ -147,9 +147,7 @@ public class ImpresoraServiceImpl implements IImpresoraService {
                 if(!impresoraExistente(objetoMap)){
                     iImpresoraRepository.save(obtenerImpresoraDesdeMap(objetoMap,false));
                     return Utils.getResponseEntity("Impresora agregada correctamente.",HttpStatus.OK);
-
                 }
-
                 return Utils.getResponseEntity("Esta impresora ya existe.",HttpStatus.BAD_REQUEST);
 
             }
@@ -216,7 +214,6 @@ public class ImpresoraServiceImpl implements IImpresoraService {
 
         return new ResponseEntity<>(new Impresora(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     private Impresora obtenerImpresoraDesdeMap(Map<String, String> objetoMap, boolean esAgregado) {
         Impresora impresora= new Impresora();
         boolean disponibidad=true;
@@ -231,9 +228,10 @@ public class ImpresoraServiceImpl implements IImpresoraService {
         }else {
             impresora.setEstado(true);
         }
-
         impresora.setNombre(objetoMap.get("nombre"));
-        impresora.setDireccionIp(objetoMap.get("direccionIP"));
+        if(objetoMap.containsKey("direccionIp")){
+            impresora.setDireccionIp(objetoMap.get("direccionIP"));
+        }
 
         if(objetoMap.get("porDefecto").equalsIgnoreCase("true")){
             Optional<Impresora> impresoraDefault=iImpresoraRepository.getImpresoraByPorDefectoTrue();
