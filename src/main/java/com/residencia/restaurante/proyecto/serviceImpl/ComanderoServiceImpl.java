@@ -154,7 +154,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                                             // Añadir el producto a la lista correspondiente a la cocina
 
                                             List<String> productos = productosPorCocina.get(cocinaId);
-                                            String productoDetalle ="C"+cantidad+"  "+ detalleOrdenMenu.getMenu().getNombre()  +"  "+ detalleOrdenWrapper.getComentario();
+                                            String productoDetalle =cantidad+"  "+ detalleOrdenMenu.getMenu().getNombre()  +"  "+ detalleOrdenWrapper.getComentario();
                                             productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al
 
                                         }
@@ -177,7 +177,7 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                                     // Añadir el producto a la lista correspondiente a la cocina
                                     List<String> productos = productosPorCocina.get(cocinaId);
-                                    String productoDetalle = "C"+detalleOrdenWrapper.getCantidad()+"   "+menu.getNombre() +  "   "+detalleOrdenWrapper.getComentario();
+                                    String productoDetalle = detalleOrdenWrapper.getCantidad()+"   "+menu.getNombre() +  "   "+detalleOrdenWrapper.getComentario();
                                     productos.add(productoDetalle); // O cualquier otra propiedad del menú que represente al producto
 
                                     //Verificamos la existencia de la relación de una orden y un menú mediante su id
@@ -240,7 +240,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                             }
 
 
-                        if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre(), orden.getUsuario().getNombre()) == 200) {
+                        if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
                         } else {
                             return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
@@ -350,6 +350,7 @@ public class ComanderoServiceImpl implements IComanderoService {
     }
 
     private void descontarStockMenu(Menu menu,DetalleOrdenMenu detalleOrdenMenu){
+        
 
         List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
         List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
@@ -605,6 +606,7 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<List<Orden>> obtenerOrdenes() {
         try {
+
             return new ResponseEntity<List<Orden>>(ordenRepository.findAll(),HttpStatus.OK);
 
         }catch (Exception e){

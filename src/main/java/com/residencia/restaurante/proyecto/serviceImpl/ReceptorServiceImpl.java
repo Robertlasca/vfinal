@@ -53,14 +53,13 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                 List<DetalleOrdenMenu> detalleOrdenMenuList= detalleOrdenMenuRepository.getAllByEstadoEqualsIgnoreCase("En espera");
                 if(!detalleOrdenMenuList.isEmpty()){
                     // Set para almacenar los nombres únicos de las mesas y áreas de servicio
-                    Set<String> mesasYaProcesadas = new HashSet<>();
+
                     Set<String> areasYaProcesadas = new HashSet<>();
                     for (DetalleOrdenMenu detalleOrdenMenu:detalleOrdenMenuList) {
-                        String nombreMesa = detalleOrdenMenu.getOrden().getMesa().getNombre();
-                        String areaServicio = detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre();
+                        String areaServicio = detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre()+detalleOrdenMenu.getOrden().getMesa().getNombre();
 
                         // Comprobar si la mesa ya ha sido procesada
-                        if (!mesasYaProcesadas.contains(nombreMesa) && !areasYaProcesadas.contains(areaServicio)) {
+                        if (!areasYaProcesadas.contains(areaServicio)) {
 
                             DatosComandaDTO datosComandaDTO = new DatosComandaDTO();
                             datosComandaDTO.setNombreCliente(detalleOrdenMenu.getOrden().getNombreCliente());
@@ -69,7 +68,7 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                             datosComandaDTOS.add(datosComandaDTO);
 
                             // Marcar la mesa y el área como procesadas
-                            mesasYaProcesadas.add(nombreMesa);
+
                             areasYaProcesadas.add(areaServicio);
                         }
 

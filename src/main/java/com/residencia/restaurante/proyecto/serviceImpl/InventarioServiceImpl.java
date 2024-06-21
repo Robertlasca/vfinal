@@ -67,6 +67,8 @@ public class InventarioServiceImpl implements IInventarioService {
                 inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
                 inventarioDTO.setStockMaximo(inventario.getStockMax());
                 inventarioDTO.setStockMinimo(inventario.getStockMin());
+                inventarioDTO.setIdAlmacen(inventario.getAlmacen().getId());
+                inventarioDTO.setUnidadMedida(inventario.getMateriaPrima().getUnidadMedida());
                 inventarioDTO.setCostoTotal(inventario.getStockActual()*inventario.getMateriaPrima().getCostoUnitario());
                 if(inventario.getFechaUltimoMovimiento()==null){
                     inventarioDTO.setFechaUtimoMovimiento("Sin fecha");
@@ -88,6 +90,8 @@ public class InventarioServiceImpl implements IInventarioService {
                 inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
                 inventarioDTO.setStockMaximo(inventario.getStockMax());
                 inventarioDTO.setStockMinimo(inventario.getStockMin());
+                inventarioDTO.setIdAlmacen(inventario.getAlmacen().getId());
+                inventarioDTO.setUnidadMedida(inventario.getMateriaPrima().getUnidadMedida());
                 inventarioDTO.setCostoTotal(inventario.getStockActual()*inventario.getMateriaPrima().getCostoUnitario());
                 if(inventario.getFechaUltimoMovimiento()==null){
                     inventarioDTO.setFechaUtimoMovimiento("Sin fecha");
@@ -108,6 +112,8 @@ public class InventarioServiceImpl implements IInventarioService {
                 inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
                 inventarioDTO.setStockMaximo(inventario.getStockMax());
                 inventarioDTO.setStockMinimo(inventario.getStockMin());
+                inventarioDTO.setIdAlmacen(inventario.getAlmacen().getId());
+                inventarioDTO.setUnidadMedida(inventario.getMateriaPrima().getUnidadMedida());
                 inventarioDTO.setCostoTotal(inventario.getStockActual()*inventario.getMateriaPrima().getCostoUnitario());
                 if(inventario.getFechaUltimoMovimiento()==null){
                     inventarioDTO.setFechaUtimoMovimiento("Sin fecha");

@@ -25,5 +25,7 @@ public class InventarioDTO {
     private double costoTotal;
     private String fechaUtimoMovimiento;
     private String estado;
+    private String unidadMedida;
+    private Integer idAlmacen;
 
 }
