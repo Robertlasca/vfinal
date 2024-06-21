@@ -33,4 +33,7 @@ public interface IReceptorController {
 
     @PostMapping(path = "/imprimir")
     ResponseEntity<String> cerrarCuenta();
+
+    @GetMapping(path = "/obtenerComandasXPlatillo/{id}")
+    ResponseEntity<List<DatosComandaDTO>> obtenerComandasAgrupadasPorCantidad(@PathVariable  Integer id);
 }

@@ -141,7 +141,7 @@ public class InventarioServiceImpl implements IInventarioService {
     @Override
     public ResponseEntity<String> agregar(Map<String, String> objetoMap) {
         try {
-            if(objetoMap.containsKey("almacenId") && objetoMap.containsKey("materiaId") && objetoMap.containsKey("cantidad") && objetoMap.containsKey("precio")){
+            if(objetoMap.containsKey("almacenId") && objetoMap.containsKey("materiaId") && objetoMap.containsKey("cantidad")){
                 Optional<Inventario> optionalOrigen=inventarioRepository.findInventarioByAlmacen_IdAndMateriaPrima_Id(Integer.parseInt(objetoMap.get("almacenId")),Integer.parseInt(objetoMap.get("materiaId")));
                 Optional<MateriaPrima> optionalMateriaPrima=materiaPrimaRepository.findById(Integer.parseInt(objetoMap.get("materiaId")));
                 if(!optionalOrigen.isEmpty() && !optionalMateriaPrima.isEmpty()){
@@ -162,7 +162,10 @@ public class InventarioServiceImpl implements IInventarioService {
                     movimientosInventario.setStockActual(stockActual);
                     movimientosInventario.setStockAnterior(stockAnterior);
                     movimientosInventario.setTipoMovimiento(objetoMap.get("tipoMovimiento"));
-                    movimientosInventario.setComentario(objetoMap.get("comentario"));
+                    if(objetoMap.containsKey("comentario")){
+                        movimientosInventario.setComentario(objetoMap.get("comentario"));
+                    }
+
                     movimientosInventario.setNombreMateria(inventario.getMateriaPrima().getNombre());
                     inventario.setFechaUltimoMovimiento(LocalDate.now());
                     Optional<Usuario> usuarioOptional=usuarioRepository.findById(Integer.parseInt(objetoMap.get("usuarioId")));
@@ -171,7 +174,7 @@ public class InventarioServiceImpl implements IInventarioService {
                         movimientosInventario.setUsuario(usuario);
                     }
 
-                    materiaPrima.setCostoUnitario(Double.parseDouble(objetoMap.get("precio")));
+
 
                     movimientoInventarioRepository.save(movimientosInventario);
 
@@ -222,7 +225,10 @@ public class InventarioServiceImpl implements IInventarioService {
                        movimientosInventario.setStockAnterior(stockAnterior);
                        movimientosInventario.setNombreMateria(inventario.getMateriaPrima().getNombre());
                        movimientosInventario.setTipoMovimiento(objetoMap.get("tipoMovimiento"));
-                       movimientosInventario.setComentario(objetoMap.get("comentario"));
+                       if(objetoMap.containsKey("comentario")){
+                           movimientosInventario.setComentario(objetoMap.get("comentario"));
+                       }
+
                        inventario.setFechaUltimoMovimiento(LocalDate.now());
 
                        Optional<Usuario> usuarioOptional=usuarioRepository.findById(Integer.parseInt(objetoMap.get("usuarioId")));

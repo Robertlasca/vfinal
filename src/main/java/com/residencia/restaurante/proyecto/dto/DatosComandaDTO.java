@@ -13,5 +13,6 @@ public class DatosComandaDTO {
     String areaServicio;
     String nombreCliente;
     String nombreMesa;
+    int cantidadPlatillo;
     List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS;
 }

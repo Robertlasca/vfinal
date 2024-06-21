@@ -22,4 +22,6 @@ public interface IReceptorService {
     ResponseEntity<String> cambiarPlatilloCancelado(Integer id);
 
     ResponseEntity<String> cerrarCuenta();
+
+    ResponseEntity<List<DatosComandaDTO>> obtenerComandasAgrupadasPorCantidad(Integer id);
 }

@@ -26,4 +26,6 @@ public interface IComanderoService {
     ResponseEntity<String> cerrarCuenta(Map<String,String> objetoMap);
 
     ResponseEntity<String> validarStocks(String productos);
+
+
 }

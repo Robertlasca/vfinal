@@ -93,4 +93,14 @@ public class ReceptorControllerImpl implements IReceptorController {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<List<DatosComandaDTO>> obtenerComandasAgrupadasPorCantidad(Integer id) {
+        try {
+            return receptorService.obtenerComandasAgrupadasPorCantidad(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

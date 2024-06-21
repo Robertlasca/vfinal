@@ -78,6 +78,7 @@ com\residencia\restaurante\proyecto\controller\IReceptorController.class
 com\residencia\restaurante\proyecto\controllerImpl\RecetaProductoTerminadoControllerImpl.class
 com\residencia\restaurante\proyecto\serviceImpl\ProductoTerminadoServiceImpl.class
 com\residencia\restaurante\proyecto\serviceImpl\MenuServiceImpl$1.class
+com\residencia\restaurante\proyecto\dto\DatosOrdenesDTO.class
 com\residencia\restaurante\proyecto\dto\EstacionDTO.class
 com\residencia\restaurante\proyecto\entity\Almacen.class
 com\residencia\restaurante\proyecto\serviceImpl\EmailService.class
@@ -217,6 +218,7 @@ com\residencia\restaurante\proyecto\service\IImpresoraService.class
 com\residencia\restaurante\proyecto\wrapper\DetalleOrdenWrapper.class
 com\residencia\restaurante\proyecto\entity\Caja.class
 com\residencia\restaurante\proyecto\dto\DatosComandaDTO.class
+com\residencia\restaurante\proyecto\dto\DetalleComandaDTO.class
 com\residencia\restaurante\proyecto\serviceImpl\ArqueoServiceImpl$1.class
 com\residencia\restaurante\security\model\Usuario_Rol.class
 com\residencia\restaurante\proyecto\controllerImpl\ArqueoControllerImpl.class
