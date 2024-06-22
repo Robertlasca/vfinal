@@ -305,7 +305,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                 // Enviar solicitud al servidor de impresión local
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("https://d77b-189-129-48-107.ngrok-free.app/print"))
+                        .uri(URI.create("http://100.121.191.21:8083/print"))
                         .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                         .header("Content-Type", "application/json")
                         .build();
@@ -901,7 +901,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         // Enviar solicitud al servidor de impresión local
                         HttpClient client = HttpClient.newHttpClient();
                         HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create("hhttps://d77b-189-129-48-107.ngrok-free.app/print"))
+                                .uri(URI.create("http://100.121.191.21:8083/print"))
                                 .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                                 .header("Content-Type", "application/json")
                                 .build();
