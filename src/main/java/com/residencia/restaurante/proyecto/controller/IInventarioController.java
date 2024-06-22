@@ -38,7 +38,7 @@ public interface IInventarioController {
      * @return ResponseEntity con la lista de materias primas del inventario en el almacén especificado
      * y el estado HTTP correspondiente.
      */
-    @GetMapping(path = "/listarPorAlmacenes")
+    @PostMapping(path = "/listarPorAlmacenes")
     ResponseEntity<List<MateriaPrima>> listarPorAlmacenes(@RequestBody(required = true) Map<String,String> objetoMap);
 
     /**

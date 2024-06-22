@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.service;
 
 import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.DatosComandaDTO;
+import com.residencia.restaurante.proyecto.dto.DatosOrdenesDTO;
 import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,5 +24,5 @@ public interface IReceptorService {
 
     ResponseEntity<String> cerrarCuenta();
 
-    ResponseEntity<List<DatosComandaDTO>> obtenerComandasAgrupadasPorCantidad(Integer id);
+    ResponseEntity<List<DatosOrdenesDTO>> obtenerComandasAgrupadasPorCantidad(Integer id);
 }

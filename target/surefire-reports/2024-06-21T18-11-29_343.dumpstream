@@ -1,4 +1,4 @@
-# Created at 2024-06-20T19:26:04.583
+# Created at 2024-06-21T18:11:29.867
 Boot Manifest-JAR contains absolute paths in classpath 'D:\SistemaWeb-Backend-cajabranch\SistemaWeb-Backend-cajabranch\target\test-classes'
 Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
 'other' has different root

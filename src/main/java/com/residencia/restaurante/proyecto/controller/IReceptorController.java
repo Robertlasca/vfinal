@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controller;
 
 import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.DatosComandaDTO;
+import com.residencia.restaurante.proyecto.dto.DatosOrdenesDTO;
 import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,5 +36,5 @@ public interface IReceptorController {
     ResponseEntity<String> cerrarCuenta();
 
     @GetMapping(path = "/obtenerComandasXPlatillo/{id}")
-    ResponseEntity<List<DatosComandaDTO>> obtenerComandasAgrupadasPorCantidad(@PathVariable  Integer id);
+    ResponseEntity<List<DatosOrdenesDTO>> obtenerComandasAgrupadasPorCantidad(@PathVariable  Integer id);
 }

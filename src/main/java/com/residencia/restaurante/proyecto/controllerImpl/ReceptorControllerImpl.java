@@ -4,6 +4,7 @@ import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IReceptorController;
 import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.DatosComandaDTO;
+import com.residencia.restaurante.proyecto.dto.DatosOrdenesDTO;
 import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
 import com.residencia.restaurante.proyecto.service.IReceptorService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -95,7 +96,7 @@ public class ReceptorControllerImpl implements IReceptorController {
     }
 
     @Override
-    public ResponseEntity<List<DatosComandaDTO>> obtenerComandasAgrupadasPorCantidad(Integer id) {
+    public ResponseEntity<List<DatosOrdenesDTO>> obtenerComandasAgrupadasPorCantidad(Integer id) {
         try {
             return receptorService.obtenerComandasAgrupadasPorCantidad(id);
         }catch (Exception e){

@@ -1,8 +1,6 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
-import com.residencia.restaurante.proyecto.entity.Almacen;
-import com.residencia.restaurante.proyecto.entity.Inventario;
-import com.residencia.restaurante.proyecto.repository.IAlmacenRepository;
-import com.residencia.restaurante.proyecto.repository.IInventarioRepository;
+import com.residencia.restaurante.proyecto.entity.*;
+import com.residencia.restaurante.proyecto.repository.*;
 import org.springframework.http.HttpHeaders;
 import com.itextpdf.awt.geom.Rectangle;
 import com.itextpdf.text.*;
@@ -10,8 +8,6 @@ import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.residencia.restaurante.proyecto.entity.ProductoNormal;
-import com.residencia.restaurante.proyecto.repository.IProductoNormalRepository;
 import com.residencia.restaurante.proyecto.service.IReporteService;
 import com.residencia.restaurante.security.model.Usuario;
 import com.residencia.restaurante.security.repository.IUsuarioRepository;
@@ -47,6 +43,12 @@ public class IReporteServiceImpl implements IReporteService {
     private IAlmacenRepository almacenRepository;
     @Autowired
     private IInventarioRepository inventarioRepository;
+
+    @Autowired
+    private IVentaRepository ventaRepository;
+
+    @Autowired
+    private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
 
     @Override
     public ResponseEntity<InputStreamResource> downloadPDF(Map<String,String> objetoMap) {
@@ -91,6 +93,151 @@ public class IReporteServiceImpl implements IReporteService {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioVentas(Map<String, String> objetoMap) {
+        // Generar el PDF
+        ByteArrayInputStream bis = generarReporteDiarioVentas(objetoMap);
+
+        // Configurar los headers para la descarga del archivo
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=ventasDiarias.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
+    private ByteArrayInputStream generarReporteDiarioVentas(Map<String, String> objetoMap) {
+        Optional<Usuario> usuarioOptional= usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
+
+        Usuario usuario= new Usuario();
+        if(usuarioOptional.isPresent()){
+            usuario= usuarioOptional.get();
+        }
+
+        Document document = new Document();
+        ByteArrayOutputStream out= new ByteArrayOutputStream();
+        try {
+            PdfWriter writer= PdfWriter.getInstance(document,out);
+            document.open();
+
+            //Agregar logo y encabezado
+            Image logo= Image.getInstance("uploads/images/logo.jpg");
+            logo.scaleToFit(100, 100);
+            logo.setAlignment(Element.ALIGN_CENTER);
+            document.add(logo);
+
+            document.add(new Paragraph("Plazita Gourmet", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, BaseColor.BLACK)));
+            document.add(new Paragraph(" "));
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = new Date();
+            document.add(new Paragraph("Reporte Diario de Ventas", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK)));
+            document.add(new Paragraph("Fecha: " + dateFormat.format(date), FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+            document.add(new Paragraph("Responsable: " + usuario.getNombre(), FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+
+            // Información de contacto del restaurante
+            agregarInformacionContacto(document);
+
+            List<Venta> ventaList=ventaRepository.findVentasPorMes(Integer.parseInt(objetoMap.get("anio")),Integer.parseInt(objetoMap.get("mes")));
+            String platilloMasVendido= obtenerPlatilloMasVendido(ventaList);
+            double totalVentas= ventaList.stream().mapToDouble(Venta::getTotalPagar).sum();
+            document.add(new Paragraph("Total Ventas del Día: $" + totalVentas, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK)));
+
+            // Tabla de ventas
+            float[] columnWidths = {1, 3, 2, 2};
+            PdfPTable table = new PdfPTable(columnWidths);
+            table.setWidthPercentage(100);
+
+            PdfPCell cell;
+            cell = new PdfPCell(new Phrase("ID Venta", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Subtotal", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Descuento", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Total", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            for (Venta venta : ventaList) {
+                table.addCell(String.valueOf(venta.getId()));
+                table.addCell(String.valueOf(venta.getSubTotal()));
+                table.addCell(String.valueOf(venta.getDescuento()));
+                table.addCell(String.valueOf(venta.getTotalPagar()));
+            }
+
+
+
+            document.add(table);
+
+            document.add(new Paragraph("Platillo mas vendido durante el día: " + platilloMasVendido, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK)));
+
+
+
+            document.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  new ByteArrayInputStream(out.toByteArray());
+
+
+    }
+
+    private String obtenerPlatilloMasVendido(List<Venta> ventaList) {
+        if(!ventaList.isEmpty()){
+            Map<String,Integer> conteoPlatillos= new HashMap<>();
+            for (Venta venta:ventaList) {
+                Orden orden= venta.getOrden();
+                List<DetalleOrdenMenu> list= detalleOrdenMenuRepository.getAllByOrden(orden);
+                for (DetalleOrdenMenu detalleOrdenMenu:list) {
+                    String nombrePlatillo= detalleOrdenMenu.getNombreMenu();
+                    if(conteoPlatillos.containsKey(nombrePlatillo)){
+                        conteoPlatillos.put(nombrePlatillo,conteoPlatillos.get(nombrePlatillo)+detalleOrdenMenu.getCantidad());
+
+                    }else {
+                        conteoPlatillos.put(nombrePlatillo,detalleOrdenMenu.getCantidad());
+                    }
+
+                }
+
+
+
+            }
+
+            String platilloMasVendio=null;
+            int cantidadMasVendida=0;
+
+            for (Map.Entry<String,Integer> entry: conteoPlatillos.entrySet()) {
+                if(entry.getValue()>cantidadMasVendida){
+                    platilloMasVendio=entry.getKey();
+                    cantidadMasVendida=entry.getValue();
+                }
+            }
+
+            if(platilloMasVendio!=null){
+                return platilloMasVendio;
+            }
+
+        }
+        return "Ninguno";
+    }
+
+    private void agregarInformacionContacto(Document document) throws DocumentException {
+        document.add(new Paragraph("Dirección: Luis G. Urbina 108, FERROCARRIL, Col del Periodista, 68060 Oaxaca de Juárez, Oax.",
+                FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+        document.add(new Paragraph("Teléfono: +52 9514526384", FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+        document.add(new Paragraph("Correo: contacto@plazitagourmet.com", FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+        document.add(new Paragraph(" "));
     }
 
     private ByteArrayInputStream generarReporteInventarioAgotandoseXAlmacen(Map<String, String> objetoMap) {

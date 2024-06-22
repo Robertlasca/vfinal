@@ -1,10 +1,7 @@
 package com.residencia.restaurante.proyecto.serviceImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
-import com.residencia.restaurante.proyecto.dto.ComandaDTO;
-import com.residencia.restaurante.proyecto.dto.DatosComandaDTO;
-import com.residencia.restaurante.proyecto.dto.DatosOrdenesDTO;
-import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
+import com.residencia.restaurante.proyecto.dto.*;
 import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IReceptorService;
@@ -293,7 +290,7 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
     }
 
     @Override
-    public ResponseEntity<List<DatosComandaDTO>> obtenerComandasAgrupadasPorCantidad(Integer id) {
+    public ResponseEntity<List<DatosOrdenesDTO>> obtenerComandasAgrupadasPorCantidad(Integer id) {
         try {
             List<DatosComandaDTO> datosComandaDTOS = new ArrayList<>();
 
@@ -313,38 +310,39 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
 
                             // Crear o actualizar DatosComandaDTO para este nombre de producto
                             DatosComandaDTO datosComandaDTO = productoMap.get(nombreProducto);
+                            DatosOrdenesDTO datosOrdenesDTO= productoMa.get(nombreProducto);
 
-                            if (datosComandaDTO == null) {
-                                datosComandaDTO = new DatosComandaDTO();
-                                datosComandaDTO.setNombreCliente(detalleOrdenMenu.getOrden().getNombreCliente());
-                                datosComandaDTO.setAreaServicio(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre());
-                                datosComandaDTO.setNombreMesa(detalleOrdenMenu.getOrden().getMesa().getNombre());
-                                datosComandaDTO.setCantidadPlatillo(0); // Inicializar cantidad en 0
-                                datosComandaDTO.setDetalleOrdenProductoDTOS(new ArrayList<>());
-                                productoMap.put(nombreProducto, datosComandaDTO);
+                            if (datosOrdenesDTO == null) {
+                                datosOrdenesDTO = new DatosOrdenesDTO();
+                                datosOrdenesDTO.setCantidadPlatillo(0);
+                                datosOrdenesDTO.setNombrePlatillo(nombreProducto);
+                                datosOrdenesDTO.setDetalleOrdenProductoDTOS(new ArrayList<>());
+
+                                productoMa.put(nombreProducto, datosOrdenesDTO);
                             }
 
                             // Actualizar la cantidad de platillos
-                            int nuevaCantidad = datosComandaDTO.getCantidadPlatillo() + detalleOrdenMenu.getCantidad();
-                            datosComandaDTO.setCantidadPlatillo(nuevaCantidad);
+                            int nuevaCantidad = datosOrdenesDTO.getCantidadPlatillo() + detalleOrdenMenu.getCantidad();
+                            datosOrdenesDTO.setCantidadPlatillo(nuevaCantidad);
 
                             // Agregar detalles a datosComandaDTO
-                            DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
-                            detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
-                            detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
-                            detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
-                            detalleOrdenProductoDTO.setNombreProducto(nombreProducto);
-                            detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                            detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
-                            detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
-                            detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                            DetalleComandaDTO detalleComandaDTO= new DetalleComandaDTO();
+                            detalleComandaDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                            detalleComandaDTO.setMesa(detalleOrdenMenu.getOrden().getMesa().getNombre());
+                            detalleComandaDTO.setEsDetalleMenu("detalleMenu");
+                            detalleComandaDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                            detalleComandaDTO.setAreaServicio(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre());
+                            detalleComandaDTO.setComentario(detalleOrdenMenu.getComentario());
+                            detalleComandaDTO.setEstado(detalleOrdenMenu.getEstado());
+                            detalleComandaDTO.setNombreMesero(detalleOrdenMenu.getOrden().getUsuario().getNombre());
 
-                            datosComandaDTO.getDetalleOrdenProductoDTOS().add(detalleOrdenProductoDTO);
+                            datosOrdenesDTO.getDetalleOrdenProductoDTOS().add(detalleComandaDTO);
+
                         }
                     }
 
                     // Construir lista de resultados a devolver
-                    List<DatosComandaDTO> resultadoFinal = new ArrayList<>(productoMap.values());
+                    List<DatosOrdenesDTO> resultadoFinal = new ArrayList<>(productoMa.values());
 
                     return new ResponseEntity<>(resultadoFinal, HttpStatus.OK);
                 }

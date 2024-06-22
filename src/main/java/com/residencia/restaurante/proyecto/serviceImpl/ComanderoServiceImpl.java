@@ -240,11 +240,11 @@ public class ComanderoServiceImpl implements IComanderoService {
                             }
 
 
-                        //if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
+                        if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
-                        //} else {
+                        } else {
                           //  return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
-                        //}
+                        }
 
                     }
                         return Utils.getResponseEntity(validarStock(objetoMap.get("detalleOrden")),HttpStatus.BAD_REQUEST);
@@ -305,7 +305,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                 // Enviar solicitud al servidor de impresión local
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("https://61da-189-129-48-107.ngrok-free.app/print"))
+                        .uri(URI.create("https://d77b-189-129-48-107.ngrok-free.app/print"))
                         .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                         .header("Content-Type", "application/json")
                         .build();
@@ -901,7 +901,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         // Enviar solicitud al servidor de impresión local
                         HttpClient client = HttpClient.newHttpClient();
                         HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create("https://67b5-2806-10ae-10-4b65-889c-99b4-a753-8fbc.ngrok-free.app/print"))
+                                .uri(URI.create("hhttps://d77b-189-129-48-107.ngrok-free.app/print"))
                                 .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                                 .header("Content-Type", "application/json")
                                 .build();
