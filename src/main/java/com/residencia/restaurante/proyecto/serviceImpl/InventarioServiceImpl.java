@@ -210,7 +210,7 @@ public class InventarioServiceImpl implements IInventarioService {
                    Inventario inventario=optionalOrigen.get();
                    Double cantidad= Double.parseDouble(objetoMap.get("cantidad"));
 
-                   if(cantidad<=inventario.getStockActual() || inventario.getStockActual()==0){
+                   if(cantidad<=inventario.getStockActual() && inventario.getStockActual()!=0){
                        Double stockAnterior=inventario.getStockActual();
                        Double stockActual=inventario.getStockActual()-cantidad;
 

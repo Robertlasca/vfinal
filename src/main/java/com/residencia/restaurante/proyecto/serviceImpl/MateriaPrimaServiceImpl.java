@@ -148,6 +148,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 List<String> almacenes=new ArrayList<>();
                 MateriaPrimaDTO materiaPrimaDTO= new MateriaPrimaDTO();
                 materiaPrimaDTO.setMateriaPrimaDTO(materiaPrima);
+
                 if(materiaPrima.isVisibilidad()){
                     materiaPrimaDTO.setEstado("Visible");
                 }else{
@@ -163,6 +164,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                             almacenes.add(inventario.getAlmacen().getNombre());
                             InventarioDTO inventarioDTO= new InventarioDTO();
                             inventarioDTO.setId(inventario.getId());
+
                             inventarioDTO.setNombreAlmacen(inventario.getAlmacen().getNombre());
                             inventarioDTO.setStockMinimo(inventario.getStockMin());
                             inventarioDTO.setStockMaximo(inventario.getStockMax());
