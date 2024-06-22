@@ -57,7 +57,7 @@ public interface IInventarioController {
      * @param objetoMap Un mapa que contiene información relevante para la transferencia.
      * @return ResponseEntity con los datos de transferencia y el estado HTTP correspondiente.
      */
-    @GetMapping(path = "/obtenerDatos")
+    @PostMapping(path = "/obtenerDatos")
     ResponseEntity<Map<String,String>> obtenerDatostranferencia(@RequestBody(required = true) Map<String,String> objetoMap);
 
     /**
@@ -93,7 +93,7 @@ public interface IInventarioController {
      * @param objetoMap Un mapa que contiene información relevante para mostrar.
      * @return ResponseEntity con los datos para mostrar y el estado HTTP correspondiente.
      */
-    @GetMapping(path = "/obtenerDatosMostrar")
+    @PostMapping(path = "/obtenerDatosMostrar")
     ResponseEntity<Map<String,String>> obtenerDatos(@RequestBody(required = true) Map<String,String> objetoMap);
 
     @GetMapping(path = "/movimientosInventario")
