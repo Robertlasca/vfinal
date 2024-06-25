@@ -3,6 +3,7 @@ package com.residencia.restaurante.security.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Getter
 @Setter
 @AllArgsConstructor

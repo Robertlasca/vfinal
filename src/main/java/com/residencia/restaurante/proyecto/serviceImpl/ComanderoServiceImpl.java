@@ -279,6 +279,8 @@ public class ComanderoServiceImpl implements IComanderoService {
 
     private  int imprimirComandas(Map<Integer, List<String>> productosPorCocina,String cliente,String areaServicio,String usuario) throws IOException, InterruptedException {
         HttpResponse<String> response=null;
+
+
         for (Map.Entry<Integer, List<String>> entry : productosPorCocina.entrySet()) {
             //El número de veces que quieres que e imprima la comanda
 
@@ -301,16 +303,23 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                 }
 
-                String printRequestJson = new ObjectMapper().writeValueAsString(printRequest);
-                // Enviar solicitud al servidor de impresión local
-                HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("https://d77b-189-129-48-107.ngrok-free.app/print"))
-                        .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
-                        .header("Content-Type", "application/json")
-                        .build();
+            String printRequestJson = new ObjectMapper().writeValueAsString(printRequest);
 
-                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            // Configuración de la solicitud HTTP
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://carlos1his-37591.portmap.host:28266/print")) // Usa http
+                    .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
+                    .header("Content-Type", "application/json")
+                    .build();
+
+            // Envío de la solicitud y obtención de la respuesta
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Manejo de la respuesta
+            System.out.println("Respuesta del servidor: " + response.body());
+            System.out.println("Código de estado: " + response.statusCode());
+
 
 
         }
