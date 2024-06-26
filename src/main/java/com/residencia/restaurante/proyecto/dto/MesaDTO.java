@@ -16,5 +16,6 @@ public class MesaDTO {
     Double column;
     String type;
     String name;
+    String estado;
 
 }

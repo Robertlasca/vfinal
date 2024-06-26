@@ -49,6 +49,7 @@ public class MesaServiceImpl implements IMesaService{
                 mesaDTO.setRow(mesa.getCoordY());
                 mesaDTO.setColumn(mesa.getCoordX());
                 mesaDTO.setId(mesa.getId());
+                mesaDTO.setEstado(mesa.getEstado());
                 String tipoMesa = mesa.getTipoMesa();
                 if (tipoMesa == null ) {
                     mesaDTO.setType("miCuadrado");
