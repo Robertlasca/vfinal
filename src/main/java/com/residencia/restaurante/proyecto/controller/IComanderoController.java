@@ -1,6 +1,7 @@
 package com.residencia.restaurante.proyecto.controller;
 
 import com.residencia.restaurante.proyecto.dto.ComandaDTO;
+import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.Orden;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,10 @@ public interface IComanderoController {
 
     @GetMapping(path = "/validarStock")
     ResponseEntity<String> validarStocks(@RequestBody(required = true)String productos);
+
+    @GetMapping(path = "/obtenerOrdenesActuales")
+    ResponseEntity<List<OrdenDTO>> obtenerOrdenesActuales();
+
 
 
 

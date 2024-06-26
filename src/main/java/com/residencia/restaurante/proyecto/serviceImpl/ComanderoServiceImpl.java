@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.ComandaDTO;
 import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
+import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.*;
@@ -33,7 +34,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -108,7 +111,9 @@ public class ComanderoServiceImpl implements IComanderoService {
                    orden.setNombreCliente(objetoMap.get("nombreCliente"));
                }
                orden.setEstado("En curso");
-               orden.setFolio(folioService.getNextFolio());
+               Integer lastFolio = ordenRepository.findMaxFolio();
+               int newFolio = (lastFolio != null) ? lastFolio + 1 : 1;
+               orden.setFolio(newFolio);
                orden.setCantidadComensal(Integer.parseInt(objetoMap.get("numComensales")));
                ordenRepository.save(orden);
 
@@ -968,6 +973,54 @@ public class ComanderoServiceImpl implements IComanderoService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<OrdenDTO>> obtenerOrdenesActuales() {
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDateTime startOfDay = today.atStartOfDay();
+            LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+            List<Orden> ordenList= ordenRepository.findOrdenesDelDia(startOfDay,endOfDay);
+            List<OrdenDTO> ordenDTOS= new ArrayList<>();
+
+            if(!ordenList.isEmpty()){
+                for (Orden orden:ordenList) {
+                    OrdenDTO ordenDTO= new OrdenDTO();
+                    ordenDTO.setIdOrden(orden.getId());
+                    ordenDTO.setNombreCliente(orden.getNombreCliente());
+                    ordenDTO.setFolio(orden.getFolio());
+                    ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre());
+                    ordenDTO.setEstado(orden.getEstado());
+                    double total=0;
+                    List<DetalleOrdenMenu> detalleOrdenMenuList= detalleOrdenMenuRepository.getAllByOrden(orden);
+                    List<DetalleOrden_ProductoNormal> detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+
+                    if(!detalleOrdenMenuList.isEmpty()){
+                        for (DetalleOrdenMenu detalleOrdenMenu:detalleOrdenMenuList) {
+                            total=total+(detalleOrdenMenu.getTotal());
+                        }
+                    }
+
+                    if(!detalleOrdenProductoNormals.isEmpty()){
+                        for(DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals){
+                            total=total+(detalleOrdenProductoNormal.getTotal());
+                        }
+                    }
+                    ordenDTO.setTotal(total);
+                    ordenDTOS.add(ordenDTO);
+
+
+
+                }
+            }
+            return new ResponseEntity<List<OrdenDTO>>(ordenDTOS,HttpStatus.OK);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

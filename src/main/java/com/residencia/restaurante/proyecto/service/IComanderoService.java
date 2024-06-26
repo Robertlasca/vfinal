@@ -1,6 +1,7 @@
 package com.residencia.restaurante.proyecto.service;
 
 import com.residencia.restaurante.proyecto.dto.ComandaDTO;
+import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.Orden;
 import org.springframework.http.ResponseEntity;
@@ -28,4 +29,5 @@ public interface IComanderoService {
     ResponseEntity<String> validarStocks(String productos);
 
 
+    ResponseEntity<List<OrdenDTO>> obtenerOrdenesActuales();
 }
