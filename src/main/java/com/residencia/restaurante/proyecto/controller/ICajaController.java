@@ -35,6 +35,9 @@ public interface ICajaController {
      */
     @GetMapping(path = "/obtenerCajas")
     ResponseEntity<List<CajaDTO>> obtenerCajas();
+
+    @GetMapping(path = "/obtenerCajasConArqueo")
+    ResponseEntity<List<CajaDTO>> obtenerCajasConArqueo();
     /**
      * Cambia el estado de una caja específica en el sistema.
      *

@@ -57,4 +57,6 @@ public interface ICajaService {
      * @return ResponseEntity con la caja obtenida.
      */
     ResponseEntity<Caja> obtenerCajaId(Integer id);
+
+    ResponseEntity<List<CajaDTO>> obtenerCajasConArqueo();
 }

@@ -3,9 +3,11 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.dto.CajaDTO;
 import com.residencia.restaurante.proyecto.dto.MedioPagoDTO;
+import com.residencia.restaurante.proyecto.entity.Arqueo;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
+import com.residencia.restaurante.proyecto.repository.IArqueoRepository;
 import com.residencia.restaurante.proyecto.repository.ICajaRepository;
 import com.residencia.restaurante.proyecto.repository.IImpresoraRepository;
 import com.residencia.restaurante.proyecto.service.ICajaService;
@@ -24,6 +26,9 @@ import java.util.Optional;
 public class CajaServiceImpl implements ICajaService {
     @Autowired
     private ICajaRepository cajaRepository;
+
+    @Autowired
+    private IArqueoRepository arqueoRepository;
 
     @Autowired
     private IImpresoraRepository impresoraRepository;
@@ -250,6 +255,30 @@ public class CajaServiceImpl implements ICajaService {
         }
 
         return new ResponseEntity<>(new Caja(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<CajaDTO>> obtenerCajasConArqueo() {
+        try {
+            List<Arqueo> arqueoList= arqueoRepository.findArqueoByEstadoArqueoTrue();
+            List<CajaDTO> cajaConEstado = new ArrayList<>();
+            for (Arqueo caja : arqueoList) {
+                CajaDTO cajaDTO= new CajaDTO();
+                cajaDTO.setCaja(caja.getCaja());
+                if(caja.getCaja().getVisibilidad()){
+                    cajaDTO.setEstado("Visible");
+                }else{
+                    cajaDTO.setEstado("No visible");
+                }
+
+                cajaConEstado.add(cajaDTO);
+            }
+            return new ResponseEntity<List<CajaDTO>>(cajaConEstado, HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<List<CajaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
