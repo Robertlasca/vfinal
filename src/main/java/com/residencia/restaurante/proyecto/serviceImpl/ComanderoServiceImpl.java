@@ -313,7 +313,7 @@ public class ComanderoServiceImpl implements IComanderoService {
             // Configuración de la solicitud HTTP
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://carlos1his-37591.portmap.host:28266/print")) // Usa http
+                    .uri(URI.create("http://localhost:8082/print")) // Usa http
                     .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                     .header("Content-Type", "application/json")
                     .build();
@@ -683,7 +683,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleMenu");
                         detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
                         detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
@@ -699,7 +699,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenProductoNormal.getProductoNormal().getId());
-                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleNormal");
                         detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getProductoNormal().getNombre());
                         detalleOrdenProductoDTO.setComentario(detalleOrdenProductoNormal.getComentario());
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
@@ -740,12 +740,10 @@ public class ComanderoServiceImpl implements IComanderoService {
                 if(!detalleOrdenMenus.isEmpty()){
                     for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
                         if(!detalleOrdenMenu.getEstado().equalsIgnoreCase("cancelado")){
-
-
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleMenu");
                         detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
                         detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
@@ -762,7 +760,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenProductoNormal.getProductoNormal().getId());
-                        detalleOrdenProductoDTO.setEsDetalleMenu("true");
+                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleNormal");
                         detalleOrdenProductoDTO.setNombreProducto(detalleOrdenProductoNormal.getProductoNormal().getNombre());
                         detalleOrdenProductoDTO.setComentario(detalleOrdenProductoNormal.getComentario());
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
@@ -1021,6 +1019,180 @@ public class ComanderoServiceImpl implements IComanderoService {
             e.printStackTrace();
         }
         return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> asignarPlatillo(Map<String, String> objetoMap) {
+        try{
+            if(objetoMap.containsKey("idProducto")&& objetoMap.containsKey("idOrden")&& objetoMap.containsKey("cantidad") && objetoMap.containsKey("esMenu")){
+                Optional<Orden> ordenOptional= ordenRepository.findById(Integer.parseInt(objetoMap.get("idOrden")));
+
+                if(ordenOptional.isPresent()){
+                    Orden orden= ordenOptional.get();
+                    Integer idProducto=Integer.parseInt(objetoMap.get("idProducto"));
+
+                    if(objetoMap.get("esMenu").equalsIgnoreCase("esMenu")){
+                        Optional<Menu> menuOptional= menuRepository.findById(idProducto);
+                        if (menuOptional.isPresent()){
+                            Menu menu= menuOptional.get();
+
+                            List<MateriaPrima_Menu> materiaPrimaMenus= materiaPrimaMenuRepository.getAllByMenu(menu);
+                            List<ProductoTerminado_Menu> productoTerminadoMenus=productoTerminadoMenuRepository.getAllByMenu(menu);
+
+                            //Validar el stock
+                            if(!materiaPrimaMenus.isEmpty()){
+                                for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
+                                    double descontandoStock= materiaPrimaMenu.getInventario().getStockActual()-(materiaPrimaMenu.getCantidad()*Integer.parseInt(objetoMap.get("cantidad")));
+                                    if(descontandoStock<=0){
+                                        return Utils.getResponseEntity("No hay suficiente stock para preparar los platillos" + materiaPrimaMenu.getMenu().getNombre() + ". Ya que no hay suficiente stock en el inventario en el almacen" + materiaPrimaMenu.getInventario().getAlmacen().getNombre() + ".Hace falta ingresar mas " + materiaPrimaMenu.getInventario().getMateriaPrima().getNombre(),HttpStatus.BAD_REQUEST);
+                                    }
+                                }
+                            }
+
+                            if(!productoTerminadoMenus.isEmpty()){
+                                for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus) {
+                                    double descontandoStock = productoTerminadoMenu.getProductoTerminado().getStockActual()-(productoTerminadoMenu.getCantidad() * Integer.parseInt(objetoMap.get("cantidad")));
+                                    if(descontandoStock<=0){
+                                        return Utils.getResponseEntity("No hay suficiente stock para preparar los platillos"+productoTerminadoMenu.getMenu().getNombre()+". Ya que no hay suficiente stock en el producto terminado"+productoTerminadoMenu.getProductoTerminado().getNombre(),HttpStatus.BAD_REQUEST);
+                                    }
+                                }
+                            }
+
+                            //Descontando stock
+
+                            if(!materiaPrimaMenus.isEmpty()){
+                                for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
+                                    Inventario inventario= materiaPrimaMenu.getInventario();
+                                    inventario.setStockActual(materiaPrimaMenu.getInventario().getStockActual()-(materiaPrimaMenu.getCantidad()*Integer.parseInt(objetoMap.get("cantidad"))));
+                                    inventarioRepository.save(inventario);
+                                }
+                            }
+
+                            if(!productoTerminadoMenus.isEmpty()){
+                                for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus) {
+                                    ProductoTerminado productoTerminado= productoTerminadoMenu.getProductoTerminado();
+                                    productoTerminado.setStockActual(productoTerminadoMenu.getProductoTerminado().getStockActual()-(productoTerminadoMenu.getCantidad() * Integer.parseInt(objetoMap.get("cantidad"))));
+                                    productoTerminadoRepository.save(productoTerminado);
+                                }
+                            }
+
+                            DetalleOrdenMenu detalleOrdenMenu= new DetalleOrdenMenu();
+                            detalleOrdenMenu.setMenu(menu);
+                            detalleOrdenMenu.setOrden(orden);
+                            detalleOrdenMenu.setCantidad(Integer.parseInt(objetoMap.get("cantidad")));
+                            detalleOrdenMenu.setTotal(menu.getPrecioVenta()*Integer.parseInt(objetoMap.get("cantidad")));
+                            if(objetoMap.containsKey("comentario")){
+                                detalleOrdenMenu.setComentario(objetoMap.get("comentario"));
+                            }
+                            detalleOrdenMenu.setEstado("Por enviar");
+                            detalleOrdenMenu.setNombreMenu(menu.getNombre());
+                            detalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
+                            detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                            return Utils.getResponseEntity("Platillo asignado correctamente.",HttpStatus.OK);
+
+                        }
+                        return Utils.getResponseEntity("El producto no existe.",HttpStatus.BAD_REQUEST);
+
+                    }else {
+                        Optional<ProductoNormal> productoNormalOptional= productoNormalRepository.findById(idProducto);
+                        if(productoNormalOptional.isPresent()){
+                            ProductoNormal productoNormal= productoNormalOptional.get();
+
+                            if((productoNormal.getStockActual() - Integer.parseInt(objetoMap.get("cantidad")))<=0){
+                                return Utils.getResponseEntity("No hay suficiente stock para el producto "+productoNormal.getNombre(),HttpStatus.BAD_REQUEST);
+                            }
+                            productoNormal.setStockActual(productoNormal.getStockActual() - Integer.parseInt(objetoMap.get("cantidad")));
+                            DetalleOrden_ProductoNormal detalleOrdenProductoNormal= new DetalleOrden_ProductoNormal();
+                            detalleOrdenProductoNormal.setProductoNormal(productoNormal);
+                            detalleOrdenProductoNormal.setOrden(orden);
+                            detalleOrdenProductoNormal.setEstado("Por enviar");
+                            detalleOrdenProductoNormal.setPrecioProductoNormal(productoNormal.getPrecioUnitario());
+                            detalleOrdenProductoNormal.setNombreProductoNormal(productoNormal.getNombre());
+                            detalleOrdenProductoNormal.setTotal(productoNormal.getPrecioUnitario()*Integer.parseInt(objetoMap.get("cantidad")));
+                            if(objetoMap.containsKey("comentario")){
+                                detalleOrdenProductoNormal.setComentario(objetoMap.get("comentario"));
+                            }
+                            detalleOrdenProductoNormalRepository.save(detalleOrdenProductoNormal);
+                            return Utils.getResponseEntity("Producto asignado correctamente.",HttpStatus.OK);
+
+                        }
+
+                    }
+
+                }
+                return Utils.getResponseEntity("La orden no existe.",HttpStatus.BAD_REQUEST);
+
+
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> imprimirComanda(Integer id) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<String> eliminarPlatilloDeComanda(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("idProducto") && objetoMap.containsKey("esDetalleMenu")){
+                Integer idProducto=Integer.parseInt(objetoMap.get("idProducto"));
+                if(objetoMap.get("esDetalleMenu").equalsIgnoreCase("esDetalleMenu")){
+                    Optional<DetalleOrdenMenu>detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(idProducto);
+                    if(detalleOrdenMenuOptional.isPresent()){
+                        DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
+                        List<MateriaPrima_Menu> materiaPrimaMenus= materiaPrimaMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
+                        List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
+
+                        if(!materiaPrimaMenus.isEmpty()){
+                            for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
+                                Inventario inventario= materiaPrimaMenu.getInventario();
+                                inventario.setStockActual(inventario.getStockActual()+(detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad()));
+                                inventarioRepository.save(inventario);
+
+                            }
+                        }
+
+                        if(!productoTerminadoMenus.isEmpty()){
+                            for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus) {
+                                ProductoTerminado productoTerminado= productoTerminadoMenu.getProductoTerminado();
+                                productoTerminado.setStockActual(productoTerminado.getStockActual()+(detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad()));
+                                productoTerminadoRepository.save(productoTerminado);
+                            }
+                        }
+                        //Regresar el stock
+                        detalleOrdenMenuRepository.delete(detalleOrdenMenu);
+                        return Utils.getResponseEntity("Platillo eliminado de la orden correctamente.",HttpStatus.OK);
+                    }
+                    return Utils.getResponseEntity("Ya no existe el registro.",HttpStatus.BAD_REQUEST);
+                }
+
+                if(objetoMap.get("esDetalleMenu").equalsIgnoreCase("esDetalleNormal")){
+                    Optional<DetalleOrden_ProductoNormal>detalleOrdenProductoNormalOptional= detalleOrdenProductoNormalRepository.findById(idProducto);
+                    if(detalleOrdenProductoNormalOptional.isPresent()){
+                        DetalleOrden_ProductoNormal detalleOrdenProductoNormal= detalleOrdenProductoNormalOptional.get();
+                        //Regresar el stock
+                        ProductoNormal productoNormal= detalleOrdenProductoNormal.getProductoNormal();
+                        productoNormal.setStockActual(productoNormal.getStockActual()+detalleOrdenProductoNormal.getCantidad());
+                        productoNormalRepository.save(productoNormal);
+                        detalleOrdenProductoNormalRepository.delete(detalleOrdenProductoNormal);
+                        return Utils.getResponseEntity("Platillo eliminado de la orden correctamente.",HttpStatus.OK);
+
+                    }
+                    return Utils.getResponseEntity("Ya no existe el registro.",HttpStatus.BAD_REQUEST);
+                }
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

@@ -30,4 +30,10 @@ public interface IComanderoService {
 
 
     ResponseEntity<List<OrdenDTO>> obtenerOrdenesActuales();
+
+    ResponseEntity<String> asignarPlatillo(Map<String, String> objetoMap);
+
+    ResponseEntity<String> imprimirComanda(Integer id);
+
+    ResponseEntity<String> eliminarPlatilloDeComanda(Map<String, String> objetoMap);
 }

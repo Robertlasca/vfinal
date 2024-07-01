@@ -18,6 +18,15 @@ public interface IComanderoController {
     @PostMapping(path = "/asignarPlatillos")
     ResponseEntity<String> asignarPlatillos(@RequestBody(required = true) Map<String, String> objetoMap);
 
+    @PostMapping(path = "/asignarPlatillo")
+    ResponseEntity<String> asignarPlatillo(@RequestBody(required = true) Map<String, String> objetoMap);
+
+    @PostMapping(path = "/eliminarPlatillo")
+    ResponseEntity<String> eliminarPlatilloDeComanda(@RequestBody(required = true) Map<String, String> objetoMap);
+
+    @GetMapping(path = "/imprimirComanda/{id}")
+    ResponseEntity<String> imprimirComanda(@PathVariable Integer id);
+
     @GetMapping(path = "/obtenerProductos")
     ResponseEntity<List<ProductoDto>> obtenerProductos();
 

@@ -198,13 +198,16 @@ public ResponseEntity<String> cambiarEstado(Integer id) {
             if(objetoMap.containsKey("idMesa") && objetoMap.containsKey("coordX") && objetoMap.containsKey("coordY")){
                 Optional<Mesa> mesaOptional= mesaRepository.findById(Integer.parseInt(objetoMap.get("idMesa")));
                 if(mesaOptional.isPresent()){
-                    Mesa mesa= mesaOptional.get();
-                    mesa.setCoordX(Double.parseDouble(objetoMap.get("coordX")));
-                    mesa.setCoordY(Double.parseDouble(objetoMap.get("coordY")));
+                    if (mesaOptional.get().getEstado().equalsIgnoreCase("Disponible")) {
+                        Mesa mesa = mesaOptional.get();
+                        mesa.setCoordX(Double.parseDouble(objetoMap.get("coordX")));
+                        mesa.setCoordY(Double.parseDouble(objetoMap.get("coordY")));
 
-                    mesaRepository.save(mesa);
-                    return Utils.getResponseEntity("La mesa ha sido movido correctamente.",HttpStatus.OK);
+                        mesaRepository.save(mesa);
+                        return Utils.getResponseEntity("La mesa ha sido movido correctamente.", HttpStatus.OK);
 
+                    }
+                    return Utils.getResponseEntity("No se puede mover la mesa ya que esta siendo ocupada.", HttpStatus.BAD_REQUEST);
                 }
                 return Utils.getResponseEntity("La mesa no existe.",HttpStatus.BAD_REQUEST);
             }

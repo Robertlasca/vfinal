@@ -24,4 +24,6 @@ public interface IMesaRepository extends JpaRepository<Mesa,Integer> {
 
 
     List<Mesa> findByAreaServicio_IdAndVisibilidadTrueOrderByNombreAsc(Integer idArea);
+
+    boolean existsMesaByIdAndEstado(Integer id,String estado);
 }

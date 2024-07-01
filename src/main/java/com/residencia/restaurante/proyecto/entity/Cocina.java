@@ -20,7 +20,7 @@ public class Cocina {
     private Integer id;
     @Column(length = 30,nullable = true)
     private String nombre;
-    @Column(length = 50,nullable = true)
+    @Column(length = 200,nullable = true)
     private String descripcion;
     @Column(nullable = true)
     private boolean visibilidad=true;

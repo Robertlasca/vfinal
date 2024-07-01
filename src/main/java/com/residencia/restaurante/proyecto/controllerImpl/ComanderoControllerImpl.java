@@ -43,6 +43,38 @@ public class ComanderoControllerImpl implements IComanderoController {
     }
 
     @Override
+    public ResponseEntity<String> asignarPlatillo(Map<String, String> objetoMap) {
+        try{
+            return comanderoService.asignarPlatillo(objetoMap);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> eliminarPlatilloDeComanda(Map<String, String> objetoMap) {
+        try{
+            return comanderoService.eliminarPlatilloDeComanda(objetoMap);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> imprimirComanda(Integer id) {
+        try{
+            return comanderoService.imprimirComanda(id);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
     public ResponseEntity<List<ProductoDto>> obtenerProductos() {
         try {
             return comanderoService.obtenerProductos();

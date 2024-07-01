@@ -229,10 +229,10 @@ public class ImpresoraServiceImpl implements IImpresoraService {
             impresora.setEstado(true);
         }
         impresora.setNombre(objetoMap.get("nombre"));
-        if(objetoMap.containsKey("direccionIp")){
+        if(objetoMap.containsKey("direccionIP")){
             impresora.setDireccionIp(objetoMap.get("direccionIP"));
         }
-
+/*
         if(objetoMap.get("porDefecto").equalsIgnoreCase("true")){
             Optional<Impresora> impresoraDefault=iImpresoraRepository.getImpresoraByPorDefectoTrue();
             if (!impresoraDefault.isEmpty()){
@@ -246,7 +246,7 @@ public class ImpresoraServiceImpl implements IImpresoraService {
             }
         }else{
             impresora.setPorDefecto(false);
-        }
+        }*/
         return impresora;
     }
     //Se valida una caja Existente mediante el nombre

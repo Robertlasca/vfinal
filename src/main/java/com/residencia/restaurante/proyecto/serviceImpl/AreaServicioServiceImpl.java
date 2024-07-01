@@ -9,6 +9,7 @@ import com.residencia.restaurante.proyecto.entity.Mesa;
 import com.residencia.restaurante.proyecto.repository.IAreaServicioRepository;
 import com.residencia.restaurante.proyecto.repository.IImpresoraRepository;
 import com.residencia.restaurante.proyecto.repository.IMesaRepository;
+import com.residencia.restaurante.proyecto.repository.IOrdenRepository;
 import com.residencia.restaurante.proyecto.service.IAreaServicioService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ AreaServicioServiceImpl implements IAreaServicioService {
 
      @Autowired
      private IMesaRepository mesaRepository;
+
+     @Autowired
+     private IOrdenRepository ordenRepository;
 
     @Override
     public ResponseEntity<List<AreaServicioDTO>> obtenerAreasActivas() {
@@ -102,7 +106,11 @@ AreaServicioServiceImpl implements IAreaServicioService {
                 if(!areaServicioOptional.isEmpty()){
                     AreaServicio areaServicio= areaServicioOptional.get();
                     if(objetoMap.get("estado").equalsIgnoreCase("false")){
+                        if(ordenRepository.existsByAreaServicioIdAndEstadoNotIn(Integer.parseInt(objetoMap.get("id")))){
+                            return Utils.getResponseEntity("No se puede cambiar el estado del área de servicio por que tiene comandas activas.",HttpStatus.BAD_REQUEST);
+                        }
                         areaServicio.setDisponibilidad(false);
+
                     }else{
                         areaServicio.setDisponibilidad(true);
                     }
