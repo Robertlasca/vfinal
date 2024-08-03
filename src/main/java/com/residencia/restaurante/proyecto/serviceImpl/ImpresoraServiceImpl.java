@@ -7,6 +7,7 @@ import com.residencia.restaurante.proyecto.entity.Almacen;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
+import com.residencia.restaurante.proyecto.repository.IArqueoRepository;
 import com.residencia.restaurante.proyecto.repository.IImpresoraRepository;
 import com.residencia.restaurante.proyecto.service.IImpresoraService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -25,6 +26,9 @@ public class ImpresoraServiceImpl implements IImpresoraService {
 
     @Autowired
     IImpresoraRepository iImpresoraRepository;
+
+    @Autowired
+    IArqueoRepository arqueoRepository;
     /**
      * Obtiene una lista de todas las impresoras activas.
      * @return Lista de impresoras activas con estado HTTP correspondiente.
@@ -113,8 +117,13 @@ public class ImpresoraServiceImpl implements IImpresoraService {
             if(objetoMap.containsKey("id") && objetoMap.containsKey("estado")){
                 Optional<Impresora> optionalImpresora=iImpresoraRepository.findById(Integer.parseInt(objetoMap.get("id")));
                 if(!optionalImpresora.isEmpty()){
+
                     Impresora impresora= optionalImpresora.get();
                     if(objetoMap.get("estado").equalsIgnoreCase("false")){
+
+                        if(arqueoRepository.existsByEstadoArqueoIsTrueAndCajaImpresoraId(Integer.parseInt(objetoMap.get("id")))){
+                            return Utils.getResponseEntity("No puedes cambiar el estado de la impresora ya que esta asociada a una caja con un arqueo en curso.",HttpStatus.BAD_REQUEST);
+                        }
                         impresora.setEstado(false);
                     }else{
                         impresora.setEstado(true);

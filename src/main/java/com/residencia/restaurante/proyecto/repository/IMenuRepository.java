@@ -9,6 +9,9 @@ import java.util.List;
 
 @Repository
 public interface IMenuRepository extends JpaRepository<Menu,Integer> {
+
+    @Query("SELECT COUNT(m) > 0 FROM Menu m WHERE m.cocina.id = :cocinaId AND m.visibilidad = true")
+    boolean existsByCocinaIdAndMenuVisibilidadIsTrue(Integer cocinaId);
     boolean existsByNombreLikeIgnoreCase(String nombre);
 
     List<Menu> getAllByVisibilidadTrue();

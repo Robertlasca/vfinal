@@ -30,6 +30,9 @@ public class RecetaProductoTerminadoServiceImpl implements IRecetaProductoTermin
     @Autowired
             private IInventarioRepository inventarioRepository;
 
+    @Autowired
+            private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
+
     MenuServiceImpl menuServiceImp;
     @Override
     public ResponseEntity<String> eliminarIngrediente(Integer id) {
@@ -42,8 +45,22 @@ public class RecetaProductoTerminadoServiceImpl implements IRecetaProductoTermin
                 Optional<ProductoTerminado> productoTerminadoOptional= productoTerminadoRepository.findById(idProducto);
 
                 if(productoTerminadoOptional.isPresent()){
-
                     ProductoTerminado productoTerminado= productoTerminadoOptional.get();
+                    List<ProductoTerminado_Menu> productoTerminadoMenusa= productoTerminadoMenuRepository.getAllByProductoTerminado(productoTerminado);
+
+                    if(!productoTerminadoMenusa.isEmpty()){
+                        for (ProductoTerminado_Menu productoMenu:productoTerminadoMenusa) {
+                            Menu menu= productoMenu.getMenu();
+                            if(detalleOrdenMenuRepository.existsByMenuIdAndEstadoNotIn(menu.getId())){
+                                return Utils.getResponseEntity("No puedes eliminar el ingrediente, ya que el platillo al que pertenece el producto terminado esta en preparación.",HttpStatus.BAD_REQUEST);
+                            }
+
+                        }
+
+                    }
+
+
+
                     materiaPrimaProductoTerminadoRepository.delete(materiaPrimaProductoTerminado);
                     List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByProductoTerminado(productoTerminado);
 
@@ -75,6 +92,20 @@ public class RecetaProductoTerminadoServiceImpl implements IRecetaProductoTermin
                 Optional<MateriaPrima_ProductoTerminado> materiaPrimaProductoTerminadoOptional= materiaPrimaProductoTerminadoRepository.findById(id);
                 if(materiaPrimaProductoTerminadoOptional.isPresent()){
                     MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado= materiaPrimaProductoTerminadoOptional.get();
+
+                    List<ProductoTerminado_Menu> productoTerminadoMenusa= productoTerminadoMenuRepository.getAllByProductoTerminado(materiaPrimaProductoTerminado.getProductoTerminado());
+
+                    if(!productoTerminadoMenusa.isEmpty()){
+                        for (ProductoTerminado_Menu productoMenu:productoTerminadoMenusa) {
+                            Menu menu= productoMenu.getMenu();
+                            if(detalleOrdenMenuRepository.existsByMenuIdAndEstadoNotIn(menu.getId())){
+                                return Utils.getResponseEntity("No puedes editar la cantidad del ingrediente, ya que el platillo al que pertenece el producto terminado esta en preparación.",HttpStatus.BAD_REQUEST);
+                            }
+
+                        }
+
+                    }
+
                     materiaPrimaProductoTerminado.setCantidad(Double.parseDouble(objetoMap.get("cantidad")));
                     materiaPrimaProductoTerminadoRepository.save(materiaPrimaProductoTerminado);
 
@@ -120,6 +151,19 @@ public class RecetaProductoTerminadoServiceImpl implements IRecetaProductoTermin
                 Optional<ProductoTerminado> productoTerminadoOptional=productoTerminadoRepository.findById(Integer.parseInt(objetoMap.get("idProducto")));
                 if(materiaPrimaOptional.isPresent() && productoTerminadoOptional.isPresent()){
                     MateriaPrima_ProductoTerminado materiaPrimaProductoTerminado= new MateriaPrima_ProductoTerminado();
+
+                    List<ProductoTerminado_Menu> productoTerminadoMenusa= productoTerminadoMenuRepository.getAllByProductoTerminado(materiaPrimaProductoTerminado.getProductoTerminado());
+
+                    if(!productoTerminadoMenusa.isEmpty()){
+                        for (ProductoTerminado_Menu productoMenu:productoTerminadoMenusa) {
+                            Menu menu= productoMenu.getMenu();
+                            if(detalleOrdenMenuRepository.existsByMenuIdAndEstadoNotIn(menu.getId())){
+                                return Utils.getResponseEntity("No puedes agregar el ingrediente, ya que el platillo al que pertenece el producto terminado esta en preparación.",HttpStatus.BAD_REQUEST);
+                            }
+
+                        }
+
+                    }
                     materiaPrimaProductoTerminado.setInventario(materiaPrimaOptional.get());
                     materiaPrimaProductoTerminado.setProductoTerminado(productoTerminadoOptional.get());
                     materiaPrimaProductoTerminado.setCantidad(Double.parseDouble(objetoMap.get("cantidad")));

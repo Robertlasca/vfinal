@@ -51,20 +51,14 @@ public class ComanderoServiceImpl implements IComanderoService {
     private IDetalleOrden_ProductoNormalRepository detalleOrdenProductoNormalRepository;
     @Autowired
     private FolioService folioService;
-
     @Autowired
     private ICajaRepository cajaRepository;
-
     @Autowired
     private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
-
     @Autowired
     private IProductoTerminadoRepository productoTerminadoRepository;
-
     @Autowired
     private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
-
-
     @Autowired
     private IUsuarioRepository usuarioRepository;
     @Autowired
@@ -79,15 +73,12 @@ public class ComanderoServiceImpl implements IComanderoService {
     private IMenuRepository menuRepository;
     @Autowired
     private  IImpresoraRepository impresoraRepository;
-
     @Autowired
     private IVenta_MedioPagoRepository ventaMedioPagoRepository;
     @Autowired
     private IMedioPagoRepository medioPagoRepository;
-
     @Autowired
     private IVentaRepository ventaRepository;
-
     @Autowired
     private ICocinaRepository cocinaRepository;
     @Override
@@ -116,24 +107,20 @@ public class ComanderoServiceImpl implements IComanderoService {
                orden.setFolio(newFolio);
                orden.setCantidadComensal(Integer.parseInt(objetoMap.get("numComensales")));
                ordenRepository.save(orden);
-
-
                return new ResponseEntity<Orden>(orden,HttpStatus.OK);
            }
            return new ResponseEntity<Orden>(new Orden(),HttpStatus.BAD_REQUEST);
-
-
        }catch (Exception e){
            e.printStackTrace();
        }
        return new ResponseEntity<Orden>(new Orden(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+//Imprimir y enviar a cocina
     @Override
     public ResponseEntity<String> asignarPlatillos(Map<String, String> objetoMap) {
         try{
             if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("detalleOrden")){
-              //  if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
+              if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
                 Optional<Orden> optional=ordenRepository.findById(Integer.parseInt(objetoMap.get("idOrden")));
                 if (optional.isPresent()){
                     Orden orden= optional.get();
@@ -211,35 +198,6 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                                 }
 
-                                if (detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esProductoNormal")) {
-                                    DetalleOrden_ProductoNormal detalleOrdenProductoNormal = new DetalleOrden_ProductoNormal();
-                                    detalleOrdenProductoNormal.setCantidad(detalleOrdenWrapper.getCantidad());
-                                    Optional<ProductoNormal> productoNormalOptional = productoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
-                                    productoNormalOptional.ifPresent(detalleOrdenProductoNormal::setProductoNormal);
-                                    if (productoNormalOptional.isPresent()) {
-                                        ProductoNormal productoNormal = productoNormalOptional.get();
-                                        productoNormal.setStockActual(productoNormal.getStockActual() - detalleOrdenWrapper.getCantidad());
-                                        productoNormalRepository.save(productoNormal);
-                                        detalleOrdenProductoNormal.setNombreProductoNormal(productoNormal.getNombre());
-                                        detalleOrdenProductoNormal.setPrecioProductoNormal(productoNormal.getPrecioUnitario());
-                                    }
-                                    detalleOrdenProductoNormal.setOrden(orden);
-                                    detalleOrdenProductoNormal.setEstado("En espera");
-                                    detalleOrdenProductoNormal.setComentario(detalleOrdenWrapper.getComentario());
-                                    detalleOrdenProductoNormal.setTotal(detalleOrdenWrapper.getCantidad() * productoNormalOptional.get().getPrecioUnitario());
-                                    detalleOrdenProductoNormalRepository.save(detalleOrdenProductoNormal);
-
-                                }
-
-                                if(detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esDetalleOrdenProducto")){
-                                    Optional<DetalleOrden_ProductoNormal> detalleOrdenProductoNormal= detalleOrdenProductoNormalRepository.findById(detalleOrdenWrapper.getIdProducto());
-
-                                    if(detalleOrdenProductoNormal.isPresent()){
-                                        DetalleOrden_ProductoNormal detalleOrdenProductoNormal1= detalleOrdenProductoNormal.get();
-                                        descontarOAgregarStockProductoNormal(detalleOrdenProductoNormal1.getProductoNormal(),detalleOrdenProductoNormal1,detalleOrdenWrapper.getCantidad());
-                                    }
-
-                                }
 
 
                             }
@@ -247,7 +205,7 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                         if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
-                        } else {
+                        } else{
                           //  return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
                         }
 
@@ -262,7 +220,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                 return Utils.getResponseEntity("La orden no existe.",HttpStatus.BAD_REQUEST);
 
 
-                //}
+                }
 
             }
             return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
@@ -284,11 +242,8 @@ public class ComanderoServiceImpl implements IComanderoService {
 
     private  int imprimirComandas(Map<Integer, List<String>> productosPorCocina,String cliente,String areaServicio,String usuario) throws IOException, InterruptedException {
         HttpResponse<String> response=null;
-
-
         for (Map.Entry<Integer, List<String>> entry : productosPorCocina.entrySet()) {
             //El número de veces que quieres que e imprima la comanda
-
                 Integer cocinaId = entry.getKey();
                 List<String> productos = entry.getValue();
                 System.out.println("Cocina ID: " + cocinaId);
@@ -320,13 +275,6 @@ public class ComanderoServiceImpl implements IComanderoService {
 
             // Envío de la solicitud y obtención de la respuesta
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            // Manejo de la respuesta
-            System.out.println("Respuesta del servidor: " + response.body());
-            System.out.println("Código de estado: " + response.statusCode());
-
-
-
         }
         if(response!=null){
             return response.statusCode();
@@ -337,7 +285,6 @@ public class ComanderoServiceImpl implements IComanderoService {
     private void descontarOAgregarStockMenu(Menu menu, DetalleOrdenMenu detalleOrdenMenu, int cantidad){
         List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
         List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
-
             if(!productoTerminadoMenus.isEmpty()){
                 for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus){
                     double cantidadRegresada= detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad();
@@ -347,7 +294,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                     productoTerminadoRepository.save(productoTerminado);
                 }
             }
-
             if(!materiaPrimaMenus.isEmpty()){
                 for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
                     double cantidadRegresada= detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad();
@@ -357,18 +303,13 @@ public class ComanderoServiceImpl implements IComanderoService {
                 }
             }
 
-
-
-
-
+            detalleOrdenMenu.setEstado("En espera");
+            detalleOrdenMenuRepository.save(detalleOrdenMenu);
     }
 
     private void descontarStockMenu(Menu menu,DetalleOrdenMenu detalleOrdenMenu){
-        
-
         List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(menu);
         List<MateriaPrima_Menu> materiaPrimaMenus=materiaPrimaMenuRepository.getAllByMenu(menu);
-
         if(!productoTerminadoMenus.isEmpty()){
             for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus){
                 double cantidadRegresada= detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad();
@@ -377,7 +318,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                 productoTerminadoRepository.save(productoTerminado);
             }
         }
-
         if(!materiaPrimaMenus.isEmpty()){
             for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
                 double cantidadRegresada= detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad();
@@ -386,7 +326,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                 inventarioRepository.save(inventario);
             }
         }
-
     }
 
     public String validarStock(String detalleOrdenJson) {
@@ -396,7 +335,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         ValidarStock validarStockProductoNormal= new ValidarStock();
         try {
             List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(detalleOrdenJson, new TypeReference<List<DetalleOrdenWrapper>>() {});
-
             for (DetalleOrdenWrapper detalle : detalleOrdenWrappers) {
 
                 if (detalle.getIsMenu().equalsIgnoreCase("esMenu")) {
@@ -429,7 +367,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                 }
                     //Validar stock para los productos terminados
                     if(!productoTerminadoMenus.isEmpty()){
-
                         for (ProductoTerminado_Menu ingrediente : productoTerminadoMenus) {
                             double descontandoStock = ingrediente.getProductoTerminado().getStockActual()-(ingrediente.getCantidad() * detalle.getCantidad());
                             System.out.println("Cantidad descontando"+descontandoStock);
@@ -456,8 +393,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                         }
 
                     }
-
-
                 }
 
                 if(detalle.getIsMenu().equalsIgnoreCase("esDetalleMenu")){
@@ -620,9 +555,7 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<List<Orden>> obtenerOrdenes() {
         try {
-
             return new ResponseEntity<List<Orden>>(ordenRepository.findAll(),HttpStatus.OK);
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -655,7 +588,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                         productoDto.setPrecio(productoDto.getPrecio());
                     }
                 }
-
                 return new ResponseEntity<ProductoDto>(productoDto,HttpStatus.OK);
             }
             return new ResponseEntity<ProductoDto>(new ProductoDto(),HttpStatus.INTERNAL_SERVER_ERROR);
@@ -693,7 +625,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
                     }
                 }
-
                 if(!detalleOrdenProductoNormals.isEmpty()){
                     for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
@@ -710,15 +641,11 @@ public class ComanderoServiceImpl implements IComanderoService {
                     }
                 }
                 comandaDTO.setDetalleOrdenProductoDTOS(detalleOrdenProductoDTOS);
-
                 comandaDTO.setTotal(total);
-
                 return new ResponseEntity<ComandaDTO>(comandaDTO,HttpStatus.OK);
 
             }
             return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.BAD_REQUEST);
-
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -727,7 +654,6 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(Integer id) {
         try{
-
             Optional<Orden> optionalOrden=ordenRepository.findOrdensByMesaId(id);
             if(optionalOrden.isPresent()){
                 double total= 0;
@@ -754,7 +680,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                         }
                     }
                 }
-
                 if(!detalleOrdenProductoNormals.isEmpty()){
                     for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
@@ -785,7 +710,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<String> cerrarCuenta(Map<String, String> objetoMap) {
         try {
@@ -834,8 +758,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                                         ventaMedioPago.setMedioPago(medioPago);
                                         paymentMethods.add(new String[]{medioPago.getNombre(), String.valueOf(ventaMedioPagoWrapper.getPagoRecibido())});
                                     }
-
-
                                     ventaMedioPago.setPagoRecibido(ventaMedioPagoWrapper.getPagoRecibido());
                                     ventaMedioPagoRepository.save(ventaMedioPago);
                                 }
@@ -843,13 +765,12 @@ public class ComanderoServiceImpl implements IComanderoService {
                         }catch (Exception e){
                             e.printStackTrace();
                         }
-
                         //Imprimir información
-
                         List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
                         List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
                         List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
-                        List<String[]> products =new ArrayList<>();
+                        List<String[]> products = new ArrayList<>();
+
                         int contador=0;
                         ComandaDTO comandaDTO= new ComandaDTO();
                         comandaDTO.setOrden(orden);
@@ -962,7 +883,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<String> validarStocks(String productos) {
         try {
@@ -972,7 +892,6 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
     @Override
     public ResponseEntity<List<OrdenDTO>> obtenerOrdenesActuales() {
         try {
@@ -1007,9 +926,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                     }
                     ordenDTO.setTotal(total);
                     ordenDTOS.add(ordenDTO);
-
-
-
                 }
             }
             return new ResponseEntity<List<OrdenDTO>>(ordenDTOS,HttpStatus.OK);
@@ -1020,7 +936,7 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+//Solo asignar platillo
     @Override
     public ResponseEntity<String> asignarPlatillo(Map<String, String> objetoMap) {
         try{
@@ -1121,8 +1037,6 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                 }
                 return Utils.getResponseEntity("La orden no existe.",HttpStatus.BAD_REQUEST);
-
-
             }
             return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
 
@@ -1131,12 +1045,52 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+//Solo imprimir
     @Override
     public ResponseEntity<String> imprimirComanda(Integer id) {
-        return null;
-    }
+        try {
+            Optional<Orden> ordenOptional= ordenRepository.findById(id);
 
+            Set<Integer> cocinas = new HashSet<>();
+            Map<Integer, List<String>> productosPorCocina = new HashMap<>();
+
+            if(ordenOptional.isPresent()){
+                Orden orden= ordenOptional.get();
+                List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
+
+                if(!detalleOrdenMenus.isEmpty()){
+                    for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus){
+                        Integer cocinaId= detalleOrdenMenu.getMenu().getCocina().getId();
+
+
+                        if (!cocinas.contains(detalleOrdenMenu.getMenu().getId())) {
+                            cocinas.add(cocinaId);
+                            productosPorCocina.put(cocinaId, new ArrayList<>());
+                        }
+
+                        List<String> productos= productosPorCocina.get(cocinaId);
+                        String productoDetalle =detalleOrdenMenu.getCantidad()+"  "+ detalleOrdenMenu.getMenu().getNombre()  +"  "+ detalleOrdenMenu.getComentario();
+                        productos.add(productoDetalle);
+                    }
+                }
+
+                if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
+                    return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
+                } else{
+                    //  return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
+                }
+
+
+            }
+            return Utils.getResponseEntity("No existe la orden.",HttpStatus.BAD_REQUEST);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+//Eliminar platillo de la comanda
     @Override
     public ResponseEntity<String> eliminarPlatilloDeComanda(Map<String, String> objetoMap) {
         try {
@@ -1154,7 +1108,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 Inventario inventario= materiaPrimaMenu.getInventario();
                                 inventario.setStockActual(inventario.getStockActual()+(detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad()));
                                 inventarioRepository.save(inventario);
-
                             }
                         }
 
@@ -1194,5 +1147,105 @@ public class ComanderoServiceImpl implements IComanderoService {
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> enviarACocina(Map<String, String> objetoMap) {
+        try{
+            if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("detalleOrden")){
+                if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
+                    Optional<Orden> optional=ordenRepository.findById(Integer.parseInt(objetoMap.get("idOrden")));
+                    if (optional.isPresent()){
+                        Orden orden= optional.get();
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(objetoMap.get("detalleOrden"), new TypeReference<List<DetalleOrdenWrapper>>() {});
+
+
+
+                        if(!detalleOrdenWrappers.isEmpty()) {
+                            if (validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("Si hay suficiente stock")){
+                                for (DetalleOrdenWrapper detalleOrdenWrapper : detalleOrdenWrappers) {
+                                    if (detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esDetalleOrdenMenu")) {
+                                        Optional<DetalleOrdenMenu> detalleOrdenMenuOptional = detalleOrdenMenuRepository.findById(detalleOrdenWrapper.getIdProducto());
+                                        if (detalleOrdenMenuOptional.isPresent()) {
+                                            //Solo dos operaciones sumar o restar
+                                            DetalleOrdenMenu detalleOrdenMenu = detalleOrdenMenuOptional.get();
+                                            Integer cocinaId = 90000;
+                                            //Para el caso en el que se agrega a la nueva comanda
+                                            if (detalleOrdenMenu.getCantidad() < detalleOrdenWrapper.getCantidad()) {
+                                                cocinaId = detalleOrdenMenu.getMenu().getCocina().getId();
+                                                int cantidad = detalleOrdenWrapper.getCantidad()-detalleOrdenMenu.getCantidad() ;
+                                                // Añadir el producto a la lista correspondiente a la cocina
+
+                                            }
+                                            descontarOAgregarStockMenu(detalleOrdenMenu.getMenu(), detalleOrdenMenu, detalleOrdenWrapper.getCantidad());
+                                        }
+                                    }
+                                    if (detalleOrdenWrapper.getIsMenu().equalsIgnoreCase("esMenu")) {
+                                        Optional<Menu> menuOptional = menuRepository.findById(detalleOrdenWrapper.getIdProducto());
+                                        Menu menu = new Menu();
+                                        Integer cocinaId = 9000;
+                                        if (menuOptional.isPresent()) {
+                                            menu = menuOptional.get();
+                                            cocinaId = menuOptional.get().getCocina().getId();
+                                        }
+
+
+
+                                        //Verificamos la existencia de la relación de una orden y un menú mediante su id
+                                        //Optional<DetalleOrdenMenu> detalleOrdenMenuOptional = detalleOrdenMenuRepository.findDetalleOrdenMenuByOrden_IdAndMenu_Id(orden.getId(), detalleOrdenWrapper.getIdProducto());
+                                        //if (detalleOrdenMenuOptional.isPresent()) {
+                                        // DetalleOrdenMenu detalleOrdenMenu = detalleOrdenMenuOptional.get();
+                                        //detalleOrdenMenu.setCantidad(detalleOrdenMenu.getCantidad() + detalleOrdenWrapper.getCantidad());
+                                        //detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                                        //descontarStockMenu(menu, detalleOrdenMenu);
+
+                                        //} else {
+                                        //Verificar si es un menu con producto terminados o
+                                        DetalleOrdenMenu detalleOrdenMenu = new DetalleOrdenMenu();
+
+                                        detalleOrdenMenu.setMenu(menu);
+                                        detalleOrdenMenu.setOrden(orden);
+                                        detalleOrdenMenu.setCantidad(detalleOrdenWrapper.getCantidad());
+                                        detalleOrdenMenu.setTotal(menu.getPrecioVenta() * detalleOrdenWrapper.getCantidad());
+                                        detalleOrdenMenu.setComentario(detalleOrdenWrapper.getComentario());
+                                        detalleOrdenMenu.setEstado("En espera");
+                                        detalleOrdenMenu.setNombreMenu(menu.getNombre());
+                                        detalleOrdenMenu.setPrecioMenu(menu.getPrecioVenta());
+                                        detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                                        descontarStockMenu(menu, detalleOrdenMenu);
+                                        //}
+
+                                    }
+
+
+
+                                }
+
+                                return Utils.getResponseEntity("Platillos enviados a cocina correctamente.",HttpStatus.OK);
+
+
+                            }
+                            return Utils.getResponseEntity(validarStock(objetoMap.get("detalleOrden")),HttpStatus.BAD_REQUEST);
+
+
+                        }
+                        return Utils.getResponseEntity("Error al obtener los detalles de la orden.",HttpStatus.BAD_REQUEST);
+
+                    }
+                    return Utils.getResponseEntity("La orden no existe.",HttpStatus.BAD_REQUEST);
+
+
+                }
+
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //Solo enviar a cocina
 
 }

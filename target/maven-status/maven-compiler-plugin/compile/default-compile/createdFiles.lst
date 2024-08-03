@@ -18,6 +18,7 @@ com\residencia\restaurante\proyecto\dto\RecetaDTO.class
 com\residencia\restaurante\proyecto\repository\IImpresoraRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\RecetaProductoTerminadoServiceImpl.class
 com\residencia\restaurante\proyecto\service\IMesaService.class
+com\residencia\restaurante\proyecto\serviceImpl\ComanderoServiceImpl$4.class
 com\residencia\restaurante\proyecto\serviceImpl\ProductoTerminadoServiceImpl$1.class
 com\residencia\restaurante\proyecto\dto\OrdenDTO.class
 com\residencia\restaurante\proyecto\service\IMovimientoCajaService.class

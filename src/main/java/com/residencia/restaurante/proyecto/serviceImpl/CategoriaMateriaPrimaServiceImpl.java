@@ -5,6 +5,7 @@ import com.residencia.restaurante.proyecto.dto.CategoriaDTO;
 import com.residencia.restaurante.proyecto.dto.CategoriaMateriaPrimaDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.CategoriaMateriaPrima;
+import com.residencia.restaurante.proyecto.entity.MateriaPrima;
 import com.residencia.restaurante.proyecto.repository.ICategoriaMateriaPrimaRepository;
 import com.residencia.restaurante.proyecto.repository.IMateriaPrimaRepository;
 import com.residencia.restaurante.proyecto.service.ICategoriaMateriaPrimaService;
@@ -118,6 +119,20 @@ public class CategoriaMateriaPrimaServiceImpl implements ICategoriaMateriaPrimaS
                     CategoriaMateriaPrima categoria= categoriaOptional.get();
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
                         categoria.setVisibilidad(false);
+
+                        List<MateriaPrima> materiaPrimaList= materiaPrimaRepository.getAllByCategoriaMateriaPrima_Id(Integer.parseInt(objetoMap.get("id")));
+                        Optional<CategoriaMateriaPrima> categoriaOptional1= categoriaMateriaPrimaRepository.findCategoriaByNombreLikeIgnoreCase("Sin categoría.");
+
+                        if(categoriaOptional1.isPresent()){
+                            CategoriaMateriaPrima categoriaMateriaPrima= categoriaOptional1.get();
+                            if(!materiaPrimaList.isEmpty()){
+                                for (MateriaPrima materiaPrima:materiaPrimaList) {
+                                    materiaPrima.setCategoriaMateriaPrima(categoriaMateriaPrima);
+                                    materiaPrimaRepository.save(materiaPrima);
+                                }
+                            }
+
+                        }
                     }else{
                         categoria.setVisibilidad(true);
                     }

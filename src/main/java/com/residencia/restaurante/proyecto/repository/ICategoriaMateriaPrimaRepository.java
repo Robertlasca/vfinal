@@ -1,10 +1,12 @@
 package com.residencia.restaurante.proyecto.repository;
 
+import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.CategoriaMateriaPrima;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio de Spring Data JPA para la entidad CategoriaMateriaPrima.
@@ -30,4 +32,6 @@ public interface ICategoriaMateriaPrimaRepository extends JpaRepository<Categori
      * @return true si existe una categoría de materia prima con el nombre especificado, false de lo contrario.
      */
     boolean existsCategoriaMateriaPrimaByNombreLikeIgnoreCase(String nombre);
+
+    Optional<CategoriaMateriaPrima> findCategoriaByNombreLikeIgnoreCase(String s);
 }

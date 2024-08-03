@@ -17,4 +17,7 @@ public interface IProductoTerminado_MenuRepository extends JpaRepository<Product
     List<ProductoTerminado_Menu> findAllByMenuId(Integer menuId);
 
     List<ProductoTerminado_Menu> getAllByProductoTerminado(ProductoTerminado productoTerminado);
+
+    @Query("SELECT COUNT(ptm) > 0 FROM ProductoTerminado_Menu ptm WHERE ptm.productoTerminado.id = :productoTerminadoId AND ptm.menu.visibilidad = true")
+    boolean existsByProductoTerminadoIdAndMenuVisibilidadIsTrue(Integer productoTerminadoId);
 }

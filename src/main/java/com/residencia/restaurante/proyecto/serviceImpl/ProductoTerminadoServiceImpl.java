@@ -42,6 +42,9 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
     private  UploadFileService uploadFileService;
 
     @Autowired
+    private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
+
+    @Autowired
     private IMateriaPrima_ProductoTerminadoRepository materiaPrimaProductoTerminadoRepository;
 
 
@@ -137,9 +140,6 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
 
                     productoTerminadoDto.setEstado("Indisponible");
                     terminadoDtoList.add(productoTerminadoDto);
-
-
-
 
             }
 
@@ -518,6 +518,9 @@ public class ProductoTerminadoServiceImpl implements IProductoTerminadoService {
                 if(menuOptional.isPresent()){
                     ProductoTerminado menu= menuOptional.get();
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
+                        if(productoTerminadoMenuRepository.existsByProductoTerminadoIdAndMenuVisibilidadIsTrue(menu.getId())){
+                            return Utils.getResponseEntity("No puedes cambiar el estado del producto ya que pertenece a un platillo.",HttpStatus.BAD_REQUEST);
+                        }
                         menu.setVisibilidad(false);
                     }else{
                         menu.setVisibilidad(true);

@@ -115,6 +115,9 @@ public class CajaServiceImpl implements ICajaService {
                 if(!cajaOptional.isEmpty()){
                     Caja caja= cajaOptional.get();
                     if(objetoMap.get("estado").equalsIgnoreCase("false")){
+                        if(arqueoRepository.existsArqueoByEstadoArqueoTrueAndCaja_Id(Integer.parseInt(objetoMap.get("id")))){
+                            return Utils.getResponseEntity("No puedes cambiar el estado de la caja ya que se encuentra en un arqueo.",HttpStatus.BAD_REQUEST);
+                        }
                         caja.setVisibilidad(false);
                     }else{
                         caja.setVisibilidad(true);

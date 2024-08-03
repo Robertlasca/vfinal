@@ -31,6 +31,9 @@ public class RecetaMenuServiceImpl implements IRecetaMenuService {
     @Autowired
             private IInventarioRepository inventarioRepository;
 
+    @Autowired
+    private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
+
 @Autowired
         MenuServiceImpl menuServiceImpl;
 
@@ -44,6 +47,10 @@ public class RecetaMenuServiceImpl implements IRecetaMenuService {
                     if(materiaPrimaMenuOptional.isPresent()){
                         MateriaPrima_Menu materiaPrimaMenu=materiaPrimaMenuOptional.get();
                         Integer idMenu= materiaPrimaMenu.getMenu().getId();
+                        if(detalleOrdenMenuRepository.existsByMenuIdAndEstadoNotIn(idMenu)){
+                            return Utils.getResponseEntity("No puedes eliminar el ingrediente, ya que el platillo esta en preparación.",HttpStatus.BAD_REQUEST);
+                        }
+
 
                         materiaPrimaMenuRepository.delete(materiaPrimaMenu);
 
@@ -93,6 +100,10 @@ public class RecetaMenuServiceImpl implements IRecetaMenuService {
                     Optional<MateriaPrima_Menu> materiaPrimaMenuOptional= materiaPrimaMenuRepository.findById(id);
                     if(materiaPrimaMenuOptional.isPresent()){
                         MateriaPrima_Menu materiaPrimaMenu=materiaPrimaMenuOptional.get();
+                        Integer idMenu= materiaPrimaMenu.getMenu().getId();
+                        if(detalleOrdenMenuRepository.existsByMenuIdAndEstadoNotIn(idMenu)){
+                            return Utils.getResponseEntity("No puedes editar la cantidad el ingrediente, ya que el platillo esta en preparación.",HttpStatus.BAD_REQUEST);
+                        }
                         materiaPrimaMenu.setCantidad(Double.parseDouble(objetoMap.get("cantidad")));
                         Menu menu= materiaPrimaMenu.getMenu();
                         materiaPrimaMenuRepository.save(materiaPrimaMenu);
@@ -145,6 +156,10 @@ public class RecetaMenuServiceImpl implements IRecetaMenuService {
                     if(materiaPrimaMenuOptional.isPresent()){
                         Inventario materiaPrima= materiaPrimaMenuOptional.get();
                         MateriaPrima_Menu materiaPrimaMenu=new MateriaPrima_Menu();
+                        Integer idMenua= materiaPrimaMenu.getMenu().getId();
+                        if(detalleOrdenMenuRepository.existsByMenuIdAndEstadoNotIn(idMenua)){
+                            return Utils.getResponseEntity("No puedes agregar el ingrediente, ya que el platillo esta en preparación.",HttpStatus.BAD_REQUEST);
+                        }
                         materiaPrimaMenu.setMenu(menu);
                         materiaPrimaMenu.setInventario(materiaPrima);
                         materiaPrimaMenu.setCantidad(Double.parseDouble(objetoMap.get("cantidad")));

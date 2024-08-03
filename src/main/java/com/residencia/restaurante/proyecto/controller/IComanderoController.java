@@ -18,6 +18,9 @@ public interface IComanderoController {
     @PostMapping(path = "/asignarPlatillos")
     ResponseEntity<String> asignarPlatillos(@RequestBody(required = true) Map<String, String> objetoMap);
 
+    @PostMapping(path = "/enviarACocina")
+    ResponseEntity<String> enviarACocina(@RequestBody(required = true) Map<String, String> objetoMap);
+
     @PostMapping(path = "/asignarPlatillo")
     ResponseEntity<String> asignarPlatillo(@RequestBody(required = true) Map<String, String> objetoMap);
 

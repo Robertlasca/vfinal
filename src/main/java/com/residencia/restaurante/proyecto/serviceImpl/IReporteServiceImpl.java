@@ -27,26 +27,25 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.*;
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class IReporteServiceImpl implements IReporteService {
     @Autowired
     private IProductoNormalRepository productoNormalRepository;
-
     @Autowired
     private IUsuarioRepository usuarioRepository;
-
     @Autowired
     private IAlmacenRepository almacenRepository;
     @Autowired
     private IInventarioRepository inventarioRepository;
-
     @Autowired
     private IVentaRepository ventaRepository;
-
     @Autowired
     private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
 
@@ -108,6 +107,308 @@ public class IReporteServiceImpl implements IReporteService {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioSemanal(Map<String, String> objetoMap) {
+        // Generar el PDF
+        ByteArrayInputStream bis = generarReporteSemanalVentas(objetoMap);
+
+        // Configurar los headers para la descarga del archivo
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=ventasDiarias.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
+    private ByteArrayInputStream generarReporteSemanalVentas(Map<String, String> objetoMap) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
+
+        Usuario usuario = new Usuario();
+        if (usuarioOptional.isPresent()) {
+            usuario = usuarioOptional.get();
+        }
+
+        Document document = new Document();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            PdfWriter writer = PdfWriter.getInstance(document, out);
+            document.open();
+
+            // Agregar logo y encabezado
+            Image logo = Image.getInstance("uploads/images/logo.jpg");
+            logo.scaleToFit(100, 100);
+            logo.setAlignment(Element.ALIGN_CENTER);
+            document.add(logo);
+
+            document.add(new Paragraph("Plazita Gourmet", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, BaseColor.BLACK)));
+            document.add(new Paragraph(" "));
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
+            document.add(new Paragraph("Reporte Semanal de Ventas", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK)));
+            document.add(new Paragraph("Semana: " + objetoMap.get("semana"), FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+            document.add(new Paragraph("Responsable: " + usuario.getNombre(), FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+
+            // Información de contacto del restaurante
+            agregarInformacionContacto(document);
+
+            // Datos de ventas
+            LocalDate startDate = LocalDate.parse(objetoMap.get("diaInicio"));
+            LocalDate endDate = LocalDate.parse(objetoMap.get("diaFinal"));
+            List<Venta> ventas = ventaRepository.findByFechaBetween(startDate, endDate);
+            double totalVentas = ventas.stream().mapToDouble(Venta::getTotalPagar).sum();
+            document.add(new Paragraph("Total Ventas de la Semana: $" + totalVentas, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK)));
+
+            // Tabla de ventas por día
+            float[] columnWidths = {1, 3, 2, 2};
+            PdfPTable table = new PdfPTable(columnWidths);
+            table.setWidthPercentage(100);
+
+            PdfPCell cell;
+            cell = new PdfPCell(new Phrase("Fecha", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Subtotal", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Descuento", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Total", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                LocalDate finalDate = date;
+                List<Venta> ventasDiarias = ventas.stream().filter(v -> v.getFechaHoraConsolidacion().toLocalDate().equals(finalDate)).collect(Collectors.toList());
+                double subTotalDiario = ventasDiarias.stream().mapToDouble(Venta::getSubTotal).sum();
+                double descuentoDiario = ventasDiarias.stream().mapToDouble(Venta::getDescuento).sum();
+                double totalDiario = ventasDiarias.stream().mapToDouble(Venta::getTotalPagar).sum();
+
+                table.addCell(date.toString());
+                table.addCell(String.valueOf(subTotalDiario));
+                table.addCell(String.valueOf(descuentoDiario));
+                table.addCell(String.valueOf(totalDiario));
+            }
+
+            document.add(table);
+            document.close();
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioMensual(Map<String, String> objetoMap) {
+        // Generar el PDF
+        ByteArrayInputStream bis = generarReporteMensualVentas(objetoMap);
+
+        // Configurar los headers para la descarga del archivo
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=ventasDiarias.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
+    private ByteArrayInputStream generarReporteMensualVentas(Map<String, String> objetoMap) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
+
+        Usuario usuario = new Usuario();
+        if (usuarioOptional.isPresent()) {
+            usuario = usuarioOptional.get();
+        }
+
+        Document document = new Document();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            PdfWriter writer = PdfWriter.getInstance(document, out);
+            document.open();
+
+            // Agregar logo y encabezado
+            Image logo = Image.getInstance("uploads/images/logo.jpg");
+            logo.scaleToFit(100, 100);
+            logo.setAlignment(Element.ALIGN_CENTER);
+            document.add(logo);
+
+            document.add(new Paragraph("Plazita Gourmet", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, BaseColor.BLACK)));
+            document.add(new Paragraph(" "));
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM");
+            Date date = new Date();
+            document.add(new Paragraph("Reporte Mensual de Ventas", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK)));
+            document.add(new Paragraph("Mes: " + objetoMap.get("mes"), FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+            document.add(new Paragraph("Responsable: " + usuario.getNombre(), FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+
+            // Información de contacto del restaurante
+            agregarInformacionContacto(document);
+
+            // Datos de ventas
+            YearMonth yearMonth = YearMonth.parse(objetoMap.get("mes"));
+            LocalDate startDate = yearMonth.atDay(1);
+            LocalDate endDate = yearMonth.atEndOfMonth();
+            List<Venta> ventas = ventaRepository.findByFechaBetween(startDate, endDate);
+            double totalVentas = ventas.stream().mapToDouble(Venta::getTotalPagar).sum();
+            document.add(new Paragraph("Total Ventas del Mes: $" + totalVentas, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK)));
+
+            // Tabla de ventas por semana
+            float[] columnWidths = {1, 3, 2, 2};
+            PdfPTable table = new PdfPTable(columnWidths);
+            table.setWidthPercentage(100);
+
+            PdfPCell cell;
+            cell = new PdfPCell(new Phrase("Semana", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Subtotal", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Descuento", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Total", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            for (int i = 0; i < 5; i++) {
+                LocalDate weekStart = startDate.plusWeeks(i);
+                LocalDate weekEnd = weekStart.plusDays(6).isBefore(endDate) ? weekStart.plusDays(6) : endDate;
+                if (weekStart.isAfter(endDate)) break;
+
+                List<Venta> ventasSemanales = ventas.stream().filter(v -> !v.getFechaHoraConsolidacion().toLocalDate().isBefore(weekStart) && !v.getFechaHoraConsolidacion().toLocalDate().isAfter(weekEnd)).collect(Collectors.toList());
+                double subTotalSemanal = ventasSemanales.stream().mapToDouble(Venta::getSubTotal).sum();
+                double descuentoSemanal = ventasSemanales.stream().mapToDouble(Venta::getDescuento).sum();
+                double totalSemanal = ventasSemanales.stream().mapToDouble(Venta::getTotalPagar).sum();
+
+                table.addCell("Semana " + (i + 1));
+                table.addCell(String.valueOf(subTotalSemanal));
+                table.addCell(String.valueOf(descuentoSemanal));
+                table.addCell(String.valueOf(totalSemanal));
+            }
+
+            document.add(table);
+            document.close();
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteAnualVentas(Map<String, String> objetoMap) {
+        // Generar el PDF
+        ByteArrayInputStream bis = generarReporteAnualVentas(objetoMap);
+
+        // Configurar los headers para la descarga del archivo
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=ventasDiarias.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
+    private ByteArrayInputStream generarReporteAnualVentas(Map<String, String> objetoMap) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
+
+        Usuario usuario = new Usuario();
+        if (usuarioOptional.isPresent()) {
+            usuario = usuarioOptional.get();
+        }
+
+        Document document = new Document();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            PdfWriter writer = PdfWriter.getInstance(document, out);
+            document.open();
+
+            // Agregar logo y encabezado
+            Image logo = Image.getInstance("uploads/images/logo.jpg");
+            logo.scaleToFit(100, 100);
+            logo.setAlignment(Element.ALIGN_CENTER);
+            document.add(logo);
+
+            document.add(new Paragraph("Plazita Gourmet", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, BaseColor.BLACK)));
+            document.add(new Paragraph(" "));
+            DateFormat dateFormat = new SimpleDateFormat("yyyy");
+            Date date = new Date();
+            document.add(new Paragraph("Reporte Anual de Ventas", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK)));
+            document.add(new Paragraph("Año: " + objetoMap.get("anio"), FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+            document.add(new Paragraph("Responsable: " + usuario.getNombre(), FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.BLACK)));
+
+            // Información de contacto del restaurante
+            agregarInformacionContacto(document);
+
+            // Datos de ventas
+            int anio = Integer.parseInt(objetoMap.get("anio"));
+            LocalDate startDate = LocalDate.of(anio, 1, 1);
+            LocalDate endDate = LocalDate.of(anio, 12, 31);
+            List<Venta> ventas = ventaRepository.findByFechaBetween(startDate, endDate);
+            double totalVentas = ventas.stream().mapToDouble(Venta::getTotalPagar).sum();
+            document.add(new Paragraph("Total Ventas del Año: $" + totalVentas, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK)));
+
+            // Tabla de ventas por mes
+            float[] columnWidths = {1, 3, 2, 2};
+            PdfPTable table = new PdfPTable(columnWidths);
+            table.setWidthPercentage(100);
+
+            PdfPCell cell;
+            cell = new PdfPCell(new Phrase("Mes", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Subtotal", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Descuento", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Total", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
+            for (int i = 1; i <= 12; i++) {
+                YearMonth yearMonth = YearMonth.of(anio, i);
+                LocalDate monthStart = yearMonth.atDay(1);
+                LocalDate monthEnd = yearMonth.atEndOfMonth();
+
+                List<Venta> ventasMensuales = ventas.stream().filter(v -> !v.getFechaHoraConsolidacion().toLocalDate().isBefore(monthStart) && !v.getFechaHoraConsolidacion().toLocalDate().isAfter(monthEnd)).collect(Collectors.toList());
+                double subTotalMensual = ventasMensuales.stream().mapToDouble(Venta::getSubTotal).sum();
+                double descuentoMensual = ventasMensuales.stream().mapToDouble(Venta::getDescuento).sum();
+                double totalMensual = ventasMensuales.stream().mapToDouble(Venta::getTotalPagar).sum();
+
+                table.addCell(yearMonth.getMonth().name());
+                table.addCell(String.valueOf(subTotalMensual));
+                table.addCell(String.valueOf(descuentoMensual));
+                table.addCell(String.valueOf(totalMensual));
+            }
+
+            document.add(table);
+            document.close();
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
     private ByteArrayInputStream generarReporteDiarioVentas(Map<String, String> objetoMap) {

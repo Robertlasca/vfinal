@@ -23,6 +23,8 @@ public interface IInventarioRepository extends JpaRepository<Inventario,Integer>
      */
     List<Inventario> getAllByAlmacen_Id(Integer id);
     List<Inventario> getAllByMateriaPrima_Id(Integer id);
+    boolean existsByAlmacen_Id(Integer id);
+    boolean existsByMateriaPrima_Id(Integer id);
 
     /**
      * Encuentra un registro de inventario por ID de almacén y ID de materia prima.

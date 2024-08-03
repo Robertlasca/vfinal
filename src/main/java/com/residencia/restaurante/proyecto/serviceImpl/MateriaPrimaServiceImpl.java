@@ -198,6 +198,9 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                 if(!materiaPrimaOptional.isEmpty()){
                     MateriaPrima materiaPrima= materiaPrimaOptional.get();
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
+                        if(inventarioRepository.existsByMateriaPrima_Id(Integer.parseInt(objetoMap.get("id")))){
+                            return Utils.getResponseEntity("No puedes cambiarle el estado a la materia ya que pertenece a uno o varios almacenes.",HttpStatus.BAD_REQUEST);
+                        }
                         materiaPrima.setVisibilidad(false);
                     }else{
                         materiaPrima.setVisibilidad(true);

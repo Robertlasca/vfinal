@@ -8,6 +8,7 @@ import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
 import com.residencia.restaurante.proyecto.repository.IAlmacenRepository;
 import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
+import com.residencia.restaurante.proyecto.repository.IInventarioRepository;
 import com.residencia.restaurante.proyecto.service.IAlmacenService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class AlmacenServiceImpl implements IAlmacenService {
 
     @Autowired
     ICocinaRepository cocinaRepository;
+
+    @Autowired
+    IInventarioRepository inventarioRepository;
     /**
      * Obtiene una lista de todos los almacenes activos.
      *
@@ -115,6 +119,9 @@ public class AlmacenServiceImpl implements IAlmacenService {
                 if(!almacenOptional.isEmpty()){
                     Almacen almacen= almacenOptional.get();
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
+                        if(inventarioRepository.existsByAlmacen_Id(Integer.parseInt(objetoMap.get("id")))){
+                            return Utils.getResponseEntity("No puedes desactivar este almacén ya que contiene materias primas.",HttpStatus.BAD_REQUEST);
+                        }
                         almacen.setVisibilidad(false);
                     }else{
                         almacen.setVisibilidad(true);

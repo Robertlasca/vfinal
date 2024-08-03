@@ -21,4 +21,7 @@ public interface IOrdenRepository extends JpaRepository<Orden,Integer> {
 
     @Query("SELECT COUNT(o) > 0 FROM Orden o WHERE o.mesa.areaServicio.id = :areaServicioId AND o.estado NOT IN ('Terminada', 'Cancelado')")
     boolean existsByAreaServicioIdAndEstadoNotIn(Integer areaServicioId);
+
+    @Query("SELECT COUNT(o) > 0 FROM Orden o WHERE o.caja.id = :cajaId AND o.estado NOT IN ('Terminada', 'Cancelado')")
+    boolean existsByCajaIdAndEstadoNotIn(Integer cajaId);
 }

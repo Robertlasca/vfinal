@@ -8,7 +8,9 @@ import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.Impresora;
 import com.residencia.restaurante.proyecto.entity.Inventario;
 import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
+import com.residencia.restaurante.proyecto.repository.IDetalleOrden_MenuRepository;
 import com.residencia.restaurante.proyecto.repository.IImpresoraRepository;
+import com.residencia.restaurante.proyecto.repository.IMenuRepository;
 import com.residencia.restaurante.proyecto.service.ICocinaService;
 import com.residencia.restaurante.security.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,12 @@ public class CocinaServiceImpl implements ICocinaService {
 
     @Autowired
     IImpresoraRepository impresoraRepository;
+
+    @Autowired
+    IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
+
+    @Autowired
+    IMenuRepository menuRepository;
     /**
      * Obtiene una lista de todas las cocinas activas.
      * @return Lista de cocinas activas con estado HTTP correspondiente.
@@ -112,6 +120,15 @@ public class CocinaServiceImpl implements ICocinaService {
                 if(!cocinaOptional.isEmpty()){
                     Cocina cocina= cocinaOptional.get();
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
+                        if(detalleOrdenMenuRepository.existsByMenuCocinaIdAndEstadoNotIn(Integer.parseInt(objetoMap.get("id")))){
+                            return Utils.getResponseEntity("No puedes cambiar el estado de la cocina ya que existen platillos en preparación en la cocina.",HttpStatus.BAD_REQUEST);
+                        }
+
+                        if(menuRepository.existsByCocinaIdAndMenuVisibilidadIsTrue(Integer.parseInt(objetoMap.get("id")))){
+                            return Utils.getResponseEntity("No puedes cambiar el estado de la cocina ya que existen platillos asociados a la cocina.",HttpStatus.BAD_REQUEST);
+                        }
+
+
                         cocina.setVisibilidad(false);
                     }else{
                         cocina.setVisibilidad(true);

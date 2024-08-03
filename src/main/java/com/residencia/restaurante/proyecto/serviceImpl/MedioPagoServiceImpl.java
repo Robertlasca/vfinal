@@ -36,8 +36,6 @@ public class MedioPagoServiceImpl implements IMedioPagoService {
                 medioPagoDTO.setMedioPago(medioPago);
                 medioPagoDTO.setEstado("Visible");
 
-
-
                 mediosPagoConEstado.add(medioPagoDTO);
             }
             return new ResponseEntity<List<MedioPagoDTO>>(mediosPagoConEstado, HttpStatus.OK);

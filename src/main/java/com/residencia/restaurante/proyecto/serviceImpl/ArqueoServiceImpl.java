@@ -7,10 +7,7 @@ import com.residencia.restaurante.proyecto.entity.Arqueo;
 import com.residencia.restaurante.proyecto.entity.ArqueoSaldos;
 import com.residencia.restaurante.proyecto.entity.Caja;
 import com.residencia.restaurante.proyecto.entity.MedioPago;
-import com.residencia.restaurante.proyecto.repository.IArqueoRepository;
-import com.residencia.restaurante.proyecto.repository.IArqueoSaldosRepository;
-import com.residencia.restaurante.proyecto.repository.ICajaRepository;
-import com.residencia.restaurante.proyecto.repository.IMedioPagoRepository;
+import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IArqueoService;
 import com.residencia.restaurante.proyecto.wrapper.ArqueoSaldosWrapper;
 import com.residencia.restaurante.security.model.Usuario;
@@ -44,6 +41,9 @@ public class ArqueoServiceImpl implements IArqueoService {
     @Autowired
     private IMedioPagoRepository medioPagoRepository;
 
+    @Autowired
+    private IOrdenRepository ordenRepository;
+
 
     /**
      * Abre un nuevo arqueo verificando primero que no haya un arqueo activo para la caja indicada.
@@ -63,6 +63,7 @@ public class ArqueoServiceImpl implements IArqueoService {
                     if(!optionalCaja.isEmpty()){
                         Caja caja=optionalCaja.get();
                         arqueo.setCaja(caja);
+
 
                         Optional<Usuario> usuarioOptional=usuarioRepository.findById(Integer.parseInt(objetoMap.get("usuario")));
                         if(!usuarioOptional.isEmpty()){
@@ -115,7 +116,13 @@ public class ArqueoServiceImpl implements IArqueoService {
             if(objetoMap.containsKey("id_arqueo") && objetoMap.containsKey("mediosPago") && objetoMap.containsKey("saldo")){
                 Optional<Arqueo> optionalArqueo= arqueoRepository.findById(Integer.parseInt(objetoMap.get("id_arqueo")));
                 if(!optionalArqueo.isEmpty()){
+
                     Arqueo arqueo=optionalArqueo.get();
+
+                    if(ordenRepository.existsByCajaIdAndEstadoNotIn(arqueo.getCaja().getId())){
+                        return Utils.getResponseEntity("No puedes cerrar el arqueo ya existen comandas en proceso.",HttpStatus.BAD_REQUEST);
+                    }
+
                     arqueo.setFechaHoraCierre(LocalDateTime.now());
                     arqueo.setEstadoArqueo(false);
                     arqueo.setComentario(objetoMap.get("comentario"));

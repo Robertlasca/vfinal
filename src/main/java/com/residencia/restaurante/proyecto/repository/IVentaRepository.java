@@ -26,4 +26,5 @@ public interface IVentaRepository extends JpaRepository<Venta,Integer> {
     List<Venta> findByFechaBetween(LocalDate startDate, LocalDate endDate);
 
 
+
 }

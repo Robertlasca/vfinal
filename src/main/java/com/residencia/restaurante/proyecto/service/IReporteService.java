@@ -17,4 +17,10 @@ public interface IReporteService {
 
     //Ventas
     public ResponseEntity<InputStreamResource> descargarReporteDiarioVentas(Map<String, String> objetoMap);
+
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioSemanal(Map<String, String> objetoMap);
+
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioMensual(Map<String, String> objetoMap);
+
+    public ResponseEntity<InputStreamResource> descargarReporteAnualVentas(Map<String, String> objetoMap);
 }

@@ -53,6 +53,9 @@ public class MenuServiceImpl implements IMenuService {
     @Autowired
     private ICocinaRepository cocinaRepository;
 
+    @Autowired
+    private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
+
 
     @Override
     public ResponseEntity<List<MenuDTO>> obtenerActivos() {
@@ -529,6 +532,9 @@ if(file==null||file.isEmpty()){
                 if(menuOptional.isPresent()){
                     Menu menu= menuOptional.get();
                     if(objetoMap.get("visibilidad").equalsIgnoreCase("false")){
+                        if(detalleOrdenMenuRepository.existsByMenuIdAndEstadoNotIn(menu.getId())){
+                            return Utils.getResponseEntity("No puedes cambiar el estado del menú ya que tiene una comanda en proceso.",HttpStatus.BAD_REQUEST);
+                        }
                         menu.setVisibilidad(false);
                     }else{
                         menu.setVisibilidad(true);
