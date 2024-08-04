@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.UtensilioDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
 import org.springframework.http.ResponseEntity;
@@ -73,5 +74,5 @@ public interface IUtensilioController {
      * @return ResponseEntity con los detalles del utensilio solicitado y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerXId/{id}")
-    ResponseEntity<Utensilio> obtenerPorId(@PathVariable Integer id);
+    ResponseEntity<UtensilioDTO> obtenerPorId(@PathVariable Integer id);
 }

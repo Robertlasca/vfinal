@@ -3,6 +3,8 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.CocinaUtensilioDTO;
+import com.residencia.restaurante.proyecto.dto.UtensilioDTO;
 import com.residencia.restaurante.proyecto.entity.Categoria;
 import com.residencia.restaurante.proyecto.entity.Cocina;
 import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
@@ -43,22 +45,39 @@ public class UtensilioServiceImpl implements IUtensilioService {
 
 
     @Override
-    public ResponseEntity<Utensilio> obtenerUtensilioId(Integer id) {
+    public ResponseEntity<UtensilioDTO> obtenerUtensilioId(Integer id) {
         try {
 
             Optional<Utensilio> utensilioOptional=utensilioRepository.findById(id);
 
             if(utensilioOptional.isPresent()){
                 Utensilio utensilio= utensilioOptional.get();
-                return new ResponseEntity<>(utensilio,HttpStatus.OK);
+                List<CocinaUtensilioDTO> cocinaUtensilioDTOS=new ArrayList<>();
+                UtensilioDTO utensilioDTO=new UtensilioDTO();
+                utensilioDTO.setId(utensilio.getId());
+                utensilioDTO.setNombre(utensilio.getNombre());
+                utensilioDTO.setDescripcion(utensilio.getDescripcion());
+                List<Cocina_Utensilio> cocinaUtensilios=cocinaUtensilioRepository.findAllByUtensilio_Id(utensilio.getId());
+                if(!cocinaUtensilios.isEmpty()){
+                    for (Cocina_Utensilio cocinaU:cocinaUtensilios
+                         ) {
+                        CocinaUtensilioDTO cocinaUtensilioDTO= new CocinaUtensilioDTO();
+                        cocinaUtensilioDTO.setId(cocinaU.getId());
+                        cocinaUtensilioDTO.setCantidad(cocinaU.getCantidad());
+                        cocinaUtensilioDTO.setNombreCocina(cocinaU.getCocina().getNombre());
+                        cocinaUtensilioDTOS.add(cocinaUtensilioDTO);
+                    }
+                    utensilioDTO.setCocinaUtensilioDTOS(cocinaUtensilioDTOS);
+                }
+                return new ResponseEntity<UtensilioDTO>(utensilioDTO,HttpStatus.OK);
             }
-            return new ResponseEntity<>(new Utensilio(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<UtensilioDTO>(new UtensilioDTO(),HttpStatus.BAD_REQUEST);
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return new ResponseEntity<>(new Utensilio(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<UtensilioDTO>(new UtensilioDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

@@ -39,6 +39,7 @@ D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyec
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\RecetaDTO.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\ImpresoraControllerImpl.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IAlmacenController.java
+D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\CocinaUtensilioDTO.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\repository\IAlmacenRepository.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\wrapper\InventarioWrapper.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\MateriaPrima_ProductoTerminado.java
@@ -194,6 +195,7 @@ D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyec
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\IReporteServiceImpl.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\MateriaPrima_Menu.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IUsuarioParametrosService.java
+D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\UtensilioDTO.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\ComandaDTO.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\ArqueoControllerImpl.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\DatosComandaDTO.java

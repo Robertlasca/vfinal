@@ -47,6 +47,7 @@ com\residencia\restaurante\proyecto\service\IProductoTerminadoService.class
 com\residencia\restaurante\proyecto\controller\IMateriaPrimaController.class
 com\residencia\restaurante\proyecto\repository\ICajaRepository.class
 com\residencia\restaurante\proyecto\dto\ComandaDTO.class
+com\residencia\restaurante\proyecto\dto\CocinaUtensilioDTO.class
 com\residencia\restaurante\proyecto\controller\IRecetaMenuController.class
 com\residencia\restaurante\proyecto\serviceImpl\FolioService.class
 com\residencia\restaurante\proyecto\repository\IArqueoRepository.class
@@ -103,6 +104,7 @@ com\residencia\restaurante\proyecto\controllerImpl\ArqueoSaldosControllerImpl.cl
 com\residencia\restaurante\proyecto\service\ICajaService.class
 com\residencia\restaurante\proyecto\serviceImpl\CajaServiceImpl.class
 com\residencia\restaurante\proyecto\entity\ProductoNormal.class
+com\residencia\restaurante\proyecto\dto\UtensilioDTO.class
 com\residencia\restaurante\proyecto\repository\IAreaServicio_MesaRepository.class
 com\residencia\restaurante\proyecto\wrapper\Cocina_UtensilioWrapper.class
 com\residencia\restaurante\proyecto\serviceImpl\MateriaPrimaServiceImpl$3.class

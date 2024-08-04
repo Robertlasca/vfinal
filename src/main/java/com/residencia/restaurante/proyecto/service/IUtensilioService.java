@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.UtensilioDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public interface IUtensilioService {
      * @param id El ID del utensilio.
      * @return ResponseEntity con el utensilio correspondiente al ID.
      */
-    ResponseEntity<Utensilio> obtenerUtensilioId(Integer id);
+    ResponseEntity<UtensilioDTO> obtenerUtensilioId(Integer id);
 
     /**
      * Obtiene todos los utensilios.

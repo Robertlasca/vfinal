@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IUtensilioController;
+import com.residencia.restaurante.proyecto.dto.UtensilioDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
 import com.residencia.restaurante.proyecto.service.IUtensilioService;
@@ -102,12 +103,12 @@ public class UtensilioControllerImpl implements IUtensilioController {
      * @return ResponseEntity con el utensilio solicitado y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<Utensilio> obtenerPorId(Integer id) {
+    public ResponseEntity<UtensilioDTO> obtenerPorId(Integer id) {
         try {
             return utensilioService.obtenerUtensilioId(id);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ResponseEntity<>(new Utensilio(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new UtensilioDTO(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

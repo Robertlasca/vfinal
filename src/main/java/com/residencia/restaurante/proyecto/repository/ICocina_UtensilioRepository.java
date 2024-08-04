@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ICocina_UtensilioRepository extends JpaRepository<Cocina_Utensilio,Integer> {
     List<Cocina_Utensilio> findAllByCocina_Id(Integer id);
+    List<Cocina_Utensilio> findAllByUtensilio_Id(Integer id);
 }
