@@ -155,6 +155,8 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                 if(!detalleOrdenMenuList.isEmpty()){
                     for (DetalleOrdenMenu detalleOrdenMenu:detalleOrdenMenuList) {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                        System.out.println(detalleOrdenMenu.getOrden().getFechaHoraApertura().toLocalDate());
+                        System.out.println(localDate);
                         if(detalleOrdenMenu.getMenu().getCocina().getId()==cocina.getId() && detalleOrdenMenu.getOrden().getFechaHoraApertura().toLocalDate().equals(localDate)){
                             detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
                             detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());

@@ -1154,7 +1154,7 @@ public class ComanderoServiceImpl implements IComanderoService {
     public ResponseEntity<String> enviarACocina(Map<String, String> objetoMap) {
         try{
             if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("detalleOrden")){
-                if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
+                if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("Si hay suficiente stock")){
                     Optional<Orden> optional=ordenRepository.findById(Integer.parseInt(objetoMap.get("idOrden")));
                     if (optional.isPresent()){
                         Orden orden= optional.get();
@@ -1238,6 +1238,7 @@ public class ComanderoServiceImpl implements IComanderoService {
 
 
                 }
+                return  Utils.getResponseEntity(validarStock(objetoMap.get("detalleOrden")),HttpStatus.BAD_REQUEST);
 
             }
             return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
