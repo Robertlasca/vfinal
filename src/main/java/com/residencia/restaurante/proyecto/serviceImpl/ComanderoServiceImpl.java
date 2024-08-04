@@ -222,6 +222,8 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                 }
 
+              return Utils.getResponseEntity(validarStock(objetoMap.get("detalleOrden")),HttpStatus.BAD_REQUEST);
+
             }
             return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
 
