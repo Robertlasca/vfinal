@@ -14,6 +14,7 @@ public class UtensilioDTO {
     Integer id;
     String descripcion;
     String nombre;
+    String imagen;
     List<CocinaUtensilioDTO> cocinaUtensilioDTOS;
 
 }

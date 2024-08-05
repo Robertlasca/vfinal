@@ -57,6 +57,7 @@ public class UtensilioServiceImpl implements IUtensilioService {
                 utensilioDTO.setId(utensilio.getId());
                 utensilioDTO.setNombre(utensilio.getNombre());
                 utensilioDTO.setDescripcion(utensilio.getDescripcion());
+                utensilioDTO.setImagen(utensilioDTO.getImagen());
                 List<Cocina_Utensilio> cocinaUtensilios=cocinaUtensilioRepository.findAllByUtensilio_Id(utensilio.getId());
                 if(!cocinaUtensilios.isEmpty()){
                     for (Cocina_Utensilio cocinaU:cocinaUtensilios
@@ -81,13 +82,41 @@ public class UtensilioServiceImpl implements IUtensilioService {
     }
 
     @Override
-    public ResponseEntity<List<Utensilio>> obtenerUtensilios() {
+    public ResponseEntity<List<UtensilioDTO>> obtenerUtensilios() {
         try {
-            return new ResponseEntity<List<Utensilio>>(utensilioRepository.findAll(),HttpStatus.OK);
+            List<Utensilio> list=utensilioRepository.findAll();
+            List<UtensilioDTO> utensilioDTOS=new ArrayList<>();
+            for (Utensilio utensilio:list
+                 ) {
+                UtensilioDTO utensilioDTO= new UtensilioDTO();
+                utensilioDTO.setDescripcion(utensilio.getDescripcion());
+                utensilioDTO.setId(utensilio.getId());
+                utensilioDTO.setNombre(utensilio.getNombre());
+                utensilioDTO.setImagen(utensilio.getImagen());
+                List<CocinaUtensilioDTO> cocinaUtensilioDTOS=new ArrayList<>();
+
+                List<Cocina_Utensilio> cocinaUtensilios=cocinaUtensilioRepository.findAllByUtensilio_Id(utensilio.getId());
+                if(!cocinaUtensilios.isEmpty()){
+
+                    for (Cocina_Utensilio cocinaU:cocinaUtensilios
+                    ) {
+                        CocinaUtensilioDTO cocinaUtensilioDTO= new CocinaUtensilioDTO();
+                        cocinaUtensilioDTO.setId(cocinaU.getId());
+                        cocinaUtensilioDTO.setCantidad(cocinaU.getCantidad());
+                        cocinaUtensilioDTO.setNombreCocina(cocinaU.getCocina().getNombre());
+                        cocinaUtensilioDTOS.add(cocinaUtensilioDTO);
+                    }
+                    utensilioDTO.setCocinaUtensilioDTOS(cocinaUtensilioDTOS);
+                }
+
+                utensilioDTOS.add(utensilioDTO);
+
+            }
+            return new ResponseEntity<List<UtensilioDTO>>(utensilioDTOS,HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<Utensilio>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<UtensilioDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -166,7 +195,7 @@ public class UtensilioServiceImpl implements IUtensilioService {
     }
 
     @Override
-    public ResponseEntity<String> actualizarUtensilio(Integer id, String nombre, String descripcion, int idCocina, int cantidad, MultipartFile file) {
+    public ResponseEntity<String> actualizarUtensilio(Integer id, String nombre, String descripcion, MultipartFile file) {
         try {
 
             Optional<Utensilio> utensilioOptional=utensilioRepository.findById(id);
@@ -176,10 +205,9 @@ public class UtensilioServiceImpl implements IUtensilioService {
                     Utensilio utensilio=utensilioOptional.get();
                     utensilio.setNombre(nombre);
                     utensilio.setDescripcion(descripcion);
-                    Optional<Cocina> cocinaOptional= cocinaRepository.findById(idCocina);
 
 
-                    if(file.isEmpty()){
+                    if(file==null || file.isEmpty()){
                         utensilio.setImagen(utensilio.getImagen());
                     }else {
                         if(!utensilio.getImagen().equalsIgnoreCase("default.jpg")){

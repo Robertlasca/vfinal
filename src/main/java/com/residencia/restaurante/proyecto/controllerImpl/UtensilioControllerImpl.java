@@ -38,9 +38,9 @@ public class UtensilioControllerImpl implements IUtensilioController {
     }
 
     @Override
-    public ResponseEntity<String> actualizarUtensilio(Integer id, String nombre, String descripcion, int idCocina, int cantidad, MultipartFile file) {
+    public ResponseEntity<String> actualizarUtensilio(Integer id, String nombre, String descripcion, MultipartFile file) {
         try {
-            return utensilioService.actualizarUtensilio(id,nombre,descripcion,idCocina,cantidad,file);
+            return utensilioService.actualizarUtensilio(id,nombre,descripcion,file);
 
         }catch (Exception e){
             e.printStackTrace();
@@ -87,7 +87,7 @@ public class UtensilioControllerImpl implements IUtensilioController {
      * @return ResponseEntity con la lista de utensilios y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Utensilio>> obtenerUtensilios() {
+    public ResponseEntity<List<UtensilioDTO>> obtenerUtensilios() {
         try {
             return utensilioService.obtenerUtensilios();
         } catch (Exception e) {

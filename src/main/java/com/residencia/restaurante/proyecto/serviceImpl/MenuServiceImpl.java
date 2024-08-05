@@ -394,18 +394,18 @@ public class MenuServiceImpl implements IMenuService {
     }
 
     @Override
-    public ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
+    public ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
         try {
             Optional<Menu> optional= menuRepository.findById(id);
             if(optional.isPresent()){
                 Menu menu= optional.get();
                 if(menu.getNombre().equalsIgnoreCase(nombre)){
-                    menuRepository.save(actualizarDatos(menu,nombre,descripcion,margenGanancia,precioVenta,file,idCategoria,idCocina));
+                    menuRepository.save(actualizarDatos(menu,nombre,descripcion,precioVenta,file,idCategoria,idCocina));
                     return Utils.getResponseEntity("Menú actualizado correctamente.",HttpStatus.OK);
 
                 }else {
                     if(!menuRepository.existsByNombreLikeIgnoreCase(nombre)){
-                        menuRepository.save(actualizarDatos(menu,nombre,descripcion,margenGanancia,precioVenta,file,idCategoria,idCocina));
+                        menuRepository.save(actualizarDatos(menu,nombre,descripcion,precioVenta,file,idCategoria,idCocina));
                         return Utils.getResponseEntity("Menú actualizado correctamente.",HttpStatus.OK);
 
                     }
@@ -654,17 +654,16 @@ if(file==null||file.isEmpty()){
         return new ResponseEntity<Integer>(0,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private Menu actualizarDatos(Menu menu, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) throws IOException {
+    private Menu actualizarDatos(Menu menu, String nombre, String descripcion, double precioVenta, MultipartFile file, int idCategoria,int idCocina) throws IOException {
         menu.setNombre(nombre);
         menu.setDescripcion(descripcion);
         menu.setPrecioVenta(precioVenta);
-        menu.setMargenGanancia(margenGanancia);
         Optional<Categoria> categoriaOptional= categoriaRepository.findById(idCategoria);
         Optional<Cocina> cocinaOptional=cocinaRepository.findById(idCocina);
         cocinaOptional.ifPresent(menu::setCocina);
         categoriaOptional.ifPresent(menu::setCategoria);
 
-        if(file.isEmpty() || file==null){
+        if(file==null){
             menu.setImagen(menu.getImagen());
         }else {
             if(!menu.getImagen().equalsIgnoreCase("default.jpg")){

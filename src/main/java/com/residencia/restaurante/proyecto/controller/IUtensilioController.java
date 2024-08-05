@@ -18,20 +18,18 @@ import java.util.Map;
 public interface IUtensilioController {
 
 
-    @PostMapping(path = "/agregarUtensilio")
+    @PostMapping(path = "/agregarUtensilio", consumes = "multipart/form-data")
     ResponseEntity<String> agregarUtensilio(@RequestParam("nombre") String nombre,
                                             @RequestParam("descripcion") String descripcion,
                                             @RequestPart("inventario")String inventario,
-                                            @RequestParam("img") MultipartFile file);
+                                            @RequestParam(value = "img",required = false) MultipartFile file);
 
     @PostMapping(path = "/actualizarUtensilio")
     ResponseEntity<String> actualizarUtensilio(
             @RequestParam("id")Integer id,
             @RequestParam("nombre") String nombre,
                                             @RequestParam("descripcion") String descripcion,
-                                            @RequestParam("idCocina") int idCocina,
-                                            @RequestParam("cantidad") int cantidad,
-                                            @RequestParam("img") MultipartFile file);
+                                            @RequestParam(value = "img",required = false) MultipartFile file);
 
     /**
      * Actualiza los datos de un utensilio existente en el sistema. La información para la actualización
@@ -65,7 +63,7 @@ public interface IUtensilioController {
      * @return ResponseEntity con la lista completa de utensilios y el estado HTTP correspondiente.
      */
     @GetMapping(path = "/obtenerUtensilios")
-    ResponseEntity<List<Utensilio>> obtenerUtensilios();
+    ResponseEntity<List<UtensilioDTO>> obtenerUtensilios();
 
     /**
      * Obtiene los detalles de un utensilio específico por su identificador.

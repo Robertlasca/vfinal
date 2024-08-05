@@ -27,7 +27,7 @@ public interface IUtensilioService {
      * Obtiene todos los utensilios.
      * @return ResponseEntity con la lista de todos los utensilios.
      */
-    ResponseEntity<List<Utensilio>> obtenerUtensilios();
+    ResponseEntity<List<UtensilioDTO>> obtenerUtensilios();
 
     /**
      * Elimina un utensilio por su ID.
@@ -52,7 +52,5 @@ public interface IUtensilioService {
             Integer id,
             String nombre,
             String descripcion,
-            int idCocina,
-            int cantidad,
             MultipartFile file);
 }

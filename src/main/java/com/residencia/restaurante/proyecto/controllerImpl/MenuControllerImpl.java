@@ -107,9 +107,9 @@ public class MenuControllerImpl implements IMenuController {
     }
 
     @Override
-    public ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double margenGanancia, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
+    public ResponseEntity<String> actualizar(Integer id, String nombre, String descripcion, double precioVenta, MultipartFile file, int idCategoria,int idCocina) {
         try {
-            return menuService.actualizar(id,nombre,descripcion,margenGanancia,precioVenta,file,idCategoria,idCocina);
+            return menuService.actualizar(id,nombre,descripcion,precioVenta,file,idCategoria,idCocina);
 
         }catch (Exception e){
             e.printStackTrace();

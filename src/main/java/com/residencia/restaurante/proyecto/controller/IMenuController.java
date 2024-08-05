@@ -60,7 +60,6 @@ public interface IMenuController {
             @RequestParam("id") Integer id,
             @RequestParam("nombre") String nombre,
                                    @RequestParam("descripcion") String descripcion,
-                                   @RequestParam("margenGanancia") double margenGanancia,
                                    @RequestParam("precioVenta") double precioVenta,
                                    @RequestParam(value = "img",required = false) MultipartFile file,
                                    @RequestParam("idCategoria") int idCategoria,

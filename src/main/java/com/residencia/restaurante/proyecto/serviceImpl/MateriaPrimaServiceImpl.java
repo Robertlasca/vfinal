@@ -461,7 +461,7 @@ public class MateriaPrimaServiceImpl implements IMateriaPrimaService {
                             CategoriaMateriaPrima categoriaMateriaPrima=optionalCategoriaMateriaPrima.get();
                             materiaPrima.setCategoriaMateriaPrima(categoriaMateriaPrima);
                         }
-                    if(file.isEmpty() || file==null){
+                    if(file==null){
                         materiaPrima.setImagen(materiaPrima.getImagen());
                     }else{
                         if(!materiaPrima.getImagen().equalsIgnoreCase("default.jpg")){
