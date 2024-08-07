@@ -28,7 +28,7 @@ public interface IArqueoRepository extends JpaRepository<Arqueo,Integer> {
      * @return Lista de arqueos activos.
      */
     List<Arqueo> findArqueoByEstadoArqueoTrue();
-
+   boolean existsArqueoByCaja_IdAndEstadoArqueoTrue(Integer id);
     /**
      * Busca todos los arqueos activos asociados a un usuario específico.
      * @param id ID del usuario.

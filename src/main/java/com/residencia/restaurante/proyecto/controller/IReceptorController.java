@@ -18,10 +18,10 @@ public interface IReceptorController {
     ResponseEntity<List<DatosComandaDTO>> obtenerComandasPorIdCocina(@PathVariable Integer id);
 
     @GetMapping(path = "/obtenerComandasEnPreparacion/{id}")
-    ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasEnPreparacionPorIdCocina(@PathVariable Integer id);
+    ResponseEntity<List<DatosComandaDTO>> obtenerComandasEnPreparacionPorIdCocina(@PathVariable Integer id);
 
     @GetMapping(path = "/obtenerComandasTerminadas/{id}")
-    ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasTerminadasPorIdCocina(@PathVariable Integer id);
+    ResponseEntity<List<DatosComandaDTO>> obtenerComandasTerminadasPorIdCocina(@PathVariable Integer id);
 
     @PostMapping(path = "/cambiarPlatilloPreparacion/{id}")
     ResponseEntity<String> cambiarPlatilloPreparacion(@PathVariable Integer id);

@@ -284,5 +284,33 @@ public class CajaServiceImpl implements ICajaService {
         return new ResponseEntity<List<CajaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<CajaDTO>> obtenerCajasSinArqueo() {
+        try{
+            List<Caja> list=cajaRepository.getAllByVisibilidadTrue();
+            List<CajaDTO>cajaDTOS=new ArrayList<>();
+
+            if(!list.isEmpty()){
+                for(Caja caja: list){
+                    if(!arqueoRepository.existsArqueoByCaja_IdAndEstadoArqueoTrue(caja.getId())){
+                        CajaDTO cajaDTO=new CajaDTO();
+                        cajaDTO.setCaja(caja);
+                        cajaDTO.setEstado("Visible");
+                        cajaDTOS.add(cajaDTO);
+                    }
+                }
+                return  new ResponseEntity<List<CajaDTO>>(cajaDTOS,HttpStatus.OK);
+            }
+
+          return  new ResponseEntity<List<CajaDTO>>(cajaDTOS,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<CajaDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+
+
+    }
+
 
 }

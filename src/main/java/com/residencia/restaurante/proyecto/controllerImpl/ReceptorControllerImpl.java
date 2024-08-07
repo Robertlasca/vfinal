@@ -32,25 +32,25 @@ public class ReceptorControllerImpl implements IReceptorController {
     }
 
     @Override
-    public ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasEnPreparacionPorIdCocina(Integer id) {
+    public ResponseEntity<List<DatosComandaDTO>> obtenerComandasEnPreparacionPorIdCocina(Integer id) {
         try {
 
             return receptorService.obtenerComandasEnPreparacionPorIdCocina(id);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<DetalleOrdenProductoDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasTerminadasPorIdCocina(Integer id) {
+    public ResponseEntity<List<DatosComandaDTO>> obtenerComandasTerminadasPorIdCocina(Integer id) {
         try {
 
             return receptorService.obtenerComandasTerminadasPorIdCocina(id);
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<DetalleOrdenProductoDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override

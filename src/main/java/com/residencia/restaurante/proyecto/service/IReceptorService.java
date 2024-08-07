@@ -12,9 +12,9 @@ import java.util.List;
 public interface IReceptorService {
     ResponseEntity<List<DatosComandaDTO>> obtenerComandasPorIdCocina(Integer id);
 
-    ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasEnPreparacionPorIdCocina(Integer id);
+    ResponseEntity<List<DatosComandaDTO>> obtenerComandasEnPreparacionPorIdCocina(Integer id);
 
-    ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasTerminadasPorIdCocina(Integer id);
+    ResponseEntity<List<DatosComandaDTO>> obtenerComandasTerminadasPorIdCocina(Integer id);
 
     ResponseEntity<String> cambiarPlatilloPreparacion(Integer id);
 

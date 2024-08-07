@@ -15,6 +15,7 @@ public class DetalleOrdenProductoDTO {
     double total;
     String nombreProducto;
     String comentario;
+    String imagen;
     String estado;
     String esDetalleMenu;
     double precioUnitario;

@@ -120,7 +120,7 @@ public class ComanderoServiceImpl implements IComanderoService {
     public ResponseEntity<String> asignarPlatillos(Map<String, String> objetoMap) {
         try{
             if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("detalleOrden")){
-              if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("suficiente")){
+              if(validarStock(objetoMap.get("detalleOrden")).equalsIgnoreCase("Si hay suficiente stock")){
                 Optional<Orden> optional=ordenRepository.findById(Integer.parseInt(objetoMap.get("idOrden")));
                 if (optional.isPresent()){
                     Orden orden= optional.get();
@@ -203,13 +203,13 @@ public class ComanderoServiceImpl implements IComanderoService {
                             }
 
 
-                       // if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
-                            return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
-                        //} else{
-                          //  return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
-                        //}
 
-                    }
+                            if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
+                                return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
+                            } else{
+                                return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
+                            }
+                        }
                         return Utils.getResponseEntity(validarStock(objetoMap.get("detalleOrden")),HttpStatus.BAD_REQUEST);
 
 
@@ -335,7 +335,9 @@ public class ComanderoServiceImpl implements IComanderoService {
         ValidarStock validarStock= new ValidarStock();
         ValidarStock validarStockTerminado= new ValidarStock();
         ValidarStock validarStockProductoNormal= new ValidarStock();
+
         try {
+
             List<DetalleOrdenWrapper> detalleOrdenWrappers = objectMapper.readValue(detalleOrdenJson, new TypeReference<List<DetalleOrdenWrapper>>() {});
             for (DetalleOrdenWrapper detalle : detalleOrdenWrappers) {
 
@@ -617,7 +619,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleMenu");
+                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
                         detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
                         detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
@@ -671,7 +673,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleMenu");
+                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
                         detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
                         detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
@@ -827,24 +829,41 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 paymentMethods
                         );
                         String ticketContent = ticket.getContentTicket().toString();
+                        HttpResponse<String> response=null;
+
+                        Impresora impresoraOptional1= orden.getCaja().getImpresora();
                         Map<String, String> printRequest = new HashMap<>();
+                        printRequest.put("ticketContent", ticketContent);
+
+                            printRequest.put("nombreIm",impresoraOptional1.getNombre());
+                            //if(cocinaOptional.get().getImpresora().getDireccionIp()!=null||cocinaOptional.get().getImpresora().getDireccionIp().length()!=0 ){
+                            //  printRequest.put("printerIp",cocinaOptional.get().getImpresora().getDireccionIp());
+                            //}
+
+
+
+
+
                         printRequest.put("ticketContent", ticketContent);
                         printRequest.put("printerIp", impresora1.getDireccionIp());
 
                         String printRequestJson = new ObjectMapper().writeValueAsString(printRequest);
 
                         // Enviar solicitud al servidor de impresión local
+                        // Configuración de la solicitud HTTP
                         HttpClient client = HttpClient.newHttpClient();
                         HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create("https://d77b-189-129-48-107.ngrok-free.app/print"))
+                                .uri(URI.create("http://localhost:8082/print")) // Usa http
                                 .POST(HttpRequest.BodyPublishers.ofString(printRequestJson, StandardCharsets.UTF_8))
                                 .header("Content-Type", "application/json")
                                 .build();
 
-                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                        if (response.statusCode()==200) {
+                        // Envío de la solicitud y obtención de la respuesta
+                        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                       // if (response.statusCode()==200) {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
-                        } else {
+                        //}
+                        /* else {
                             Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
                             if (impresoraOptional.isPresent()) {
                                 Impresora impresora= impresoraOptional.get();
@@ -866,7 +885,7 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                             }
                             return Utils.getResponseEntity("Error al imprimir: ",HttpStatus.INTERNAL_SERVER_ERROR);
-                        }
+                        }*/
 
 
 

@@ -42,19 +42,19 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
     @Override
     public ResponseEntity<List<DatosComandaDTO>> obtenerComandasPorIdCocina(Integer id) {
         try {
-            List<DetalleOrdenProductoDTO> comandaDTOList= new ArrayList<>();
-            List<DatosComandaDTO> datosComandaDTOS=new ArrayList<>();
+            
+            List<DatosComandaDTO> datosComandaDTOS = new ArrayList<>();
+            List<DatosComandaDTO> datosComandaDefinitivaDTOS = new ArrayList<>();
 
-            Optional<Cocina> optionalCocina= cocinaRepository.findById(id);
-            if(optionalCocina.isPresent()){
-                Cocina cocina= optionalCocina.get();
-                List<DetalleOrdenMenu> detalleOrdenMenuList= detalleOrdenMenuRepository.getAllByEstadoEqualsIgnoreCase("En espera");
-                if(!detalleOrdenMenuList.isEmpty()){
-                    // Set para almacenar los nombres únicos de las mesas y áreas de servicio
-
+            Optional<Cocina> optionalCocina = cocinaRepository.findById(id);
+            if (optionalCocina.isPresent()) {
+                Cocina cocina = optionalCocina.get();
+                List<DetalleOrdenMenu> detalleOrdenMenuList = detalleOrdenMenuRepository.getAllByEstadoEqualsIgnoreCase("En espera");
+                if (!detalleOrdenMenuList.isEmpty()) {
                     Set<String> areasYaProcesadas = new HashSet<>();
-                    for (DetalleOrdenMenu detalleOrdenMenu:detalleOrdenMenuList) {
-                        String areaServicio = detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre()+detalleOrdenMenu.getOrden().getMesa().getNombre();
+                    for (DetalleOrdenMenu detalleOrdenMenu : detalleOrdenMenuList) {
+
+                        String areaServicio = detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre() + detalleOrdenMenu.getOrden().getMesa().getNombre();
 
                         // Comprobar si la mesa ya ha sido procesada
                         if (!areasYaProcesadas.contains(areaServicio)) {
@@ -63,17 +63,19 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                             datosComandaDTO.setNombreCliente(detalleOrdenMenu.getOrden().getNombreCliente());
                             datosComandaDTO.setAreaServicio(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre());
                             datosComandaDTO.setNombreMesa(detalleOrdenMenu.getOrden().getMesa().getNombre());
+
+                            datosComandaDTO.setDetalleOrdenProductoDTOS(new ArrayList<>());
+
+
                             datosComandaDTOS.add(datosComandaDTO);
 
                             // Marcar la mesa y el área como procesadas
-
                             areasYaProcesadas.add(areaServicio);
                         }
 
-                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
 
-                        if(detalleOrdenMenu.getMenu().getCocina().getId()==cocina.getId()){
-
+                        if (detalleOrdenMenu.getMenu().getCocina().getId() == cocina.getId()) {
                             detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
                             detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
                             detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
@@ -81,31 +83,43 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                             detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
                             detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
                             detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                            detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
                             detalleOrdenProductoDTO.setEsDetalleMenu("true");
 
-                            comandaDTOList.add(detalleOrdenProductoDTO);
-                        }
-                        for (int x=0;x<datosComandaDTOS.size();x++) {
-                            if( datosComandaDTOS.get(x).getNombreMesa().equalsIgnoreCase(detalleOrdenMenu.getOrden().getMesa().getNombre()) && datosComandaDTOS.get(x).getAreaServicio().equalsIgnoreCase(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre())){
-                                datosComandaDTOS.get(x).setDetalleOrdenProductoDTOS(comandaDTOList);
+                            for (DatosComandaDTO datosComandaDTO : datosComandaDTOS) {
+                                if (datosComandaDTO.getNombreMesa().equalsIgnoreCase(detalleOrdenMenu.getOrden().getMesa().getNombre())
+                                        && datosComandaDTO.getAreaServicio().equalsIgnoreCase(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre())) {
+                                    datosComandaDTO.getDetalleOrdenProductoDTOS().add(detalleOrdenProductoDTO);
+                                }
                             }
                         }
+
+
                     }
-                    return new ResponseEntity<List<DatosComandaDTO>>(datosComandaDTOS,HttpStatus.OK);
+                    if(!datosComandaDTOS.isEmpty()){
+                        for (DatosComandaDTO datos:datosComandaDTOS
+                             ) {
+                            if(!datos.getDetalleOrdenProductoDTOS().isEmpty()){
+                                datosComandaDefinitivaDTOS.add(datos);
+                            }
+
+                        }
+                    }
+                    return new ResponseEntity<>(datosComandaDefinitivaDTOS, HttpStatus.OK);
                 }
-
-
             }
-            return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
     @Override
-    public ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasEnPreparacionPorIdCocina(Integer id) {
+    public ResponseEntity<List<DatosComandaDTO>> obtenerComandasEnPreparacionPorIdCocina(Integer id) {
+        /*
         try {
             List<DetalleOrdenProductoDTO> comandaDTOList= new ArrayList<>();
 
@@ -139,25 +153,41 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<DetalleOrdenProductoDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Override
-    public ResponseEntity<List<DetalleOrdenProductoDTO>> obtenerComandasTerminadasPorIdCocina(Integer id) {
+        return new ResponseEntity<List<DetalleOrdenProductoDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);*/
         try {
-            List<DetalleOrdenProductoDTO> comandaDTOList= new ArrayList<>();
+            List<DatosComandaDTO> datosComandaDTOS = new ArrayList<>();
+            List<DatosComandaDTO> datosComandaDefinitivaDTOS = new ArrayList<>();
 
-            Optional<Cocina> optionalCocina= cocinaRepository.findById(id);
-            if(optionalCocina.isPresent()){
-                Cocina cocina= optionalCocina.get();
-                List<DetalleOrdenMenu> detalleOrdenMenuList= detalleOrdenMenuRepository.getAllByEstadoEqualsIgnoreCase("Terminado");
-                LocalDate localDate= LocalDate.now();
-                if(!detalleOrdenMenuList.isEmpty()){
-                    for (DetalleOrdenMenu detalleOrdenMenu:detalleOrdenMenuList) {
-                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
-                        System.out.println(detalleOrdenMenu.getOrden().getFechaHoraApertura().toLocalDate());
-                        System.out.println(localDate);
-                        if(detalleOrdenMenu.getMenu().getCocina().getId()==cocina.getId() && detalleOrdenMenu.getOrden().getFechaHoraApertura().toLocalDate().equals(localDate)){
+            Optional<Cocina> optionalCocina = cocinaRepository.findById(id);
+            if (optionalCocina.isPresent()) {
+                Cocina cocina = optionalCocina.get();
+                List<DetalleOrdenMenu> detalleOrdenMenuList = detalleOrdenMenuRepository.getAllByEstadoEqualsIgnoreCase("En preparación");
+                if (!detalleOrdenMenuList.isEmpty()) {
+                    Set<String> areasYaProcesadas = new HashSet<>();
+                    for (DetalleOrdenMenu detalleOrdenMenu : detalleOrdenMenuList) {
+
+                        String areaServicio = detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre() + detalleOrdenMenu.getOrden().getMesa().getNombre();
+
+                        // Comprobar si la mesa ya ha sido procesada
+                        if (!areasYaProcesadas.contains(areaServicio)) {
+
+                            DatosComandaDTO datosComandaDTO = new DatosComandaDTO();
+                            datosComandaDTO.setNombreCliente(detalleOrdenMenu.getOrden().getNombreCliente());
+                            datosComandaDTO.setAreaServicio(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre());
+                            datosComandaDTO.setNombreMesa(detalleOrdenMenu.getOrden().getMesa().getNombre());
+
+                            datosComandaDTO.setDetalleOrdenProductoDTOS(new ArrayList<>());
+
+
+                            datosComandaDTOS.add(datosComandaDTO);
+
+                            // Marcar la mesa y el área como procesadas
+                            areasYaProcesadas.add(areaServicio);
+                        }
+
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
+
+                        if (detalleOrdenMenu.getMenu().getCocina().getId() == cocina.getId()) {
                             detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
                             detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
                             detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
@@ -165,22 +195,113 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                             detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
                             detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
                             detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                            detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
                             detalleOrdenProductoDTO.setEsDetalleMenu("true");
-                            comandaDTOList.add(detalleOrdenProductoDTO);
+
+                            for (DatosComandaDTO datosComandaDTO : datosComandaDTOS) {
+                                if (datosComandaDTO.getNombreMesa().equalsIgnoreCase(detalleOrdenMenu.getOrden().getMesa().getNombre())
+                                        && datosComandaDTO.getAreaServicio().equalsIgnoreCase(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre())) {
+                                    datosComandaDTO.getDetalleOrdenProductoDTOS().add(detalleOrdenProductoDTO);
+                                }
+                            }
+                        }
+
+
+                    }
+                    if(!datosComandaDTOS.isEmpty()){
+                        for (DatosComandaDTO datos:datosComandaDTOS
+                        ) {
+                            if(!datos.getDetalleOrdenProductoDTOS().isEmpty()){
+                                datosComandaDefinitivaDTOS.add(datos);
+                            }
 
                         }
                     }
-                    return new ResponseEntity<List<DetalleOrdenProductoDTO>>(comandaDTOList,HttpStatus.OK);
+                    return new ResponseEntity<List<DatosComandaDTO>>(datosComandaDefinitivaDTOS, HttpStatus.OK);
                 }
-
-
             }
-            return new ResponseEntity<List<DetalleOrdenProductoDTO>>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<List<DetalleOrdenProductoDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<DatosComandaDTO>> obtenerComandasTerminadasPorIdCocina(Integer id) {
+        try {
+            List<DatosComandaDTO> datosComandaDTOS = new ArrayList<>();
+            List<DatosComandaDTO> datosComandaDefinitivaDTOS = new ArrayList<>();
+
+            Optional<Cocina> optionalCocina = cocinaRepository.findById(id);
+            if (optionalCocina.isPresent()) {
+                Cocina cocina = optionalCocina.get();
+                List<DetalleOrdenMenu> detalleOrdenMenuList = detalleOrdenMenuRepository.getAllByEstadoEqualsIgnoreCase("Terminado");
+                if (!detalleOrdenMenuList.isEmpty()) {
+                    Set<String> areasYaProcesadas = new HashSet<>();
+                    for (DetalleOrdenMenu detalleOrdenMenu : detalleOrdenMenuList) {
+
+                        String areaServicio = detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre() + detalleOrdenMenu.getOrden().getMesa().getNombre();
+
+                        // Comprobar si la mesa ya ha sido procesada
+                        if (!areasYaProcesadas.contains(areaServicio)) {
+
+                            DatosComandaDTO datosComandaDTO = new DatosComandaDTO();
+                            datosComandaDTO.setNombreCliente(detalleOrdenMenu.getOrden().getNombreCliente());
+                            datosComandaDTO.setAreaServicio(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre());
+                            datosComandaDTO.setNombreMesa(detalleOrdenMenu.getOrden().getMesa().getNombre());
+
+                            datosComandaDTO.setDetalleOrdenProductoDTOS(new ArrayList<>());
+
+
+                            datosComandaDTOS.add(datosComandaDTO);
+
+                            // Marcar la mesa y el área como procesadas
+                            areasYaProcesadas.add(areaServicio);
+                        }
+
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
+
+                        if (detalleOrdenMenu.getMenu().getCocina().getId() == cocina.getId()) {
+                            detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                            detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                            detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                            detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                            detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                            detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                            detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                            detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
+                            detalleOrdenProductoDTO.setEsDetalleMenu("true");
+
+                            for (DatosComandaDTO datosComandaDTO : datosComandaDTOS) {
+                                if (datosComandaDTO.getNombreMesa().equalsIgnoreCase(detalleOrdenMenu.getOrden().getMesa().getNombre())
+                                        && datosComandaDTO.getAreaServicio().equalsIgnoreCase(detalleOrdenMenu.getOrden().getMesa().getAreaServicio().getNombre())) {
+                                    datosComandaDTO.getDetalleOrdenProductoDTOS().add(detalleOrdenProductoDTO);
+                                }
+                            }
+                        }
+
+
+                    }
+                    if(!datosComandaDTOS.isEmpty()){
+                        for (DatosComandaDTO datos:datosComandaDTOS
+                        ) {
+                            if(!datos.getDetalleOrdenProductoDTOS().isEmpty()){
+                                datosComandaDefinitivaDTOS.add(datos);
+                            }
+
+                        }
+                    }
+                    return new ResponseEntity<List<DatosComandaDTO>>(datosComandaDefinitivaDTOS, HttpStatus.OK);
+                }
+            }
+            return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<List<DatosComandaDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

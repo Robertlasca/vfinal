@@ -15,7 +15,7 @@ public class RestauranteApplication {
 
 
     }
-
+/*
     @Configuration
     public static class Myconfiguration{
         @Bean
@@ -29,6 +29,6 @@ public class RestauranteApplication {
             };
         }
     }
-
+*/
 
 }

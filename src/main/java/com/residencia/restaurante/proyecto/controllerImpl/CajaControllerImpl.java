@@ -79,6 +79,16 @@ public class CajaControllerImpl implements ICajaController {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<CajaDTO>> obtenerCajasSinArqueo() {
+        try {
+            return cajaService.obtenerCajasSinArqueo();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     /**
      * Cambia el estado de una caja.
      *

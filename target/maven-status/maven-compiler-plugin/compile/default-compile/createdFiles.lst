@@ -3,7 +3,6 @@ com\residencia\restaurante\proyecto\controller\IUsuarioController.class
 com\residencia\restaurante\proyecto\controller\IProductoNormalController.class
 com\residencia\restaurante\proyecto\controller\IAlmacenController.class
 com\residencia\restaurante\proyecto\controller\ICajaController.class
-com\residencia\restaurante\RestauranteApplication$Myconfiguration$1.class
 com\residencia\restaurante\proyecto\dto\ProductoNormalDTO.class
 com\residencia\restaurante\proyecto\controller\IAreaServicioController.class
 com\residencia\restaurante\security\repository\IConfirmationTokenRepository.class
@@ -185,7 +184,6 @@ com\residencia\restaurante\proyecto\dto\CategoriaDTO.class
 com\residencia\restaurante\proyecto\repository\IVentaRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\AreaServicioServiceImpl.class
 com\residencia\restaurante\proyecto\service\ICategoriaService.class
-com\residencia\restaurante\RestauranteApplication$Myconfiguration.class
 com\residencia\restaurante\security\model\Usuario_Rol$Usuario_RolBuilder.class
 com\residencia\restaurante\security\utils\Ticket.class
 com\residencia\restaurante\proyecto\serviceImpl\MenuServiceImpl.class
