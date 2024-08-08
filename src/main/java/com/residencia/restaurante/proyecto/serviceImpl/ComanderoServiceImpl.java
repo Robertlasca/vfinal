@@ -1138,27 +1138,35 @@ public class ComanderoServiceImpl implements IComanderoService {
                     Optional<DetalleOrdenMenu>detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(idProducto);
                     if(detalleOrdenMenuOptional.isPresent()){
                         DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
-                        List<MateriaPrima_Menu> materiaPrimaMenus= materiaPrimaMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
-                        List<ProductoTerminado_Menu> productoTerminadoMenus= productoTerminadoMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
+                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")) {
+                            List<MateriaPrima_Menu> materiaPrimaMenus = materiaPrimaMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
+                            List<ProductoTerminado_Menu> productoTerminadoMenus = productoTerminadoMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
 
-                        if(!materiaPrimaMenus.isEmpty()){
-                            for (MateriaPrima_Menu materiaPrimaMenu:materiaPrimaMenus) {
-                                Inventario inventario= materiaPrimaMenu.getInventario();
-                                inventario.setStockActual(inventario.getStockActual()+(detalleOrdenMenu.getCantidad()*materiaPrimaMenu.getCantidad()));
-                                inventarioRepository.save(inventario);
+                            if (!materiaPrimaMenus.isEmpty()) {
+                                for (MateriaPrima_Menu materiaPrimaMenu : materiaPrimaMenus) {
+                                    Inventario inventario = materiaPrimaMenu.getInventario();
+                                    inventario.setStockActual(inventario.getStockActual() + (detalleOrdenMenu.getCantidad() * materiaPrimaMenu.getCantidad()));
+                                    inventarioRepository.save(inventario);
+                                }
                             }
+
+                            if (!productoTerminadoMenus.isEmpty()) {
+                                for (ProductoTerminado_Menu productoTerminadoMenu : productoTerminadoMenus) {
+                                    ProductoTerminado productoTerminado = productoTerminadoMenu.getProductoTerminado();
+                                    productoTerminado.setStockActual(productoTerminado.getStockActual() + (detalleOrdenMenu.getCantidad() * productoTerminadoMenu.getCantidad()));
+                                    productoTerminadoRepository.save(productoTerminado);
+                                }
+                            }
+                            //Regresar el stock
+                            detalleOrdenMenuRepository.delete(detalleOrdenMenu);
+                            return Utils.getResponseEntity("Platillo eliminado de la orden correctamente.", HttpStatus.OK);
                         }
 
-                        if(!productoTerminadoMenus.isEmpty()){
-                            for (ProductoTerminado_Menu productoTerminadoMenu:productoTerminadoMenus) {
-                                ProductoTerminado productoTerminado= productoTerminadoMenu.getProductoTerminado();
-                                productoTerminado.setStockActual(productoTerminado.getStockActual()+(detalleOrdenMenu.getCantidad()*productoTerminadoMenu.getCantidad()));
-                                productoTerminadoRepository.save(productoTerminado);
-                            }
+                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("Por enviar")) {
+                            //Regresar el stock
+                            detalleOrdenMenuRepository.delete(detalleOrdenMenu);
+                            return Utils.getResponseEntity("Platillo eliminado de la orden correctamente.", HttpStatus.OK);
                         }
-                        //Regresar el stock
-                        detalleOrdenMenuRepository.delete(detalleOrdenMenu);
-                        return Utils.getResponseEntity("Platillo eliminado de la orden correctamente.",HttpStatus.OK);
                     }
                     return Utils.getResponseEntity("Ya no existe el registro.",HttpStatus.BAD_REQUEST);
                 }

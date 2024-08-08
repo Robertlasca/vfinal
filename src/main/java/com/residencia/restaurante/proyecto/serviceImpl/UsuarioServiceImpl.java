@@ -26,27 +26,20 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public ResponseEntity<String> agregar(Map<String, String> objetoMap) {
         try {
 
-            if(objetoMap.containsKey("apellidos") && objetoMap.containsKey("email") && objetoMap.containsKey("contrasena") && objetoMap.containsKey("nombre") && objetoMap.containsKey("telefono")){
+            if(objetoMap.containsKey("apellidos") && objetoMap.containsKey("email")  && objetoMap.containsKey("nombre") && objetoMap.containsKey("telefono")&& objetoMap.containsKey("rol")){
                 if(!usuarioRepository.existsUsuarioByEmailEqualsIgnoreCase(objetoMap.get("email"))){
                     Usuario usuario=new Usuario();
                     usuario.setNombre(objetoMap.get("nombre"));
                     usuario.setApellidos(objetoMap.get("apellidos"));
-                    usuario.setContrasena(objetoMap.get("contrasena"));
-                    usuario.setContrasena(passwordEncoder.encode(objetoMap.get("contrasena")));
+                    usuario.setContrasena(passwordEncoder.encode("12345678"));
                     usuario.setEmail(objetoMap.get("email"));
                     usuario.setTelefono(objetoMap.get("telefono"));
-
-
+                    usuario.setRol(objetoMap.get("rol"));
                     // Generar un token de verificación
                     String verificationToken = UUID.randomUUID().toString();
                     System.out.println(verificationToken.length());
                     usuario.setTokenVerificacionEmail(verificationToken);
-
-
-
                     usuarioRepository.save(usuario);
-
-
                     return Utils.getResponseEntity("Usuario registrado con exito.",HttpStatus.OK);
                 }
                 return Utils.getResponseEntity("Ya esta registrado este correo.",HttpStatus.BAD_REQUEST);

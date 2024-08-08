@@ -28,9 +28,12 @@ public class Usuario {
     @Column(length = 50)
     private String email;
     @Column(length = 100)
-    private String contrasena;
+    private String contrasena="12345678";
     @Column(length = 12)
     private String telefono;
+
+    @Column(length = 40,nullable = true)
+    private String rol;
 
 
     @Column(nullable = true)
