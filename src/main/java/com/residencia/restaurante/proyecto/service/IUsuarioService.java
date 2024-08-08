@@ -24,4 +24,6 @@ public interface IUsuarioService {
     ResponseEntity<List<Usuario>> obtenerNoActivos();
 
     ResponseEntity<List<Usuario>> obtenerUsuarios();
+
+    ResponseEntity<String> restaurar(Integer id);
 }

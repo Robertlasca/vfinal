@@ -642,6 +642,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
                         detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
                         detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                        detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
                         total=total+detalleOrdenMenu.getTotal();
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
                     }

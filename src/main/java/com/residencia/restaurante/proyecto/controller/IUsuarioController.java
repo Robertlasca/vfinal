@@ -16,6 +16,9 @@ public interface IUsuarioController {
     @PostMapping(path = "/actualizar")
     ResponseEntity<String> actualizar(@RequestBody(required = true)Map<String,String> objetoMap);
 
+    @PostMapping(path = "/restaurar/{id}")
+    ResponseEntity<String> restaurarContrasena(@PathVariable Integer id);
+
     @PostMapping(path = "/cambiarEstado")
     ResponseEntity<String> cambiarEstado(@RequestBody(required = true)Map<String,String> objetoMap);
 

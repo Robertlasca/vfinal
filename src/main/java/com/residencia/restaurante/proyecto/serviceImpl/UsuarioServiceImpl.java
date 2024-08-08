@@ -55,7 +55,29 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public ResponseEntity<String> actualizar(Map<String, String> objetoMap) {
-        return null;
+        try {
+
+            if(objetoMap.containsKey("idUsuario")&& objetoMap.containsKey("apellidos") && objetoMap.containsKey("email")  && objetoMap.containsKey("nombre") && objetoMap.containsKey("telefono")&& objetoMap.containsKey("rol")){
+                Optional<Usuario> usuarioOptional= usuarioRepository.findById(Integer.parseInt("idUsuario"));
+                if(usuarioOptional.isPresent()){
+                    Usuario usuario=usuarioOptional.get();
+                    usuario.setNombre(objetoMap.get("nombre"));
+                    usuario.setApellidos(objetoMap.get("apellidos"));
+                    usuario.setEmail(objetoMap.get("email"));
+                    usuario.setTelefono(objetoMap.get("telefono"));
+                    usuario.setRol(objetoMap.get("rol"));
+                    usuarioRepository.save(usuario);
+                    return Utils.getResponseEntity("Datos actualizados.",HttpStatus.OK);
+                }
+                return Utils.getResponseEntity("El usuario no existe.",HttpStatus.BAD_REQUEST);
+            }
+
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
@@ -126,5 +148,26 @@ public class UsuarioServiceImpl implements IUsuarioService {
             e.printStackTrace();
         }
         return new ResponseEntity<List<Usuario>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> restaurar(Integer id) {
+        try{
+            Optional<Usuario> usuarioOptional=usuarioRepository.findById(id);
+            if(usuarioOptional.isPresent()){
+                Usuario usuario=usuarioOptional.get();
+                usuario.setContrasena(passwordEncoder.encode("12345678"));
+                usuarioRepository.save(usuario);
+                return Utils.getResponseEntity("La contraseña ha sido restaurada",HttpStatus.OK);
+
+            }
+            return Utils.getResponseEntity("No existe el usuario.",HttpStatus.INTERNAL_SERVER_ERROR);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
