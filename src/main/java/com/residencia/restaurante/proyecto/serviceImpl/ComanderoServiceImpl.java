@@ -799,7 +799,7 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                         if(!detalleOrdenMenus.isEmpty()){
                             for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
-                                if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado")){
+                                if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado") ||detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")){
                                     DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                                     detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                                     detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());

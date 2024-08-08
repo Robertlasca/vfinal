@@ -241,8 +241,12 @@ public class ArqueoServiceImpl implements IArqueoService {
                     ordenDTO.setFolio(orden.getFolio());
                     ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre());
                     ordenDTO.setEstado(orden.getEstado());
-                    ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
-                    ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+                    ordenDTO.setFecha(orden.getFechaHoraApertura().toString());
+                    if(orden.getUsuario()!=null){
+                        ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                        ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+                    }
+
 
                     double total=0;
 
@@ -305,8 +309,11 @@ public class ArqueoServiceImpl implements IArqueoService {
                         ordenDTO.setFolio(orden.getFolio());
                         ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre() + orden.getMesa().getNombre());
                         ordenDTO.setEstado(orden.getEstado());
-                        ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
-                        ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+                        ordenDTO.setFecha(orden.getFechaHoraApertura().toString());
+                        if(orden.getUsuario()!=null){
+                            ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                            ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+                        }
 
                         double total = 0;
 
@@ -370,9 +377,11 @@ public class ArqueoServiceImpl implements IArqueoService {
                         ordenDTO.setFolio(orden.getFolio());
                         ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre() + orden.getMesa().getNombre());
                         ordenDTO.setEstado(orden.getEstado());
-                        ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
-                        ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
-
+                        ordenDTO.setFecha(orden.getFechaHoraApertura().toString());
+                        if(orden.getUsuario()!=null){
+                            ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                            ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+                        }
                         double total = 0;
 
                         List<DetalleOrdenMenu> detalleOrdenMenuList = detalleOrdenMenuRepository.getAllByOrden(orden);
