@@ -69,7 +69,7 @@ public class ArqueoServiceImpl implements IArqueoService {
                         if(!usuarioOptional.isEmpty()){
                             Usuario usuario=usuarioOptional.get();
                             arqueo.setUsuario(usuario);
-                            arqueo.setSaldoFinal(0);
+                            arqueo.setSaldoFinal(Double.parseDouble(objetoMap.get("monto_inicial")));
                             arqueo.setSaldoMaximo(Double.parseDouble(objetoMap.get("monto_max")));
                             arqueoRepository.save(arqueo);
 

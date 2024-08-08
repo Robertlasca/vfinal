@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
 import com.residencia.restaurante.proyecto.dto.UtensilioDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
@@ -53,4 +54,12 @@ public interface IUtensilioService {
             String nombre,
             String descripcion,
             MultipartFile file);
+
+    ResponseEntity<String> eliminarInventario(Integer id);
+
+    ResponseEntity<String> editarStock(Map<String, String> objetoMap);
+
+    ResponseEntity<List<EstacionDTO>> listarAlmacenesPorIdUtensilio(Integer id);
+
+    ResponseEntity<String> agregarInventario(Map<String, String> objetoMap);
 }

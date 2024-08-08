@@ -32,6 +32,7 @@ public class Usuario {
     @Column(length = 12)
     private String telefono;
 
+
     @Column(nullable = true)
     private boolean visibilidad=true;
     @Column(nullable = true)

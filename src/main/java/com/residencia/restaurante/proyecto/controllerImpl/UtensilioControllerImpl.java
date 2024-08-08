@@ -2,6 +2,8 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IUtensilioController;
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
 import com.residencia.restaurante.proyecto.dto.UtensilioDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
@@ -110,5 +112,47 @@ public class UtensilioControllerImpl implements IUtensilioController {
             e.printStackTrace();
         }
         return new ResponseEntity<>(new UtensilioDTO(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> eliminarInventario(Integer id) {
+        try {
+            return utensilioService.eliminarInventario(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> editarStockMM(Map<String, String> objetoMap) {
+        try {
+            return utensilioService.editarStock(objetoMap);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<EstacionDTO>> listarAlmacenesPorIdUtensilio(Integer id) {
+        try {
+            return utensilioService.listarAlmacenesPorIdUtensilio(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<EstacionDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> agregarInventario(Map<String, String> objetoMap) {
+        try {
+            return utensilioService.agregarInventario(objetoMap);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

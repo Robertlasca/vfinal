@@ -3,18 +3,20 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
 import com.residencia.restaurante.proyecto.dto.CocinaUtensilioDTO;
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
 import com.residencia.restaurante.proyecto.dto.UtensilioDTO;
-import com.residencia.restaurante.proyecto.entity.Categoria;
-import com.residencia.restaurante.proyecto.entity.Cocina;
-import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
-import com.residencia.restaurante.proyecto.entity.Utensilio;
+import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.ICocinaRepository;
 import com.residencia.restaurante.proyecto.repository.ICocina_UtensilioRepository;
 import com.residencia.restaurante.proyecto.repository.IUtensilioRepository;
 import com.residencia.restaurante.proyecto.service.IUtensilioService;
 import com.residencia.restaurante.proyecto.wrapper.Cocina_UtensilioWrapper;
+import com.residencia.restaurante.proyecto.wrapper.InventarioWrapper;
+import com.residencia.restaurante.security.model.Usuario;
 import com.residencia.restaurante.security.utils.Utils;
+import jdk.jshell.execution.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -156,8 +158,15 @@ public class UtensilioServiceImpl implements IUtensilioService {
             Utensilio utensilio= new Utensilio();
             utensilio.setNombre(nombre);
             utensilio.setDescripcion(descripcion);
-            String nombreImagen= uploadFileService.guardarImagen(file);
-            utensilio.setImagen(nombreImagen);
+            if(file==null || file.isEmpty()){
+                utensilio.setImagen("default.jpg");
+
+            }else{
+                String nombreImagen= uploadFileService.guardarImagen(file);
+                utensilio.setImagen(nombreImagen);
+
+            }
+
             utensilioRepository.save(utensilio);
 
             ObjectMapper objectMapper=new ObjectMapper();
@@ -222,6 +231,113 @@ public class UtensilioServiceImpl implements IUtensilioService {
             }
 
             return Utils.getResponseEntity("No existe el utensilio.",HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> eliminarInventario(Integer id) {
+        try{
+            Optional<Cocina_Utensilio> cocinaUtensilio=cocinaUtensilioRepository.findById(id);
+            if(cocinaUtensilio.isPresent()){
+                Cocina_Utensilio cocinaUtensilio1=cocinaUtensilio.get();
+                cocinaUtensilioRepository.delete(cocinaUtensilio1);
+                return Utils.getResponseEntity("EL utensilio ya no pertenece al almacén.",HttpStatus.OK);
+            }
+            return Utils.getResponseEntity("Ya no existe esta relación.",HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> editarStock(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("id")&& objetoMap.containsKey("cantidad")){
+                Optional<Cocina_Utensilio> optionalInventario=cocinaUtensilioRepository.findById(Integer.parseInt(objetoMap.get("id")));
+                if(optionalInventario.isPresent()){
+                    double cantidad=Double.parseDouble(objetoMap.get("cantidad"));
+                    Cocina_Utensilio cocinaUtensilio=optionalInventario.get();
+                    cocinaUtensilio.setCantidad((int) cantidad);
+                    cocinaUtensilioRepository.save(cocinaUtensilio);
+
+                        return Utils.getResponseEntity("Stock actualizado.",HttpStatus.OK);
+
+                }
+                return Utils.getResponseEntity("El inventario no existe.",HttpStatus.BAD_REQUEST);
+
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<EstacionDTO>> listarAlmacenesPorIdUtensilio(Integer id) {
+        try {
+            List<Cocina> almacens= cocinaUtensilioRepository.findEstacionNotRelatedToUtensilio(id);
+            List<EstacionDTO> almacenDTOS= new ArrayList<>();
+            for (Cocina almacen:almacens) {
+                EstacionDTO estacionDTO= new EstacionDTO();
+                estacionDTO.setCocina(almacen);
+
+                almacenDTOS.add(estacionDTO);
+            }
+            return new ResponseEntity<List<EstacionDTO>>(almacenDTOS,HttpStatus.OK);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<EstacionDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> agregarInventario(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("idUtensilio") && objetoMap.containsKey("inventario")){
+                Optional<Utensilio> optionalMateriaPrima=utensilioRepository.findById(Integer.parseInt(objetoMap.get("idUtensilio")));
+                if(!optionalMateriaPrima.isEmpty()){
+                    Utensilio materiaPrima= optionalMateriaPrima.get();
+
+                    ObjectMapper objectMapper= new ObjectMapper();
+                    try {
+                        List<Cocina_UtensilioWrapper> listaInventario=objectMapper.readValue(objetoMap.get("inventario"), new TypeReference<List<Cocina_UtensilioWrapper>>() {});
+                        if(!listaInventario.isEmpty()){
+                            for(Cocina_UtensilioWrapper inventarioWrapper: listaInventario){
+                                Cocina_Utensilio cocinaUtensilio=new Cocina_Utensilio();
+                                cocinaUtensilio.setCantidad(inventarioWrapper.getCantidad());
+
+                               cocinaUtensilio.setUtensilio(materiaPrima);
+
+                                Optional<Cocina> optionalAlmacen= cocinaRepository.findById(inventarioWrapper.getIdCocina());
+                                if(!optionalAlmacen.isEmpty()){
+                                    Cocina almacen=optionalAlmacen.get();
+                                    cocinaUtensilio.setCocina(almacen);
+                                }
+                                cocinaUtensilio.setCantidad(inventarioWrapper.getCantidad());
+                                cocinaUtensilioRepository.save(cocinaUtensilio);
+
+
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    return Utils.getResponseEntity("Inventario agregado.",HttpStatus.OK);
+
+                }
+                return Utils.getResponseEntity("No existe el utensilio.",HttpStatus.BAD_REQUEST);
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
+
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -213,6 +213,7 @@ com\residencia\restaurante\proyecto\controllerImpl\UsuarioControllerImpl.class
 com\residencia\restaurante\proyecto\entity\MateriaPrima.class
 com\residencia\restaurante\proyecto\serviceImpl\ComanderoServiceImpl$2.class
 com\residencia\restaurante\proyecto\entity\DetalleOrden_ProductoNormal.class
+com\residencia\restaurante\proyecto\serviceImpl\UtensilioServiceImpl$2.class
 com\residencia\restaurante\proyecto\controller\IMovimientosCajaController.class
 com\residencia\restaurante\proyecto\entity\Mesa.class
 com\residencia\restaurante\proyecto\dto\MateriaPrimaDTO.class

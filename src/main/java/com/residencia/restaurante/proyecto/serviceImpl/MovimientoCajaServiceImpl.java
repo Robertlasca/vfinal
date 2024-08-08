@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class MovimientoCajaServiceImpl implements IMovimientoCajaService {
+public class    MovimientoCajaServiceImpl implements IMovimientoCajaService {
     @Autowired
     private IMovimientoCajaRepository movimientoCajaRepository;
 
@@ -65,23 +65,53 @@ public class MovimientoCajaServiceImpl implements IMovimientoCajaService {
                        Arqueo arqueo=obtenerArqueo(Integer.parseInt(objetoMap.get("arqueo_id")));
                        double cantidad= Double.parseDouble(objetoMap.get("cantidad"));
 
-                       if(cantidad<arqueo.getSaldoFinal()){
-                            MovimientosCaja movimientosCaja=new MovimientosCaja();
+                       if(objetoMap.get("tipo").equalsIgnoreCase("retiro")) {
 
-                            movimientosCaja.setCantidad(cantidad);
-                            movimientosCaja.setFechaHoraMovimiento(LocalDateTime.now());
-                            movimientosCaja.setTipoMovimiento(objetoMap.get("tipo"));
-                            movimientosCaja.setArqueo(arqueo);
-                            movimientosCaja.setUsuario(usuario);
-                            movimientosCaja.setMotivo(objetoMap.get("motivo"));
+                           if (cantidad < arqueo.getSaldoFinal()) {
+                               if((arqueo.getSaldoFinal()-cantidad)>arqueo.getSaldoInicial()){
+                               MovimientosCaja movimientosCaja = new MovimientosCaja();
 
-                            arqueo.setSaldoFinal(arqueo.getSaldoFinal()-cantidad);
+                               movimientosCaja.setCantidad(cantidad);
+                               movimientosCaja.setFechaHoraMovimiento(LocalDateTime.now());
+                               movimientosCaja.setTipoMovimiento(objetoMap.get("tipo"));
+                               movimientosCaja.setArqueo(arqueo);
+                               movimientosCaja.setUsuario(usuario);
+                               movimientosCaja.setMotivo(objetoMap.get("motivo"));
 
-                            movimientoCajaRepository.save(movimientosCaja);
-                            arqueoRepository.save(arqueo);
-                            return Utils.getResponseEntity("Movimiento agregado correctamente.",HttpStatus.OK);
+                               arqueo.setSaldoFinal(arqueo.getSaldoFinal() - cantidad);
+
+                               movimientoCajaRepository.save(movimientosCaja);
+                               arqueoRepository.save(arqueo);
+
+                               return Utils.getResponseEntity("Movimiento agregado correctamente.", HttpStatus.OK);
+
+                           }
+                               return Utils.getResponseEntity("No se puede hacer este movimiento ya que la caja debe de tener un saldo mínimo.", HttpStatus.BAD_REQUEST);
+                           }
+                           return Utils.getResponseEntity("No se puede hacer este movimiento ya que no se tiene el suficiente efectivo.", HttpStatus.BAD_REQUEST);
                        }
-                       return Utils.getResponseEntity("No se puede hacer este movimiento ya que no se tiene el suficiente efectivo.",HttpStatus.BAD_REQUEST);
+
+                       if(objetoMap.get("tipo").equalsIgnoreCase("ingreso")) {
+                           MovimientosCaja movimientosCaja = new MovimientosCaja();
+
+                           movimientosCaja.setCantidad(cantidad);
+                           movimientosCaja.setFechaHoraMovimiento(LocalDateTime.now());
+                           movimientosCaja.setTipoMovimiento(objetoMap.get("tipo"));
+                           movimientosCaja.setArqueo(arqueo);
+                           movimientosCaja.setUsuario(usuario);
+                           movimientosCaja.setMotivo(objetoMap.get("motivo"));
+                           double cantidadActual= arqueo.getSaldoFinal();
+
+                           arqueo.setSaldoFinal(arqueo.getSaldoFinal() + cantidad);
+
+                           movimientoCajaRepository.save(movimientosCaja);
+                           arqueoRepository.save(arqueo);
+                           if((cantidadActual + cantidad)>arqueo.getSaldoMaximo()){
+                               return Utils.getResponseEntity("Tu saldo es mayor al saldo máximo por favor, considera retirar dinero.", HttpStatus.OK);
+                           }
+                           return Utils.getResponseEntity("Movimiento agregado correctamente.", HttpStatus.OK);
+
+                       }
 
                    }
                    return Utils.getResponseEntity("Existe un problema con el usuario.",HttpStatus.BAD_REQUEST);

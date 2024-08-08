@@ -1,5 +1,7 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.AlmacenDTO;
+import com.residencia.restaurante.proyecto.dto.EstacionDTO;
 import com.residencia.restaurante.proyecto.dto.UtensilioDTO;
 import com.residencia.restaurante.proyecto.entity.Cocina_Utensilio;
 import com.residencia.restaurante.proyecto.entity.Utensilio;
@@ -73,4 +75,17 @@ public interface IUtensilioController {
      */
     @GetMapping(path = "/obtenerXId/{id}")
     ResponseEntity<UtensilioDTO> obtenerPorId(@PathVariable Integer id);
+
+    @PostMapping(path = "/eliminarInventario/{id}")
+    ResponseEntity<String> eliminarInventario(@PathVariable(required = true)  Integer id);
+
+    @PostMapping(path = "/editarStock")
+    ResponseEntity<String> editarStockMM(@RequestBody(required = true) Map<String,String> objetoMap);
+
+    @GetMapping(path = "/listarAlmacenesPorIdUtensilio/{id}")
+    ResponseEntity<List<EstacionDTO>> listarAlmacenesPorIdUtensilio(@PathVariable Integer id);
+
+    @PostMapping(path = "/agregarInventario")
+    ResponseEntity<String> agregarInventario(@RequestBody(required = true) Map<String,String> objetoMap);
+
 }

@@ -32,9 +32,10 @@ public class UsuarioServiceImpl implements IUsuarioService {
                     usuario.setNombre(objetoMap.get("nombre"));
                     usuario.setApellidos(objetoMap.get("apellidos"));
                     usuario.setContrasena(objetoMap.get("contrasena"));
-                    //usuario.setContrasena(passwordEncoder.encode(objetoMap.get("contrasena")));
+                    usuario.setContrasena(passwordEncoder.encode(objetoMap.get("contrasena")));
                     usuario.setEmail(objetoMap.get("email"));
                     usuario.setTelefono(objetoMap.get("telefono"));
+
 
                     // Generar un token de verificación
                     String verificationToken = UUID.randomUUID().toString();
