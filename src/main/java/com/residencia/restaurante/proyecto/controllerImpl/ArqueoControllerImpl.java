@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IArqueoController;
+import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.entity.Arqueo;
 import com.residencia.restaurante.proyecto.service.IArqueoService;
 import com.residencia.restaurante.security.utils.Utils;
@@ -115,4 +116,36 @@ public class ArqueoControllerImpl implements IArqueoController {
         }
         return new ResponseEntity<>(new Arqueo(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnCurso(Integer id) {
+        try {
+            return arqueoService.obtenerOrdenesEnCurso(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnProcesoPago(Integer id) {
+        try {
+            return arqueoService.obtenerOrdenesEnProcesoPago(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnTerminadas(Integer id) {
+        try {
+            return arqueoService.obtenerOrdenesTerminadas(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

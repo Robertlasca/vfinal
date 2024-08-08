@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.entity.Arqueo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,16 @@ public interface IArqueoController {
      */
     @GetMapping(path = "/obtenerArqueo/{id}")
     ResponseEntity<Arqueo> obtenerArqueoId(@PathVariable Integer id);
+
+    @GetMapping(path = "/obtenerOrdenesEnCursoXIdArqueo/{id}")
+    ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnCurso(@PathVariable Integer id);
+
+    @GetMapping(path = "/obtenerOrdenesEnPreparacionXIdArqueo/{id}")
+    ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnProcesoPago(@PathVariable Integer id);
+
+    @GetMapping(path = "/obtenerOrdenesTerminadasXIdArqueo/{id}")
+    ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnTerminadas(@PathVariable Integer id);
+
 
 
 

@@ -1,6 +1,9 @@
 package com.residencia.restaurante.proyecto.dto;
 
+import com.residencia.restaurante.proyecto.entity.DetalleOrdenMenu;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,4 +18,7 @@ public class OrdenDTO {
     String nombreArea;
     double total;
     String estado;
+    String idUsuario;
+    String nombreUsuario;
+    List<DetalleOrdenProductoDTO> detalleOrdenMenuList;
 }

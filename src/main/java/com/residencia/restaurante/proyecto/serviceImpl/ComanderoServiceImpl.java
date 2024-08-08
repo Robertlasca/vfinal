@@ -747,8 +747,8 @@ public class ComanderoServiceImpl implements IComanderoService {
                         Usuario usuario= optionalUsuario.get();
                         Mesa mesa= orden.getMesa();
                         Arqueo arqueo= arqueoOptional.get();
-                        mesa.setEstado("Disponible");
-                        orden.setEstado("Terminado");
+                        mesa.setEstado("Por liberar");
+                        orden.setEstado("Proceso de pago");
                         ordenRepository.save(orden);
                         mesaRepository.save(mesa);
                         Venta venta= new Venta();
@@ -948,6 +948,8 @@ public class ComanderoServiceImpl implements IComanderoService {
                     ordenDTO.setFolio(orden.getFolio());
                     ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre());
                     ordenDTO.setEstado(orden.getEstado());
+                    ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                    ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
                     double total=0;
                     List<DetalleOrdenMenu> detalleOrdenMenuList= detalleOrdenMenuRepository.getAllByOrden(orden);
                     List<DetalleOrden_ProductoNormal> detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);

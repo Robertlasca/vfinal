@@ -3,6 +3,7 @@ package com.residencia.restaurante.proyecto.repository;
 import com.residencia.restaurante.proyecto.entity.Orden;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -24,4 +25,16 @@ public interface IOrdenRepository extends JpaRepository<Orden,Integer> {
 
     @Query("SELECT COUNT(o) > 0 FROM Orden o WHERE o.caja.id = :cajaId AND o.estado NOT IN ('Terminada', 'Cancelado')")
     boolean existsByCajaIdAndEstadoNotIn(Integer cajaId);
+
+    /**
+     * Obtiene las órdenes por el ID de arqueo y el estado de la orden.
+     *
+     * @param   del arqueo.
+     * @param estado Estado de la orden.
+     * @return Lista de órdenes que coinciden con el ID de arqueo y el estado especificado.
+     */
+
+
+    @Query("SELECT o FROM Orden o WHERE o.caja.id = :cajaId AND o.estado = :estado")
+    List<Orden> findOrdenesByCajaIdAndEstado(@Param("cajaId") Integer cajaId, @Param("estado") String estado);
 }

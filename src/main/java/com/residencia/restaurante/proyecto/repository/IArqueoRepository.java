@@ -1,8 +1,10 @@
 package com.residencia.restaurante.proyecto.repository;
 
 import com.residencia.restaurante.proyecto.entity.Arqueo;
+import com.residencia.restaurante.proyecto.entity.Orden;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -38,5 +40,6 @@ public interface IArqueoRepository extends JpaRepository<Arqueo,Integer> {
 
     @Query("SELECT COUNT(a) > 0 FROM Arqueo a WHERE a.estadoArqueo = true AND a.caja.impresora.id = :impresoraId")
     boolean existsByEstadoArqueoIsTrueAndCajaImpresoraId(Integer impresoraId);
+
 
 }

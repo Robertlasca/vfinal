@@ -44,6 +44,6 @@ public class Orden {
     private int folio;
 
     @ManyToOne
-    @JoinColumn(nullable = true,name = "caja_id")
+    @JoinColumn(nullable = true, name = "caja_id")
     private Caja caja;
 }

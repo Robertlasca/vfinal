@@ -3,10 +3,9 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
-import com.residencia.restaurante.proyecto.entity.Arqueo;
-import com.residencia.restaurante.proyecto.entity.ArqueoSaldos;
-import com.residencia.restaurante.proyecto.entity.Caja;
-import com.residencia.restaurante.proyecto.entity.MedioPago;
+import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
+import com.residencia.restaurante.proyecto.dto.OrdenDTO;
+import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IArqueoService;
 import com.residencia.restaurante.proyecto.wrapper.ArqueoSaldosWrapper;
@@ -44,6 +43,8 @@ public class ArqueoServiceImpl implements IArqueoService {
     @Autowired
     private IOrdenRepository ordenRepository;
 
+    @Autowired
+    private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
 
     /**
      * Abre un nuevo arqueo verificando primero que no haya un arqueo activo para la caja indicada.
@@ -221,4 +222,196 @@ public class ArqueoServiceImpl implements IArqueoService {
         }
         return new ResponseEntity<Arqueo>(new Arqueo(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnCurso(Integer id) {
+        try{
+            Optional<Arqueo> arqueoOptional=arqueoRepository.findById(id);
+            if(arqueoOptional.isPresent()){
+
+
+            List<Orden> ordenList=ordenRepository.findOrdenesByCajaIdAndEstado(arqueoOptional.get().getCaja().getId(),"En curso");
+            List<OrdenDTO> ordenDTOList=new ArrayList<>();
+            if(!ordenList.isEmpty()){
+                for (Orden orden:
+                     ordenList) {
+                    OrdenDTO ordenDTO= new OrdenDTO();
+                    ordenDTO.setIdOrden(orden.getId());
+                    ordenDTO.setNombreCliente(orden.getNombreCliente());
+                    ordenDTO.setFolio(orden.getFolio());
+                    ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre());
+                    ordenDTO.setEstado(orden.getEstado());
+                    ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                    ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+
+                    double total=0;
+
+                    List<DetalleOrdenMenu> detalleOrdenMenuList= detalleOrdenMenuRepository.getAllByOrden(orden);
+
+                    List<DetalleOrdenProductoDTO>  detalleOrdenProductoDTOS=new ArrayList<>();
+                    if (!detalleOrdenMenuList.isEmpty()) {
+
+
+                        for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenuList) {
+                            DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                            detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                            detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                            detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
+                            detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                            detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                            detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                            detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                            detalleOrdenProductoDTO.setPrecioUnitario(detalleOrdenMenu.getMenu().getPrecioVenta());
+                            detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                            detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
+                            total=total+detalleOrdenMenu.getTotal();
+                            detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                        }
+                        ordenDTO.setDetalleOrdenMenuList(detalleOrdenProductoDTOS);
+
+                    }
+
+
+                    ordenDTO.setTotal(total);
+                    ordenDTOList.add(ordenDTO);
+
+                }
+
+            }
+            return new ResponseEntity<List<OrdenDTO>>(ordenDTOList,HttpStatus.OK);
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnProcesoPago(Integer id) {
+        try{
+            Optional<Arqueo> arqueoOptional=arqueoRepository.findById(id);
+            if(arqueoOptional.isPresent()) {
+
+
+                List<Orden> ordenList = ordenRepository.findOrdenesByCajaIdAndEstado(arqueoOptional.get().getCaja().getId(), "Proceso de pago");
+                List<OrdenDTO> ordenDTOList = new ArrayList<>();
+                if (!ordenList.isEmpty()) {
+                    for (Orden orden :
+                            ordenList) {
+                        OrdenDTO ordenDTO = new OrdenDTO();
+                        ordenDTO.setIdOrden(orden.getId());
+                        ordenDTO.setNombreCliente(orden.getNombreCliente());
+                        ordenDTO.setFolio(orden.getFolio());
+                        ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre() + orden.getMesa().getNombre());
+                        ordenDTO.setEstado(orden.getEstado());
+                        ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                        ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+
+                        double total = 0;
+
+                        List<DetalleOrdenMenu> detalleOrdenMenuList = detalleOrdenMenuRepository.getAllByOrden(orden);
+
+                        List<DetalleOrdenProductoDTO>  detalleOrdenProductoDTOS=new ArrayList<>();
+                        if (!detalleOrdenMenuList.isEmpty()) {
+
+
+                                for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenuList) {
+                                    DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                                    detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                                    detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                                    detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
+                                    detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                                    detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                                    detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                                    detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                                    detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                                    detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
+                                    total=total+detalleOrdenMenu.getTotal();
+                                    detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                                }
+                                ordenDTO.setDetalleOrdenMenuList(detalleOrdenProductoDTOS);
+
+                        }
+
+
+                        ordenDTO.setTotal(total);
+                        ordenDTOList.add(ordenDTO);
+
+                    }
+
+                }
+                return new ResponseEntity<List<OrdenDTO>>(ordenDTOList, HttpStatus.BAD_REQUEST);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<OrdenDTO>> obtenerOrdenesTerminadas(Integer id) {
+        try{
+            Optional<Arqueo> arqueoOptional=arqueoRepository.findById(id);
+            if(arqueoOptional.isPresent()) {
+
+
+                List<Orden> ordenList = ordenRepository.findOrdenesByCajaIdAndEstado(arqueoOptional.get().getCaja().getId(), "Terminada");
+                List<OrdenDTO> ordenDTOList = new ArrayList<>();
+                if (!ordenList.isEmpty()) {
+                    for (Orden orden :
+                            ordenList) {
+                        OrdenDTO ordenDTO = new OrdenDTO();
+                        ordenDTO.setIdOrden(orden.getId());
+                        ordenDTO.setNombreCliente(orden.getNombreCliente());
+                        ordenDTO.setFolio(orden.getFolio());
+                        ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre() + orden.getMesa().getNombre());
+                        ordenDTO.setEstado(orden.getEstado());
+                        ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                        ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+
+                        double total = 0;
+
+                        List<DetalleOrdenMenu> detalleOrdenMenuList = detalleOrdenMenuRepository.getAllByOrden(orden);
+
+                        List<DetalleOrdenProductoDTO>  detalleOrdenProductoDTOS=new ArrayList<>();
+                        if (!detalleOrdenMenuList.isEmpty()) {
+
+
+                            for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenuList) {
+                                DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                                detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                                detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                                detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
+                                detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                                detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                                detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                                detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                                detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                                detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
+                                total=total+detalleOrdenMenu.getTotal();
+                                detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                            }
+                            ordenDTO.setDetalleOrdenMenuList(detalleOrdenProductoDTOS);
+
+                        }
+
+
+                        ordenDTO.setTotal(total);
+                        ordenDTOList.add(ordenDTO);
+
+                    }
+
+                }
+                return new ResponseEntity<List<OrdenDTO>>(ordenDTOList, HttpStatus.BAD_REQUEST);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

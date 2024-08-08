@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.entity.Arqueo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,4 +53,11 @@ public interface IArqueoService {
      * @return ResponseEntity con el arqueo obtenido.
      */
     public ResponseEntity<Arqueo> obtenerArqueoId(Integer id);
+
+
+    ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnCurso(Integer id);
+
+    ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnProcesoPago(Integer id);
+
+    ResponseEntity<List<OrdenDTO>> obtenerOrdenesTerminadas(Integer id);
 }

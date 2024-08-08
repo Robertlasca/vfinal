@@ -17,5 +17,4 @@ public class ComandaDTO {
     Orden orden;
     List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS;
     double total;
-
 }
