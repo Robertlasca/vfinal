@@ -936,26 +936,42 @@ public class ComanderoServiceImpl implements IComanderoService {
         try {
             LocalDate today = LocalDate.now();
             LocalDateTime startOfDay = today.atStartOfDay();
+            System.out.println(startOfDay.toString());
             LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
-            List<Orden> ordenList= ordenRepository.findOrdenesDelDia(startOfDay,endOfDay);
-            List<OrdenDTO> ordenDTOS= new ArrayList<>();
+            System.out.println(endOfDay.toString());
 
+
+            //LocalDate today = LocalDate.now();
+
+            int day = today.getDayOfMonth();
+            int month = today.getMonthValue();
+            int year = today.getYear();
+
+            List<Orden> ordenList = ordenRepository.findOrdenesDelDia(day, month, year);
+            List<OrdenDTO> ordenDTOS= new ArrayList<>();
+            System.out.println( "entre");
             if(!ordenList.isEmpty()){
+                System.out.println( "No entre");
                 for (Orden orden:ordenList) {
+                    System.out.println( "No entre1");
                     OrdenDTO ordenDTO= new OrdenDTO();
                     ordenDTO.setIdOrden(orden.getId());
                     ordenDTO.setNombreCliente(orden.getNombreCliente());
                     ordenDTO.setFolio(orden.getFolio());
                     ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre());
                     ordenDTO.setEstado(orden.getEstado());
-                    ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
-                    ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+                    ordenDTO.setFecha(orden.getFechaHoraApertura().toString());
+                    if(orden.getUsuario()!=null) {
+                        ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                        ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
+                    }
                     double total=0;
                     List<DetalleOrdenMenu> detalleOrdenMenuList= detalleOrdenMenuRepository.getAllByOrden(orden);
                     List<DetalleOrden_ProductoNormal> detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
 
                     if(!detalleOrdenMenuList.isEmpty()){
                         for (DetalleOrdenMenu detalleOrdenMenu:detalleOrdenMenuList) {
+                            System.out.println( "No entre2");
                             total=total+(detalleOrdenMenu.getTotal());
                         }
                     }

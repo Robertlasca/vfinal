@@ -276,9 +276,9 @@ public class ArqueoServiceImpl implements IArqueoService {
                     ordenDTOList.add(ordenDTO);
 
                 }
-
+                return new ResponseEntity<List<OrdenDTO>>(ordenDTOList,HttpStatus.OK);
             }
-            return new ResponseEntity<List<OrdenDTO>>(ordenDTOList,HttpStatus.OK);
+
 
             }
         }catch (Exception e){
@@ -339,9 +339,11 @@ public class ArqueoServiceImpl implements IArqueoService {
                         ordenDTOList.add(ordenDTO);
 
                     }
+                    return new ResponseEntity<List<OrdenDTO>>(ordenDTOList, HttpStatus.OK);
 
                 }
                 return new ResponseEntity<List<OrdenDTO>>(ordenDTOList, HttpStatus.BAD_REQUEST);
+
             }
 
         }catch (Exception e){
@@ -402,9 +404,11 @@ public class ArqueoServiceImpl implements IArqueoService {
                         ordenDTOList.add(ordenDTO);
 
                     }
-
+                    return new ResponseEntity<List<OrdenDTO>>(ordenDTOList, HttpStatus.OK);
                 }
+
                 return new ResponseEntity<List<OrdenDTO>>(ordenDTOList, HttpStatus.BAD_REQUEST);
+
             }
 
         }catch (Exception e){

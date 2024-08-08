@@ -20,5 +20,6 @@ public class OrdenDTO {
     String estado;
     String idUsuario;
     String nombreUsuario;
+    String fecha;
     List<DetalleOrdenProductoDTO> detalleOrdenMenuList;
 }

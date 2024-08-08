@@ -17,8 +17,9 @@ public interface IOrdenRepository extends JpaRepository<Orden,Integer> {
     @Query("SELECT MAX(o.folio) FROM Orden o")
     Integer findMaxFolio();
 
-    @Query("SELECT o FROM Orden o WHERE o.fechaHoraApertura >= :startOfDay AND o.fechaHoraApertura < :endOfDay ORDER BY o.fechaHoraApertura DESC")
-    List<Orden> findOrdenesDelDia(LocalDateTime startOfDay, LocalDateTime endOfDay);
+    @Query("SELECT o FROM Orden o WHERE EXTRACT(DAY FROM o.fechaHoraApertura) = :day AND EXTRACT(MONTH FROM o.fechaHoraApertura) = :month AND EXTRACT(YEAR FROM o.fechaHoraApertura) = :year ORDER BY o.fechaHoraApertura DESC")
+    List<Orden> findOrdenesDelDia(@Param("day") int day, @Param("month") int month, @Param("year") int year);
+
 
     @Query("SELECT COUNT(o) > 0 FROM Orden o WHERE o.mesa.areaServicio.id = :areaServicioId AND o.estado NOT IN ('Terminada', 'Cancelado')")
     boolean existsByAreaServicioIdAndEstadoNotIn(Integer areaServicioId);
