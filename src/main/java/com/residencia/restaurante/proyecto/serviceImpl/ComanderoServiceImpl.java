@@ -636,7 +636,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                 comandaDTO.setOrden(orden);
                 if (!detalleOrdenMenus.isEmpty()) {
                     for (DetalleOrdenMenu detalleOrdenMenu : detalleOrdenMenus) {
-                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparacion") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Terminado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Por enviar")){
+                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparacion") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Terminado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Por enviar") || detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")){
 
 
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
@@ -1164,7 +1164,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                     Optional<DetalleOrdenMenu>detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(idProducto);
                     if(detalleOrdenMenuOptional.isPresent()){
                         DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
-                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")) {
+                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")|| detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparacion")|| detalleOrdenMenu.getEstado().equalsIgnoreCase("Terminado") && detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")) {
                             List<MateriaPrima_Menu> materiaPrimaMenus = materiaPrimaMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
                             List<ProductoTerminado_Menu> productoTerminadoMenus = productoTerminadoMenuRepository.getAllByMenu(detalleOrdenMenu.getMenu());
 
@@ -1184,15 +1184,12 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 }
                             }
                             //Regresar el stock
-                            detalleOrdenMenuRepository.delete(detalleOrdenMenu);
-                            return Utils.getResponseEntity("Platillo eliminado de la orden correctamente.", HttpStatus.OK);
-                        }
 
-                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("Por enviar")) {
-                            //Regresar el stock
-                            detalleOrdenMenuRepository.delete(detalleOrdenMenu);
-                            return Utils.getResponseEntity("Platillo eliminado de la orden correctamente.", HttpStatus.OK);
                         }
+                        detalleOrdenMenuRepository.delete(detalleOrdenMenu);
+                        return Utils.getResponseEntity("Platillo eliminado de la orden correctamente.", HttpStatus.OK);
+
+
                     }
                     return Utils.getResponseEntity("Ya no existe el registro.",HttpStatus.BAD_REQUEST);
                 }
