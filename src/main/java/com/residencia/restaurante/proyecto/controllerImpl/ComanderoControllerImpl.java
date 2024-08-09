@@ -168,4 +168,14 @@ public class ComanderoControllerImpl implements IComanderoController {
         }
         return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> cambiarPlatilloenregado(Integer id) {
+        try {
+            return comanderoService.cambiarPlatilloEntregado(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

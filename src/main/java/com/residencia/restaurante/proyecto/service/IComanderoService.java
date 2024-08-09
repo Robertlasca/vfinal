@@ -38,4 +38,6 @@ public interface IComanderoService {
     ResponseEntity<String> eliminarPlatilloDeComanda(Map<String, String> objetoMap);
 
     ResponseEntity<String> enviarACocina(Map<String, String> objetoMap);
+
+    ResponseEntity<String> cambiarPlatilloEntregado(Integer id);
 }

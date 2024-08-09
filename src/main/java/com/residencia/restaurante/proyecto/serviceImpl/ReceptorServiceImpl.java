@@ -310,7 +310,7 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
             Optional<DetalleOrdenMenu> detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(id);
             if(detalleOrdenMenuOptional.isPresent()){
                 DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
-                detalleOrdenMenu.setEstado("En preparación");
+                detalleOrdenMenu.setEstado("En preparacion");
                 detalleOrdenMenuRepository.save(detalleOrdenMenu);
                 return Utils.getResponseEntity("Estado del platillo cambiado correctamente.",HttpStatus.OK);
             }
@@ -324,7 +324,7 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
     @Override
     public ResponseEntity<String> cambiarPlatilloTerminado(Integer id) {
         try {
-            try {
+
                 Optional<DetalleOrdenMenu> detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(id);
                 if(detalleOrdenMenuOptional.isPresent()){
                     DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
@@ -334,10 +334,7 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                 }
                 return Utils.getResponseEntity("Platillo no encontrado.",HttpStatus.BAD_REQUEST);
 
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
 
         }catch (Exception e){
             e.printStackTrace();
@@ -348,7 +345,7 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
     @Override
     public ResponseEntity<String> cambiarPlatilloCancelado(Integer id) {
         try {
-            try {
+
                 Optional<DetalleOrdenMenu> detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(id);
                 if(detalleOrdenMenuOptional.isPresent()){
                     DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
@@ -379,10 +376,7 @@ private IProductoTerminado_MenuRepository productoTerminadoMenuRepository;
                 }
                 return Utils.getResponseEntity("Platillo no encontrado.",HttpStatus.BAD_REQUEST);
 
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+
 
         }catch (Exception e){
             e.printStackTrace();

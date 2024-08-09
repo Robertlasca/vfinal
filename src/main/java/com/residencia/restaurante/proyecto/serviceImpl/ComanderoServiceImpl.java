@@ -1312,6 +1312,24 @@ public class ComanderoServiceImpl implements IComanderoService {
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<String> cambiarPlatilloEntregado(Integer id) {
+        try {
+            Optional<DetalleOrdenMenu> detalleOrdenMenuOptional= detalleOrdenMenuRepository.findById(id);
+            if(detalleOrdenMenuOptional.isPresent()){
+                DetalleOrdenMenu detalleOrdenMenu= detalleOrdenMenuOptional.get();
+                detalleOrdenMenu.setEstado("Entregado");
+                detalleOrdenMenuRepository.save(detalleOrdenMenu);
+                return Utils.getResponseEntity("Estado del platillo cambiado correctamente.",HttpStatus.OK);
+            }
+            return Utils.getResponseEntity("Platillo no encontrado.",HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     //Solo enviar a cocina
 
 }

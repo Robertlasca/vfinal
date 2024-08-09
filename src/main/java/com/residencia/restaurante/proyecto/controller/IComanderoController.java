@@ -54,6 +54,8 @@ public interface IComanderoController {
     @GetMapping(path = "/obtenerOrdenesActuales")
     ResponseEntity<List<OrdenDTO>> obtenerOrdenesActuales();
 
+    @PostMapping(path = "/cambiarPlatilloEntregado/{id}")
+    ResponseEntity<String> cambiarPlatilloenregado(@PathVariable Integer id);
 
 
 
