@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -934,18 +935,16 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<List<OrdenDTO>> obtenerOrdenesActuales() {
         try {
-            LocalDate today = LocalDate.now();
-            LocalDateTime startOfDay = today.atStartOfDay();
-            System.out.println(startOfDay.toString());
-            LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
-            System.out.println(endOfDay.toString());
-
+            ZoneId zoneIdMexico = ZoneId.of("America/Mexico_City");
 
             //LocalDate today = LocalDate.now();
-
+            LocalDate today = LocalDate.now(zoneIdMexico);
             int day = today.getDayOfMonth();
+            System.out.println(day);
             int month = today.getMonthValue();
+            System.out.println(month);
             int year = today.getYear();
+            System.out.println(year);
 
             List<Orden> ordenList = ordenRepository.findOrdenesDelDia(day, month, year);
             List<OrdenDTO> ordenDTOS= new ArrayList<>();
