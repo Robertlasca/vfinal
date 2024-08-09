@@ -624,17 +624,22 @@ public class ComanderoServiceImpl implements IComanderoService {
     public ResponseEntity<ComandaDTO> obtenerComandaPorIdOrden(Integer id) {
         try{
             Optional<Orden> optionalOrden=ordenRepository.findById(id);
-            if(optionalOrden.isPresent()){
-                double total= 0;
-                Orden orden= optionalOrden.get();
-                List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
-                List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
-                List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS= new ArrayList<>();
-                ComandaDTO comandaDTO= new ComandaDTO();
+            if(optionalOrden.isPresent() ) {
+                double total = 0;
+                Orden orden = optionalOrden.get();
+                if(!orden.getEstado().equalsIgnoreCase("Proceso de pago") && !orden.getEstado().equalsIgnoreCase("Terminada")){
+
+                List<DetalleOrdenMenu> detalleOrdenMenus = detalleOrdenMenuRepository.getAllByOrden(orden);
+                List<DetalleOrden_ProductoNormal> detalleOrdenProductoNormals = detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+                List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS = new ArrayList<>();
+                ComandaDTO comandaDTO = new ComandaDTO();
                 comandaDTO.setOrden(orden);
-                if(!detalleOrdenMenus.isEmpty()){
-                    for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
-                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                if (!detalleOrdenMenus.isEmpty()) {
+                    for (DetalleOrdenMenu detalleOrdenMenu : detalleOrdenMenus) {
+                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparacion") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Terminado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Por enviar")){
+
+
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
                         detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
@@ -644,13 +649,14 @@ public class ComanderoServiceImpl implements IComanderoService {
                         detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
                         detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
                         detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
-                        total=total+detalleOrdenMenu.getTotal();
+                        total = total + detalleOrdenMenu.getTotal();
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                        }
                     }
                 }
-                if(!detalleOrdenProductoNormals.isEmpty()){
-                    for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
-                        DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
+                if (!detalleOrdenProductoNormals.isEmpty()) {
+                    for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal : detalleOrdenProductoNormals) {
+                        DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenProductoNormal.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenProductoNormal.getProductoNormal().getId());
                         detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleNormal");
@@ -659,13 +665,15 @@ public class ComanderoServiceImpl implements IComanderoService {
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenProductoNormal.getCantidad());
                         detalleOrdenProductoDTO.setEstado(detalleOrdenProductoNormal.getEstado());
                         detalleOrdenProductoDTO.setTotal(detalleOrdenProductoNormal.getTotal());
-                        total=total+detalleOrdenProductoNormal.getTotal();
+                        total = total + detalleOrdenProductoNormal.getTotal();
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
                     }
                 }
                 comandaDTO.setDetalleOrdenProductoDTOS(detalleOrdenProductoDTOS);
                 comandaDTO.setTotal(total);
-                return new ResponseEntity<ComandaDTO>(comandaDTO,HttpStatus.OK);
+                return new ResponseEntity<ComandaDTO>(comandaDTO, HttpStatus.OK);
+            }
+                return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.BAD_REQUEST);
 
             }
             return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.BAD_REQUEST);
