@@ -29,13 +29,18 @@ public class UsuarioParametrosControllerImpl implements IUsuarioParametrosContro
 
     @Override
     public ResponseEntity<String> actualizarTelefono(Map<String, String> objetoMap) {
-        return null;
+        try {
+            return usuarioParametrosService.actualizarTelefono(objetoMap);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<String> actualizarContrasena(Map<String, String> objetoMap) {
         try {
-            return usuarioParametrosService.actualizarContraseña(objetoMap);
+            return usuarioParametrosService.actualizarContrasena(objetoMap);
         }catch (Exception e){
             e.printStackTrace();
         }

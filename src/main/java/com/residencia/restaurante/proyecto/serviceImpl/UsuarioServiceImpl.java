@@ -58,7 +58,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         try {
 
             if(objetoMap.containsKey("idUsuario")&& objetoMap.containsKey("apellidos") && objetoMap.containsKey("email")  && objetoMap.containsKey("nombre") && objetoMap.containsKey("telefono")&& objetoMap.containsKey("rol")){
-                Optional<Usuario> usuarioOptional= usuarioRepository.findById(Integer.parseInt("idUsuario"));
+                Optional<Usuario> usuarioOptional= usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
                 if(usuarioOptional.isPresent()){
                     Usuario usuario=usuarioOptional.get();
                     usuario.setNombre(objetoMap.get("nombre"));

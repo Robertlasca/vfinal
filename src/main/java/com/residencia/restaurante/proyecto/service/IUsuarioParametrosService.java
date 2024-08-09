@@ -14,5 +14,5 @@ public interface IUsuarioParametrosService {
 
     ResponseEntity<String> verificarEmail(String token,String nuevoCorreo);
 
-    ResponseEntity<String> actualizarContraseña(Map<String,String> objetoMap);
+    ResponseEntity<String> actualizarContrasena(Map<String,String> objetoMap);
 }

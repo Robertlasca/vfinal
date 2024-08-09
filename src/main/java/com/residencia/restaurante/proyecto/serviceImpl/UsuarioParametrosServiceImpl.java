@@ -43,13 +43,16 @@ public class UsuarioParametrosServiceImpl implements IUsuarioParametrosService {
 
     @Override
     public ResponseEntity<String> actualizarTelefono(Map<String, String> objetoMap) {
-        try {
+        try {System.out.println("Entre1");
             if(objetoMap.containsKey("id") && objetoMap.containsKey("telefono")) {
+                System.out.println("Entre2");
                 Integer id = Integer.parseInt(objetoMap.get("id"));
                 Optional<Usuario> optional = usuarioRepository.findById(id);
                 if (optional.isPresent()) {
                     Usuario usuario = optional.get();
+                    System.out.println(objetoMap.get("telefono"));
                     usuario.setTelefono(objetoMap.get("telefono"));
+                    usuarioRepository.save(usuario);
                     return Utils.getResponseEntity("Teléfono actualizado.",HttpStatus.OK);
                 }
                 return Utils.getResponseEntity("El usuario no existe.",HttpStatus.BAD_REQUEST);
@@ -122,7 +125,7 @@ public class UsuarioParametrosServiceImpl implements IUsuarioParametrosService {
     }
 
     @Override
-    public ResponseEntity<String> actualizarContraseña(Map<String, String> objetoMap) {
+    public ResponseEntity<String> actualizarContrasena(Map<String, String> objetoMap) {
         try {
             if(objetoMap.containsKey("id") && objetoMap.containsKey("actualContrasena") && objetoMap.containsKey("nuevaContrasena")){
                 Integer id=Integer.parseInt(objetoMap.get("id"));
