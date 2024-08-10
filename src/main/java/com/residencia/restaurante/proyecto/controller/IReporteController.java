@@ -26,6 +26,6 @@ public interface IReporteController {
     @GetMapping("/inventario-agotado")
     public  ResponseEntity<InputStreamResource> descargarReporteInventarioAgotandose(@RequestBody(required = true) Map<String,String> objetoMap);
 
-    @GetMapping("/inventario-agotado-almacen")
+    @PostMapping("/inventario-agotado-almacen")
     public  ResponseEntity<InputStreamResource> descargarReporteInventarioAgotandoseXAlmacen(@RequestBody(required = true) Map<String,String> objetoMap);
 }

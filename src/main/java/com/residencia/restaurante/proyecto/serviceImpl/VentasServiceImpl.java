@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,8 @@ public class VentasServiceImpl implements IVentasService {
         try {
             List<Venta> ventaList= ventaRepository.findAll();
             List<VentasDTO> ventasDTOS=new ArrayList<>();
+            LocalDateTime today = LocalDateTime.now();
+            System.out.println(today);
             if(!ventaList.isEmpty()){
                 for (Venta venta:ventaList){
                     VentasDTO ventasDTO= new VentasDTO();

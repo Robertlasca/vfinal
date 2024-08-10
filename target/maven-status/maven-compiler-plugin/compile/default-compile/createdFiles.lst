@@ -38,6 +38,7 @@ com\residencia\restaurante\proyecto\controller\IUtensilioController.class
 com\residencia\restaurante\proyecto\repository\IDetalleOrden_MenuRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\CategoriaServiceImpl.class
 com\residencia\restaurante\proyecto\controllerImpl\ImpresoraControllerImpl.class
+com\residencia\restaurante\proyecto\controllerImpl\DatosReporteControllerImpl.class
 com\residencia\restaurante\proyecto\controllerImpl\InventarioControllerImpl.class
 com\residencia\restaurante\proyecto\repository\IMateriaPrima_ProductoTerminadoRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\ProductoNormalServiceImpl.class
@@ -53,7 +54,9 @@ com\residencia\restaurante\proyecto\repository\IArqueoRepository.class
 com\residencia\restaurante\proyecto\service\IReceptorService.class
 com\residencia\restaurante\proyecto\repository\IMesaRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\MovimientoCajaServiceImpl.class
+com\residencia\restaurante\proyecto\serviceImpl\DatosReporteServiceImpl.class
 com\residencia\restaurante\security\model\Rol$RolBuilder.class
+com\residencia\restaurante\proyecto\controller\IDatosReporteController.class
 com\residencia\restaurante\proyecto\serviceImpl\UploadFileService.class
 com\residencia\restaurante\security\model\Rol.class
 com\residencia\restaurante\security\utils\Utils.class
@@ -118,6 +121,7 @@ com\residencia\restaurante\proyecto\dto\ProductoDto.class
 com\residencia\restaurante\proyecto\dto\InventarioDTO.class
 com\residencia\restaurante\proyecto\repository\IInventarioRepository.class
 com\residencia\restaurante\proyecto\controllerImpl\MateriaPrimaControllerImpl.class
+com\residencia\restaurante\proyecto\dto\TotalVentasDTO.class
 com\residencia\restaurante\proyecto\controllerImpl\CajaControllerImpl.class
 com\residencia\restaurante\proyecto\dto\ImpresoraDTO.class
 com\residencia\restaurante\proyecto\service\IComanderoService.class
@@ -208,6 +212,7 @@ com\residencia\restaurante\proyecto\entity\ArqueoSaldos.class
 com\residencia\restaurante\proyecto\repository\IProductoNormalRepository.class
 com\residencia\restaurante\security\model\ConfirmationToken.class
 com\residencia\restaurante\proyecto\entity\Arqueo.class
+com\residencia\restaurante\proyecto\service\IDatosReporteService.class
 com\residencia\restaurante\security\model\Usuario$UsuarioBuilder.class
 com\residencia\restaurante\proyecto\controllerImpl\UsuarioControllerImpl.class
 com\residencia\restaurante\proyecto\entity\MateriaPrima.class

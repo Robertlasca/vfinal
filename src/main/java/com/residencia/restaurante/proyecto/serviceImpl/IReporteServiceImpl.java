@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.*;
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -441,8 +442,11 @@ public class IReporteServiceImpl implements IReporteService {
 
             // Información de contacto del restaurante
             agregarInformacionContacto(document);
+            ZoneId zoneIdMexico = ZoneId.of("America/Mexico_City");
 
-            List<Venta> ventaList=ventaRepository.findVentasPorMes(Integer.parseInt(objetoMap.get("anio")),Integer.parseInt(objetoMap.get("mes")));
+            //LocalDate today = LocalDate.now();
+            LocalDate today = LocalDate.parse(objetoMap.get("dia"));
+            List<Venta> ventaList=ventaRepository.findVentasPorDia(today);
             String platilloMasVendido= obtenerPlatilloMasVendido(ventaList);
             double totalVentas= ventaList.stream().mapToDouble(Venta::getTotalPagar).sum();
             document.add(new Paragraph("Total Ventas del Día: $" + totalVentas, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK)));
