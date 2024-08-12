@@ -774,6 +774,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         }
                         venta.setUsuario(orden.getUsuario());
                         venta.setEstado("Proceso de pago");
+
                         venta.setArqueo(arqueo);
                         venta.setSubTotal(Double.parseDouble(objetoMap.get("subTotal")));
                         venta.setTotalPagar(Double.parseDouble(objetoMap.get("totalPagar")));
@@ -1314,6 +1315,8 @@ public class ComanderoServiceImpl implements IComanderoService {
             Optional<Venta> ventaOptional=ventaRepository.findByOrden_Id(id);
             if(ventaOptional.isPresent()){
                 Venta venta=ventaOptional.get();
+                Arqueo arqueo=venta.getArqueo();
+                arqueo.setSaldoFinal(arqueo.getSaldoFinal()+venta.getTotalPagar());
 
                 venta.setEstado("Terminado");
                 Orden orden=venta.getOrden();
