@@ -630,15 +630,13 @@ public class ComanderoServiceImpl implements IComanderoService {
                 if(!orden.getEstado().equalsIgnoreCase("Proceso de pago") && !orden.getEstado().equalsIgnoreCase("Terminada")){
 
                 List<DetalleOrdenMenu> detalleOrdenMenus = detalleOrdenMenuRepository.getAllByOrden(orden);
-                List<DetalleOrden_ProductoNormal> detalleOrdenProductoNormals = detalleOrdenProductoNormalRepository.getAllByOrden(orden);
+                //List<DetalleOrden_ProductoNormal> detalleOrdenProductoNormals = detalleOrdenProductoNormalRepository.getAllByOrden(orden);
                 List<DetalleOrdenProductoDTO> detalleOrdenProductoDTOS = new ArrayList<>();
                 ComandaDTO comandaDTO = new ComandaDTO();
                 comandaDTO.setOrden(orden);
                 if (!detalleOrdenMenus.isEmpty()) {
                     for (DetalleOrdenMenu detalleOrdenMenu : detalleOrdenMenus) {
-                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparacion") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Terminado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Por enviar") || detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")){
-
-
+                        if(detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparación") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Terminado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado") || detalleOrdenMenu.getEstado().equalsIgnoreCase("Por enviar") || detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")){
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
                         detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                         detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
@@ -648,12 +646,15 @@ public class ComanderoServiceImpl implements IComanderoService {
                         detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
                         detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
                         detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                        detalleOrdenProductoDTO.setPrecioUnitario(detalleOrdenMenu.getMenu().getPrecioVenta());
                         detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
                         total = total + detalleOrdenMenu.getTotal();
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
                         }
                     }
                 }
+                /*
+
                 if (!detalleOrdenProductoNormals.isEmpty()) {
                     for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal : detalleOrdenProductoNormals) {
                         DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
@@ -668,7 +669,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         total = total + detalleOrdenProductoNormal.getTotal();
                         detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
                     }
-                }
+                }*/
                 comandaDTO.setDetalleOrdenProductoDTOS(detalleOrdenProductoDTOS);
                 comandaDTO.setTotal(total);
                 return new ResponseEntity<ComandaDTO>(comandaDTO, HttpStatus.OK);
