@@ -29,13 +29,9 @@ public class TicketOrden {
     String discount;
     String numOfProducts;
     String total;
-    String received;
-    String change;
-    List<String[]> paymentMethods;
 
     public TicketOrden(String folio, String cashierBox, String cashier, String customerName, List<String[]> products,
-                       String subtotal, String discount, String numOfProducts, String total, String received, String change,
-                       List<String[]> paymentMethods) {
+                       String subtotal, String discount, String numOfProducts, String total) {
 
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -51,12 +47,6 @@ public class TicketOrden {
             productsStringBuilder.append(String.format("%-10s %-10s %5s\n", quantity, productName, amount));
         }
 
-        StringBuilder paymentMethodsStringBuilder = new StringBuilder();
-        for (String[] payment : paymentMethods) {
-            String method = payment[0];
-            String amount = payment[1];
-            paymentMethodsStringBuilder.append(String.format("Pagado con: %-20s Cantidad: %s\n", method, amount));
-        }
 
         this.contentTicket =
                 "Plazita Gourmet\n" +
@@ -77,9 +67,6 @@ public class TicketOrden {
                         String.format("Descuento: %s\n", discount) +
                         String.format("N° de productos: %s\n\n", numOfProducts) +
                         String.format("Total: %s\n", total) +
-                        String.format("Recibido: %s\n", received) +
-                        String.format("Cambio: %s\n\n", change) +
-                        paymentMethodsStringBuilder.toString() +
                         "No es un comprobante con valor fiscal.\n" +
                         "¡Gracias por su compra!\n";
     }
@@ -112,12 +99,7 @@ public class TicketOrden {
         sb.append("Subtotal: ").append(subtotal).append("\n");
         sb.append("Descuento: ").append(discount).append("\n");
         sb.append("Total a pagar: ").append(total).append("\n");
-        sb.append("Recibido: ").append(received).append("\n");
-        sb.append("Cambio: ").append(change).append("\n");
-        sb.append("Métodos de pago: \n");
-        for (String[] payment : paymentMethods) {
-            sb.append(payment[0]).append(": ").append(payment[1]).append("\n");
-        }
+
         return sb.toString();
     }
 

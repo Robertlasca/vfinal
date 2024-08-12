@@ -24,4 +24,7 @@ public interface IDatosReporteController {
 
     @GetMapping(path = "/ventasXMes")
     ResponseEntity<TotalVentasDTO> ventasXMes(@RequestParam(required = true) String mes);
+
+    @GetMapping(path = "/ventasXAnio/{id}")
+    ResponseEntity<TotalVentasDTO> ventasXAnio(@PathVariable Integer id);
 }

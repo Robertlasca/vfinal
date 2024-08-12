@@ -747,13 +747,13 @@ public class ComanderoServiceImpl implements IComanderoService {
             if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("subTotal") && objetoMap.containsKey("descuento") && objetoMap.containsKey("totalPagar") && objetoMap.containsKey("idUsuario")){
                 Integer idOrden= Integer.parseInt(objetoMap.get("idOrden"));
                 Optional<Orden> ordenOptional= ordenRepository.findById(idOrden);
-                Optional<Usuario> optionalUsuario= usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
-                if(ordenOptional.isPresent() && optionalUsuario.isPresent()){
+
+
                     double total= 0;
                     Orden orden= ordenOptional.get();
                     Optional<Arqueo> arqueoOptional= arqueoRepository.findArqueoByEstadoArqueoTrueAndCaja_Id(orden.getCaja().getId());
                     if(arqueoOptional.isPresent()) {
-                        Usuario usuario = optionalUsuario.get();
+
 
                         Optional<Venta> ventaOptional = ventaRepository.findByOrden_Id(orden.getId());
 
@@ -771,7 +771,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         if (objetoMap.containsKey("comentario")) {
                             venta.setComentario(objetoMap.get("comentario"));
                         }
-                        venta.setUsuario(usuario);
+                        venta.setUsuario(orden.getUsuario());
                         venta.setEstado("Proceso de pago");
                         venta.setArqueo(arqueo);
                         venta.setDescuento(Double.parseDouble(objetoMap.get("descuento")));
@@ -780,49 +780,10 @@ public class ComanderoServiceImpl implements IComanderoService {
                         venta.setFechaHoraConsolidacion(LocalDateTime.now());
                         ventaRepository.save(venta);
 
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        try {
-                            List<Venta_MedioPagoWrapper> mediosPago = objectMapper.readValue(objetoMap.get("mediosPago"), new TypeReference<List<Venta_MedioPagoWrapper>>() {
-                            });
 
-                            if (!mediosPago.isEmpty()) {
-                                for (Venta_MedioPagoWrapper ventaMedioPagoWrapper : mediosPago) {
-                                    Venta_MedioPago ventaMedioPago = new Venta_MedioPago();
-                                    ventaMedioPago.setVenta(venta);
-                                    Optional<MedioPago> medioPagoOptional = medioPagoRepository.findById(ventaMedioPagoWrapper.getId());
-                                    if (medioPagoOptional.isPresent()) {
-                                        MedioPago medioPago = medioPagoOptional.get();
-                                        ventaMedioPago.setMedioPago(medioPago);
-                                    }
-                                    ventaMedioPago.setPagoRecibido(ventaMedioPagoWrapper.getPagoRecibido());
-                                    ventaMedioPagoRepository.save(ventaMedioPago);
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     }
 
-                        //Agregar medio de pago al ticket
-                        List<String[]> paymentMetho = new ArrayList<>();
 
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        try {
-                            List<Venta_MedioPagoWrapper> mediosPago = objectMapper.readValue(objetoMap.get("mediosPago"), new TypeReference<List<Venta_MedioPagoWrapper>>() {
-                            });
-
-                            if (!mediosPago.isEmpty()) {
-                                for (Venta_MedioPagoWrapper ventaMedioPagoWrapper : mediosPago) {
-                                    Optional<MedioPago> medioPagoOptional = medioPagoRepository.findById(ventaMedioPagoWrapper.getId());
-                                    if (medioPagoOptional.isPresent()) {
-                                        MedioPago medioPago = medioPagoOptional.get();
-                                        paymentMetho.add(new String[]{medioPago.getNombre(), String.valueOf(ventaMedioPagoWrapper.getPagoRecibido())});
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
 
                         //Imprimir información
                         List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
@@ -881,9 +842,8 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                         Impresora impresora1= orden.getCaja().getImpresora();
 
-                        TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), usuario.getNombre(), orden.getNombreCliente(), products,
-                                "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
-                                paymentMetho
+                        TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), orden.getUsuario().getNombre(), orden.getNombreCliente(), products,
+                                "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar")
                         );
                         String ticketContent = ticket.getContentTicket().toString();
                         HttpResponse<String> response=null;
@@ -936,8 +896,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                     }
                     return Utils.getResponseEntity("El arqueo ya no esta abierto.",HttpStatus.BAD_REQUEST);
 
-                }
-                return Utils.getResponseEntity("La orden o usuario no existe.",HttpStatus.BAD_REQUEST);
+
             }
             return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
 

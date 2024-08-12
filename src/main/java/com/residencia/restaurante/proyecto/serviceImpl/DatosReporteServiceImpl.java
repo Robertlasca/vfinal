@@ -193,6 +193,52 @@ public class DatosReporteServiceImpl implements IDatosReporteService {
         return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<TotalVentasDTO> obterDatosVentasAnio(Integer id) {
+        try {
+            System.out.println("Estoy en el metodo");
+            LocalDate startDate = LocalDate.of(id, 1, 1);
+            LocalDate endDate = LocalDate.of(id, 12, 31);
+            List<Venta> ventaList = ventaRepository.findByFechaBetween(startDate, endDate);
+            List<VentasDTO> ventasDTOS=new ArrayList<>();
+            if(!ventaList.isEmpty()){
+                TotalVentasDTO totalVentasDTO=new TotalVentasDTO();
+                for (Venta venta:ventaList
+                ) {
+                    VentasDTO ventasDTO= new VentasDTO();
+                    ventasDTO.setId(venta.getId());
+                    ventasDTO.setCliente(venta.getOrden().getNombreCliente());
+                    ventasDTO.setComentario(venta.getComentario());
+                    ventasDTO.setMesa(venta.getOrden().getMesa().getNombre());
+                    ventasDTO.setEstado(venta.getEstado());
+                    ventasDTO.setAreaServicio(venta.getOrden().getMesa().getAreaServicio().getNombre());
+                    ventasDTO.setUsuario(venta.getUsuario().getNombre());
+                    ventasDTO.setDescuento(venta.getDescuento());
+                    ventasDTO.setMes(venta.getFechaHoraConsolidacion().getMonth().getValue());
+                    ventasDTO.setFechaHora(venta.getFechaHoraConsolidacion());
+                    ventasDTO.setFechaHoraApertura(venta.getOrden().getFechaHoraApertura());
+                    ventasDTO.setTotalPagar(venta.getTotalPagar());
+                    ventasDTO.setSubTotal(venta.getSubTotal());
+                    ventasDTO.setOrdenId(venta.getOrden().getId());
+                    ventasDTO.setHora(String.valueOf(venta.getOrden().getFechaHoraApertura().getHour()));
+                    ventasDTOS.add(ventasDTO);
+                }
+                totalVentasDTO.setLista(ventasDTOS);
+                String platilloMasVendido= obtenerPlatilloMasVendido(ventaList);
+                double totalVentas= ventaList.stream().mapToDouble(Venta::getTotalPagar).sum();
+                totalVentasDTO.setPlatilloMasVendido(platilloMasVendido);
+                totalVentasDTO.setMontoTotal(totalVentas);
+                return new ResponseEntity<TotalVentasDTO>(totalVentasDTO,HttpStatus.OK);
+
+            }
+
+            return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private String obtenerPlatilloMasVendido(List<Venta> ventaList) {
         if(!ventaList.isEmpty()){
             Map<String,Integer> conteoPlatillos= new HashMap<>();

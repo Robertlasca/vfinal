@@ -16,4 +16,6 @@ public interface IDatosReporteService {
     ResponseEntity<TotalVentasDTO> obtenerDatosVentasXMes(String diaInicio, String diaFin);
 
     ResponseEntity<TotalVentasDTO> obterDatosVentasMes(String mes);
+
+    ResponseEntity<TotalVentasDTO> obterDatosVentasAnio(Integer id);
 }

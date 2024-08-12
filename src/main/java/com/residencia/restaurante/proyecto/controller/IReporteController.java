@@ -28,4 +28,12 @@ public interface IReporteController {
 
     @PostMapping("/inventario-agotado-almacen")
     public  ResponseEntity<InputStreamResource> descargarReporteInventarioAgotandoseXAlmacen(@RequestBody(required = true) Map<String,String> objetoMap);
+    @PostMapping("/ventasDiarias")
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioVentas(@RequestBody(required = true)Map<String, String> objetoMap);
+    @PostMapping("/ventasSemanales")
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioSemanal(@RequestBody(required = true)Map<String, String> objetoMap);
+    @PostMapping("/ventasMensual")
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioMensual(@RequestBody(required = true)Map<String, String> objetoMap);
+    @PostMapping("/ventasAnuales")
+    public ResponseEntity<InputStreamResource> descargarReporteAnualVentas(@RequestBody(required = true)Map<String, String> objetoMap);
 }

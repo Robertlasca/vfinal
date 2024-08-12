@@ -20,22 +20,22 @@ public class PrintServer {
         try {
             String ticketContent = printRequest.get("ticketContent");
             System.out.println(ticketContent+"Contenido");
-            String printerIp = printRequest.get("printerIp");
-            String nombre = printRequest.get("nombreIm");
-
-            // Lógica para imprimir el ticket
-            boolean success;
-            //if (printerIp != null && !printerIp.isEmpty()) {
-            //success = printTicketByIp(ticketContent, printerIp, 9100);
-            //} else {
-            success = printTicketByName(ticketContent, nombre);
-            //}
-
-            if (success) {
-                return new ResponseEntity<>("Impreso correctamente", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("Error al imprimir", HttpStatus.INTERNAL_SERVER_ERROR);
+            if(printRequest.containsKey("printerIp")){
+                String printerIp = printRequest.get("printerIp");
+                if(printTicketByIp(ticketContent,printerIp, 9100)){
+                    return new ResponseEntity<>("Impreso correctamente", HttpStatus.OK);
+                }
             }
+
+            if(printRequest.containsKey("nombreIm")){
+                String nombre = printRequest.get("nombreIm");
+                if(printTicketByName(ticketContent,nombre)){
+                    return new ResponseEntity<>("Impreso correctamente", HttpStatus.OK);
+                }
+            }
+
+                return new ResponseEntity<>("Error al imprimir", HttpStatus.BAD_REQUEST);
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("Error al imprimir: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

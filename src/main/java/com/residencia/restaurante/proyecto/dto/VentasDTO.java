@@ -25,4 +25,5 @@ public class VentasDTO {
     private String cliente;
     private String usuario;
     private String hora;
+    private int mes;
 }

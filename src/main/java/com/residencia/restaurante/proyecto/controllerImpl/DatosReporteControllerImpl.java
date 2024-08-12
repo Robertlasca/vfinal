@@ -61,5 +61,15 @@ public class DatosReporteControllerImpl implements IDatosReporteController {
         return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<TotalVentasDTO> ventasXAnio(Integer id) {
+        try {
+            return datosReporteService.obterDatosVentasAnio(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 }

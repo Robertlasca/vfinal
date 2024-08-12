@@ -72,6 +72,26 @@ public class ReporteControllerImpl implements IReporteController {
         return reporteService.descargarReporteInventarioAgotandoseXAlmacen(objetoMap);
     }
 
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioVentas(Map<String, String> objetoMap) {
+        return reporteService.descargarReporteDiarioVentas(objetoMap);
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioSemanal(Map<String, String> objetoMap) {
+        return reporteService.descargarReporteDiarioSemanal(objetoMap);
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteDiarioMensual(Map<String, String> objetoMap) {
+        return reporteService.descargarReporteDiarioMensual(objetoMap);
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> descargarReporteAnualVentas(Map<String, String> objetoMap) {
+        return  reporteService.descargarReporteAnualVentas(objetoMap);
+    }
+
 
     private boolean enviarSolicitudDeImpresion() {
         try {

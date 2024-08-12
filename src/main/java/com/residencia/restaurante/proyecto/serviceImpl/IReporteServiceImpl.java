@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -286,6 +287,7 @@ public class IReporteServiceImpl implements IReporteService {
             table.addCell(cell);
 
             for (int i = 0; i < 5; i++) {
+                System.out.println("llegue aqui");
                 LocalDate weekStart = startDate.plusWeeks(i);
                 LocalDate weekEnd = weekStart.plusDays(6).isBefore(endDate) ? weekStart.plusDays(6) : endDate;
                 if (weekStart.isAfter(endDate)) break;
@@ -397,7 +399,7 @@ public class IReporteServiceImpl implements IReporteService {
                 double descuentoMensual = ventasMensuales.stream().mapToDouble(Venta::getDescuento).sum();
                 double totalMensual = ventasMensuales.stream().mapToDouble(Venta::getTotalPagar).sum();
 
-                table.addCell(yearMonth.getMonth().name());
+                table.addCell(yearMonth.getMonth().getDisplayName(TextStyle.FULL,new Locale("es","ES")));
                 table.addCell(String.valueOf(subTotalMensual));
                 table.addCell(String.valueOf(descuentoMensual));
                 table.addCell(String.valueOf(totalMensual));
@@ -413,6 +415,7 @@ public class IReporteServiceImpl implements IReporteService {
     }
 
     private ByteArrayInputStream generarReporteDiarioVentas(Map<String, String> objetoMap) {
+        System.out.println("El id de usuario"+objetoMap.get("idUsuario"));
         Optional<Usuario> usuarioOptional= usuarioRepository.findById(Integer.parseInt(objetoMap.get("idUsuario")));
 
         Usuario usuario= new Usuario();
@@ -445,7 +448,7 @@ public class IReporteServiceImpl implements IReporteService {
             ZoneId zoneIdMexico = ZoneId.of("America/Mexico_City");
 
             //LocalDate today = LocalDate.now();
-            LocalDate today = LocalDate.parse(objetoMap.get("dia"));
+            LocalDate today = LocalDate.parse(objetoMap.get("fecha"));
             List<Venta> ventaList=ventaRepository.findVentasPorDia(today);
             String platilloMasVendido= obtenerPlatilloMasVendido(ventaList);
             double totalVentas= ventaList.stream().mapToDouble(Venta::getTotalPagar).sum();
@@ -473,11 +476,16 @@ public class IReporteServiceImpl implements IReporteService {
             cell.setBackgroundColor(BaseColor.GRAY);
             table.addCell(cell);
 
+            cell = new PdfPCell(new Phrase("Fecha y Hora", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.WHITE)));
+            cell.setBackgroundColor(BaseColor.GRAY);
+            table.addCell(cell);
+
             for (Venta venta : ventaList) {
                 table.addCell(String.valueOf(venta.getId()));
                 table.addCell(String.valueOf(venta.getSubTotal()));
                 table.addCell(String.valueOf(venta.getDescuento()));
                 table.addCell(String.valueOf(venta.getTotalPagar()));
+                table.addCell(String.valueOf(venta.getFechaHoraConsolidacion()));
             }
 
 
