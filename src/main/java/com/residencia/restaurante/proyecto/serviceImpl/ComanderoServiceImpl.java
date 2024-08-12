@@ -756,7 +756,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                     if(arqueoOptional.isPresent()) {
 
 
-                        Optional<Venta> ventaOptional = ventaRepository.findByOrden_Id(orden.getId());
+                        Optional<Venta> ventaOptional = ventaRepository.findVentaByOrden_Id(orden.getId());
                         Mesa mesa = orden.getMesa();
                         Arqueo arqueo = arqueoOptional.get();
                         mesa.setEstado("Por liberar");
@@ -765,7 +765,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         mesaRepository.save(mesa);
 
                         //Parte de ventas
-                        if (ventaOptional.isPresent()) {
+                        if (ventaOptional.isEmpty()) {
 
                         Venta venta = new Venta();
                         venta.setOrden(orden);
@@ -1312,7 +1312,7 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<String> cerrarCuenta(Integer id) {
         try {
-            Optional<Venta> ventaOptional=ventaRepository.findByOrden_Id(id);
+            Optional<Venta> ventaOptional=ventaRepository.findVentaByOrden_Id(id);
             if(ventaOptional.isPresent()){
                 Venta venta=ventaOptional.get();
                 Arqueo arqueo=venta.getArqueo();

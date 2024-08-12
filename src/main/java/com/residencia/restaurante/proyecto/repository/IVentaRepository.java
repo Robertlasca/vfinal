@@ -26,7 +26,7 @@ public interface IVentaRepository extends JpaRepository<Venta,Integer> {
     @Query("SELECT v FROM Venta v WHERE DATE(v.fechaHoraConsolidacion) >= :startDate AND DATE(v.fechaHoraConsolidacion) <= :endDate")
     List<Venta> findByFechaBetween(LocalDate startDate, LocalDate endDate);
 
-    Optional<Venta> findByOrden_Id(Integer idOrden);
+    Optional<Venta> findVentaByOrden_Id(Integer idOrden);
 
 
 }

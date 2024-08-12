@@ -47,6 +47,8 @@ public class ArqueoServiceImpl implements IArqueoService {
     private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
     @Autowired
     private IVentaRepository ventaRepository;
+    @Autowired
+    private IVenta_MedioPagoRepository ventaMedioPagoRepository;
 
     /**
      * Abre un nuevo arqueo verificando primero que no haya un arqueo activo para la caja indicada.
@@ -260,19 +262,21 @@ public class ArqueoServiceImpl implements IArqueoService {
 
 
                         for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenuList) {
-                            DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
-                            detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
-                            detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                            detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
-                            detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
-                            detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
-                            detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
-                            detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
-                            detalleOrdenProductoDTO.setPrecioUnitario(detalleOrdenMenu.getMenu().getPrecioVenta());
-                            detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
-                            detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
-                            total=total+detalleOrdenMenu.getTotal();
-                            detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                            if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado") ||detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparación")) {
+                                DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
+                                detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                                detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                                detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
+                                detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                                detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                                detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                                detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                                detalleOrdenProductoDTO.setPrecioUnitario(detalleOrdenMenu.getMenu().getPrecioVenta());
+                                detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                                detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
+                                total = total + detalleOrdenMenu.getTotal();
+                                detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                            }
                         }
                         ordenDTO.setDetalleOrdenMenuList(detalleOrdenProductoDTOS);
 
@@ -313,13 +317,9 @@ public class ArqueoServiceImpl implements IArqueoService {
                         ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre() + orden.getMesa().getNombre());
                         ordenDTO.setEstado(orden.getEstado());
                         ordenDTO.setFecha(orden.getFechaHoraApertura().toString());
-                        Optional<Venta> ventaOptional=ventaRepository.findByOrden_Id(orden.getId());
 
-                        if(ventaOptional.isPresent()){
-                            ordenDTO.setDescuento(ventaOptional.get().getDescuento());
-                        }else{
                             ordenDTO.setDescuento(0);
-                        }
+
 
                         if(orden.getUsuario()!=null){
                             ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
@@ -335,18 +335,20 @@ public class ArqueoServiceImpl implements IArqueoService {
 
 
                                 for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenuList) {
-                                    DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
-                                    detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
-                                    detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                                    detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
-                                    detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
-                                    detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
-                                    detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
-                                    detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
-                                    detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
-                                    detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
-                                    total=total+detalleOrdenMenu.getTotal();
-                                    detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                                    if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado") ||detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparación")) {
+                                        DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
+                                        detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                                        detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                                        detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
+                                        detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                                        detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                                        detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                                        detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                                        detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                                        detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
+                                        total = total + detalleOrdenMenu.getTotal();
+                                        detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                                    }
                                 }
                                 ordenDTO.setDetalleOrdenMenuList(detalleOrdenProductoDTOS);
 
@@ -402,18 +404,20 @@ public class ArqueoServiceImpl implements IArqueoService {
 
 
                             for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenuList) {
-                                DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
-                                detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
-                                detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
-                                detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
-                                detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
-                                detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
-                                detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
-                                detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
-                                detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
-                                detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
-                                total=total+detalleOrdenMenu.getTotal();
-                                detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                                if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado") ||detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparación")) {
+                                    DetalleOrdenProductoDTO detalleOrdenProductoDTO = new DetalleOrdenProductoDTO();
+                                    detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
+                                    detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
+                                    detalleOrdenProductoDTO.setEsDetalleMenu("esDetalleOrdenMenu");
+                                    detalleOrdenProductoDTO.setNombreProducto(detalleOrdenMenu.getMenu().getNombre());
+                                    detalleOrdenProductoDTO.setComentario(detalleOrdenMenu.getComentario());
+                                    detalleOrdenProductoDTO.setCantidad(detalleOrdenMenu.getCantidad());
+                                    detalleOrdenProductoDTO.setEstado(detalleOrdenMenu.getEstado());
+                                    detalleOrdenProductoDTO.setTotal(detalleOrdenMenu.getTotal());
+                                    detalleOrdenProductoDTO.setImagen(detalleOrdenMenu.getMenu().getImagen());
+                                    total = total + detalleOrdenMenu.getTotal();
+                                    detalleOrdenProductoDTOS.add(detalleOrdenProductoDTO);
+                                }
                             }
                             ordenDTO.setDetalleOrdenMenuList(detalleOrdenProductoDTOS);
 

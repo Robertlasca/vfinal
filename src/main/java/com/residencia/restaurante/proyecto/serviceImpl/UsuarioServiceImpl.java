@@ -34,6 +34,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
                     usuario.setContrasena(passwordEncoder.encode("12345678"));
                     usuario.setEmail(objetoMap.get("email"));
                     usuario.setTelefono(objetoMap.get("telefono"));
+                    System.out.println("este es el rol"+objetoMap.get("rol"));
                     usuario.setRol(objetoMap.get("rol"));
                     // Generar un token de verificación
                     String verificationToken = UUID.randomUUID().toString();
