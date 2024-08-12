@@ -45,6 +45,8 @@ public class ArqueoServiceImpl implements IArqueoService {
 
     @Autowired
     private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
+    @Autowired
+    private IVentaRepository ventaRepository;
 
     /**
      * Abre un nuevo arqueo verificando primero que no haya un arqueo activo para la caja indicada.
@@ -311,6 +313,14 @@ public class ArqueoServiceImpl implements IArqueoService {
                         ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre() + orden.getMesa().getNombre());
                         ordenDTO.setEstado(orden.getEstado());
                         ordenDTO.setFecha(orden.getFechaHoraApertura().toString());
+                        Optional<Venta> ventaOptional=ventaRepository.findByOrden_Id(orden.getId());
+
+                        if(ventaOptional.isPresent()){
+                            ordenDTO.setDescuento(ventaOptional.get().getDescuento());
+                        }else{
+                            ordenDTO.setDescuento(0);
+                        }
+
                         if(orden.getUsuario()!=null){
                             ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
                             ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());

@@ -22,5 +22,6 @@ public class OrdenDTO {
     String idUsuario;
     String nombreUsuario;
     String fecha;
+    double descuento;
     List<DetalleOrdenProductoDTO> detalleOrdenMenuList;
 }
