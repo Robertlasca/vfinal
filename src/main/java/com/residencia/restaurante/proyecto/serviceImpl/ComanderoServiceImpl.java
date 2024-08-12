@@ -843,7 +843,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                         Impresora impresora1= orden.getCaja().getImpresora();
 
                         TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), orden.getUsuario().getNombre(), orden.getNombreCliente(), products,
-                                "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar")
+                                "$"+objetoMap.get("subTotal"), "0", String.valueOf(contador), objetoMap.get("totalPagar")
                         );
                         String ticketContent = ticket.getContentTicket().toString();
                         HttpResponse<String> response=null;
