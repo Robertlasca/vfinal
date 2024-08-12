@@ -757,16 +757,16 @@ public class ComanderoServiceImpl implements IComanderoService {
 
 
                         Optional<Venta> ventaOptional = ventaRepository.findByOrden_Id(orden.getId());
-
-
-                        //Parte de ventas
-                        if (ventaOptional.isPresent()) {
                         Mesa mesa = orden.getMesa();
                         Arqueo arqueo = arqueoOptional.get();
                         mesa.setEstado("Por liberar");
                         orden.setEstado("Proceso de pago");
                         ordenRepository.save(orden);
                         mesaRepository.save(mesa);
+
+                        //Parte de ventas
+                        if (ventaOptional.isPresent()) {
+
                         Venta venta = new Venta();
                         venta.setOrden(orden);
                         if (objetoMap.containsKey("comentario")) {

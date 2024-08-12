@@ -11,6 +11,11 @@ import java.util.Optional;
 public interface IUsuarioRepository extends JpaRepository<Usuario,Integer> {
 
     boolean existsUsuarioByEmailEqualsIgnoreCase(String email);
+    boolean existsUsuarioByTelefonoEqualsIgnoreCase(String telefono);
+
+    Usuario findUsuarioByTelefonoEqualsIgnoreCase(String telefono);
+
+
 
     List<Usuario> getAllByVisibilidadTrue();
 
