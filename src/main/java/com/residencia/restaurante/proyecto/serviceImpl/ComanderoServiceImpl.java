@@ -745,7 +745,7 @@ public class ComanderoServiceImpl implements IComanderoService {
     @Override
     public ResponseEntity<String> imprimirTicketFinal(Map<String, String> objetoMap) {
         try {
-            if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("subTotal") && objetoMap.containsKey("descuento") && objetoMap.containsKey("totalPagar") && objetoMap.containsKey("idUsuario")){
+            if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("subTotal")  && objetoMap.containsKey("totalPagar") ){
                 Integer idOrden= Integer.parseInt(objetoMap.get("idOrden"));
                 Optional<Orden> ordenOptional= ordenRepository.findById(idOrden);
 
@@ -775,7 +775,6 @@ public class ComanderoServiceImpl implements IComanderoService {
                         venta.setUsuario(orden.getUsuario());
                         venta.setEstado("Proceso de pago");
                         venta.setArqueo(arqueo);
-                        venta.setDescuento(Double.parseDouble(objetoMap.get("descuento")));
                         venta.setSubTotal(Double.parseDouble(objetoMap.get("subTotal")));
                         venta.setTotalPagar(Double.parseDouble(objetoMap.get("totalPagar")));
                         venta.setFechaHoraConsolidacion(LocalDateTime.now());
@@ -798,7 +797,7 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                         if(!detalleOrdenMenus.isEmpty()){
                             for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
-                                if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado") ||detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparacion")){
+                                if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado") ||detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparación")){
                                     DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                                     detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                                     detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
