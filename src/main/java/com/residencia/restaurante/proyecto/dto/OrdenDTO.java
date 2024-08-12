@@ -16,6 +16,7 @@ public class OrdenDTO {
     int folio;
     String nombreCliente;
     String nombreArea;
+    String nombreMesa;
     double total;
     String estado;
     String idUsuario;

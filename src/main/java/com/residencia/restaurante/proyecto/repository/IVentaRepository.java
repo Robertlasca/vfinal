@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IVentaRepository extends JpaRepository<Venta,Integer> {
@@ -22,9 +23,10 @@ public interface IVentaRepository extends JpaRepository<Venta,Integer> {
     @Query("SELECT v FROM Venta v WHERE YEAR(v.fechaHoraConsolidacion) = :anio")
     List<Venta> findVentasPorAno(int anio);
 
-    @Query("SELECT v FROM Venta v WHERE v.fechaHoraConsolidacion >= :startDate AND v.fechaHoraConsolidacion < :endDate")
+    @Query("SELECT v FROM Venta v WHERE DATE(v.fechaHoraConsolidacion) >= :startDate AND DATE(v.fechaHoraConsolidacion) <= :endDate")
     List<Venta> findByFechaBetween(LocalDate startDate, LocalDate endDate);
 
+    Optional<Venta> findByOrden_Id(Integer idOrden);
 
 
 }

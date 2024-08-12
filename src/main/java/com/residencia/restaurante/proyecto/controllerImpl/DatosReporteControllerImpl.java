@@ -39,4 +39,27 @@ public class DatosReporteControllerImpl implements IDatosReporteController {
         }
         return new ResponseEntity<>(new TotalVentasDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<TotalVentasDTO> ventasXDMes(String diaInicio, String diaFin) {
+        try {
+            return datosReporteService.obtenerDatosVentasXMes(diaInicio,diaFin);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new TotalVentasDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<TotalVentasDTO> ventasXMes(String mes) {
+
+        try {
+            return datosReporteService.obterDatosVentasMes(mes);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

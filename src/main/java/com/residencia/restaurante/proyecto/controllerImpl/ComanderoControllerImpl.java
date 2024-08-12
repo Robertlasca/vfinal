@@ -8,7 +8,6 @@ import com.residencia.restaurante.proyecto.dto.ProductoDto;
 import com.residencia.restaurante.proyecto.entity.Orden;
 import com.residencia.restaurante.proyecto.service.IComanderoService;
 import com.residencia.restaurante.security.utils.Utils;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -138,10 +137,20 @@ public class ComanderoControllerImpl implements IComanderoController {
     }
 
     @Override
-    public ResponseEntity<String> cerrarCuenta(Map<String,String> objetoMap) {
+    public ResponseEntity<String> imprimirTicketFinal(Map<String,String> objetoMap) {
         try{
-            return comanderoService.cerrarCuenta(objetoMap);
+            return comanderoService.imprimirTicketFinal(objetoMap);
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cerrarCuenta(Integer id) {
+        try {
+            return comanderoService.cerrarCuenta(id);
         }catch (Exception e){
             e.printStackTrace();
         }

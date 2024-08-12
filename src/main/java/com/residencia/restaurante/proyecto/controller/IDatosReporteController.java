@@ -18,4 +18,10 @@ public interface IDatosReporteController {
 
     @GetMapping(path = "/ventasXDia")
     ResponseEntity<TotalVentasDTO> ventasXDia(@RequestParam(required = true) String dia);
+
+    @GetMapping(path = "/ventasXSemana")
+    ResponseEntity<TotalVentasDTO> ventasXDMes(@RequestParam(required = true) String diaInicio,@RequestParam(required = true) String diaFin);
+
+    @GetMapping(path = "/ventasXMes")
+    ResponseEntity<TotalVentasDTO> ventasXMes(@RequestParam(required = true) String mes);
 }

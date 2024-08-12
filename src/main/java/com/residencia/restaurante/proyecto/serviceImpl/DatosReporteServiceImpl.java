@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -76,6 +77,7 @@ public class DatosReporteServiceImpl implements IDatosReporteService {
                     ventasDTO.setTotalPagar(venta.getTotalPagar());
                     ventasDTO.setSubTotal(venta.getSubTotal());
                     ventasDTO.setOrdenId(venta.getOrden().getId());
+                    ventasDTO.setHora(String.valueOf(venta.getOrden().getFechaHoraApertura().getHour()));
                     ventasDTOS.add(ventasDTO);
                 }
                 totalVentasDTO.setLista(ventasDTOS);
@@ -93,6 +95,102 @@ public class DatosReporteServiceImpl implements IDatosReporteService {
             e.printStackTrace();
         }
         return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<TotalVentasDTO> obtenerDatosVentasXMes(String diaInicio, String diaFin) {
+        try {
+            List<VentasDTO> ventasDTOS=new ArrayList<>();
+            ZoneId zoneIdMexico = ZoneId.of("America/Mexico_City");
+
+            LocalDate today = LocalDate.now(zoneIdMexico);
+            System.out.println(diaInicio);
+            System.out.println(diaFin);
+            List<Venta> ventaList=ventaRepository.findByFechaBetween(LocalDate.parse(diaInicio),LocalDate.parse(diaFin));
+
+            if(!ventaList.isEmpty()){
+                TotalVentasDTO totalVentasDTO=new TotalVentasDTO();
+                for (Venta venta:ventaList
+                ) {
+                    VentasDTO ventasDTO= new VentasDTO();
+                    ventasDTO.setId(venta.getId());
+                    ventasDTO.setCliente(venta.getOrden().getNombreCliente());
+                    ventasDTO.setComentario(venta.getComentario());
+                    ventasDTO.setMesa(venta.getOrden().getMesa().getNombre());
+                    ventasDTO.setEstado(venta.getEstado());
+                    ventasDTO.setAreaServicio(venta.getOrden().getMesa().getAreaServicio().getNombre());
+                    ventasDTO.setUsuario(venta.getUsuario().getNombre());
+                    ventasDTO.setDescuento(venta.getDescuento());
+                    ventasDTO.setFechaHora(venta.getFechaHoraConsolidacion());
+                    ventasDTO.setFechaHoraApertura(venta.getOrden().getFechaHoraApertura());
+                    ventasDTO.setTotalPagar(venta.getTotalPagar());
+                    ventasDTO.setSubTotal(venta.getSubTotal());
+                    ventasDTO.setOrdenId(venta.getOrden().getId());
+                    ventasDTO.setHora(String.valueOf(venta.getOrden().getFechaHoraApertura().getHour()));
+                    ventasDTOS.add(ventasDTO);
+                }
+                totalVentasDTO.setLista(ventasDTOS);
+                String platilloMasVendido= obtenerPlatilloMasVendido(ventaList);
+                double totalVentas= ventaList.stream().mapToDouble(Venta::getTotalPagar).sum();
+                totalVentasDTO.setPlatilloMasVendido(platilloMasVendido);
+                totalVentasDTO.setMontoTotal(totalVentas);
+                return new ResponseEntity<TotalVentasDTO>(totalVentasDTO,HttpStatus.OK);
+
+            }
+
+            return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.BAD_REQUEST);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<TotalVentasDTO> obterDatosVentasMes(String mes) {
+
+        try {
+            YearMonth yearMonth = YearMonth.parse(mes);
+            LocalDate startDate = yearMonth.atDay(1);
+            LocalDate endDate = yearMonth.atEndOfMonth();
+            System.out.println("Wnte");
+            List<Venta> ventaList = ventaRepository.findByFechaBetween(startDate, endDate);
+            List<VentasDTO> ventasDTOS=new ArrayList<>();
+            if(!ventaList.isEmpty()){
+                TotalVentasDTO totalVentasDTO=new TotalVentasDTO();
+                for (Venta venta:ventaList
+                ) {
+                    VentasDTO ventasDTO= new VentasDTO();
+                    ventasDTO.setId(venta.getId());
+                    ventasDTO.setCliente(venta.getOrden().getNombreCliente());
+                    ventasDTO.setComentario(venta.getComentario());
+                    ventasDTO.setMesa(venta.getOrden().getMesa().getNombre());
+                    ventasDTO.setEstado(venta.getEstado());
+                    ventasDTO.setAreaServicio(venta.getOrden().getMesa().getAreaServicio().getNombre());
+                    ventasDTO.setUsuario(venta.getUsuario().getNombre());
+                    ventasDTO.setDescuento(venta.getDescuento());
+                    ventasDTO.setFechaHora(venta.getFechaHoraConsolidacion());
+                    ventasDTO.setFechaHoraApertura(venta.getOrden().getFechaHoraApertura());
+                    ventasDTO.setTotalPagar(venta.getTotalPagar());
+                    ventasDTO.setSubTotal(venta.getSubTotal());
+                    ventasDTO.setOrdenId(venta.getOrden().getId());
+                    ventasDTO.setHora(String.valueOf(venta.getOrden().getFechaHoraApertura().getHour()));
+                    ventasDTOS.add(ventasDTO);
+                }
+                totalVentasDTO.setLista(ventasDTOS);
+                String platilloMasVendido= obtenerPlatilloMasVendido(ventaList);
+                double totalVentas= ventaList.stream().mapToDouble(Venta::getTotalPagar).sum();
+                totalVentasDTO.setPlatilloMasVendido(platilloMasVendido);
+                totalVentasDTO.setMontoTotal(totalVentas);
+                return new ResponseEntity<TotalVentasDTO>(totalVentasDTO,HttpStatus.OK);
+
+            }
+
+            return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<TotalVentasDTO>(new TotalVentasDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private String obtenerPlatilloMasVendido(List<Venta> ventaList) {

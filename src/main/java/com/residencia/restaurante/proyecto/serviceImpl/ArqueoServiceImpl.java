@@ -239,11 +239,12 @@ public class ArqueoServiceImpl implements IArqueoService {
                     ordenDTO.setIdOrden(orden.getId());
                     ordenDTO.setNombreCliente(orden.getNombreCliente());
                     ordenDTO.setFolio(orden.getFolio());
-                    ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre());
+                    ordenDTO.setNombreArea(orden.getMesa().getAreaServicio().getNombre());
+                    ordenDTO.setNombreMesa(orden.getMesa().getNombre());
                     ordenDTO.setEstado(orden.getEstado());
                     ordenDTO.setFecha(orden.getFechaHoraApertura().toString());
                     if(orden.getUsuario()!=null){
-                        ordenDTO.setIdUsuario(orden.getUsuario().getNombre());
+                        ordenDTO.setIdUsuario(String.valueOf(orden.getUsuario().getId()));
                         ordenDTO.setNombreUsuario(orden.getUsuario().getNombre());
                     }
 

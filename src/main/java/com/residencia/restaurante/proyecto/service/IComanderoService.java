@@ -24,7 +24,7 @@ public interface IComanderoService {
 
     ResponseEntity<ComandaDTO> obtenerComandaPorIdOrdenMesa(Integer id);
 
-    ResponseEntity<String> cerrarCuenta(Map<String,String> objetoMap);
+    ResponseEntity<String> imprimirTicketFinal(Map<String,String> objetoMap);
 
     ResponseEntity<String> validarStocks(String productos);
 
@@ -40,4 +40,6 @@ public interface IComanderoService {
     ResponseEntity<String> enviarACocina(Map<String, String> objetoMap);
 
     ResponseEntity<String> cambiarPlatilloEntregado(Integer id);
+
+    ResponseEntity<String> cerrarCuenta(Integer id);
 }

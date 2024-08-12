@@ -742,7 +742,7 @@ public class ComanderoServiceImpl implements IComanderoService {
         return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @Override
-    public ResponseEntity<String> cerrarCuenta(Map<String, String> objetoMap) {
+    public ResponseEntity<String> imprimirTicketFinal(Map<String, String> objetoMap) {
         try {
             if(objetoMap.containsKey("idOrden") && objetoMap.containsKey("subTotal") && objetoMap.containsKey("descuento") && objetoMap.containsKey("totalPagar") && objetoMap.containsKey("idUsuario")){
                 Integer idOrden= Integer.parseInt(objetoMap.get("idOrden"));
@@ -752,50 +752,78 @@ public class ComanderoServiceImpl implements IComanderoService {
                     double total= 0;
                     Orden orden= ordenOptional.get();
                     Optional<Arqueo> arqueoOptional= arqueoRepository.findArqueoByEstadoArqueoTrueAndCaja_Id(orden.getCaja().getId());
-                    if(arqueoOptional.isPresent()){
-                        Usuario usuario= optionalUsuario.get();
-                        Mesa mesa= orden.getMesa();
-                        Arqueo arqueo= arqueoOptional.get();
+                    if(arqueoOptional.isPresent()) {
+                        Usuario usuario = optionalUsuario.get();
+
+                        Optional<Venta> ventaOptional = ventaRepository.findByOrden_Id(orden.getId());
+
+
+                        //Parte de ventas
+                        if (ventaOptional.isPresent()) {
+                        Mesa mesa = orden.getMesa();
+                        Arqueo arqueo = arqueoOptional.get();
                         mesa.setEstado("Por liberar");
                         orden.setEstado("Proceso de pago");
                         ordenRepository.save(orden);
                         mesaRepository.save(mesa);
-                        Venta venta= new Venta();
+                        Venta venta = new Venta();
                         venta.setOrden(orden);
-                        if(objetoMap.containsKey("comentario")){
+                        if (objetoMap.containsKey("comentario")) {
                             venta.setComentario(objetoMap.get("comentario"));
                         }
                         venta.setUsuario(usuario);
-                        venta.setEstado("Cerrado");
+                        venta.setEstado("Proceso de pago");
                         venta.setArqueo(arqueo);
                         venta.setDescuento(Double.parseDouble(objetoMap.get("descuento")));
                         venta.setSubTotal(Double.parseDouble(objetoMap.get("subTotal")));
                         venta.setTotalPagar(Double.parseDouble(objetoMap.get("totalPagar")));
                         venta.setFechaHoraConsolidacion(LocalDateTime.now());
                         ventaRepository.save(venta);
-                        List<String[]> paymentMethods = new ArrayList<>();
 
-                        ObjectMapper objectMapper= new ObjectMapper();
+                        ObjectMapper objectMapper = new ObjectMapper();
                         try {
-                            List<Venta_MedioPagoWrapper> mediosPago=objectMapper.readValue(objetoMap.get("mediosPago"), new TypeReference<List<Venta_MedioPagoWrapper>>() {});
+                            List<Venta_MedioPagoWrapper> mediosPago = objectMapper.readValue(objetoMap.get("mediosPago"), new TypeReference<List<Venta_MedioPagoWrapper>>() {
+                            });
 
-                            if(!mediosPago.isEmpty()){
-                                for(Venta_MedioPagoWrapper ventaMedioPagoWrapper: mediosPago){
-                                    Venta_MedioPago ventaMedioPago= new Venta_MedioPago();
+                            if (!mediosPago.isEmpty()) {
+                                for (Venta_MedioPagoWrapper ventaMedioPagoWrapper : mediosPago) {
+                                    Venta_MedioPago ventaMedioPago = new Venta_MedioPago();
                                     ventaMedioPago.setVenta(venta);
-                                    Optional<MedioPago> medioPagoOptional= medioPagoRepository.findById(ventaMedioPagoWrapper.getId());
-                                    if(medioPagoOptional.isPresent()){
-                                        MedioPago medioPago= medioPagoOptional.get();
+                                    Optional<MedioPago> medioPagoOptional = medioPagoRepository.findById(ventaMedioPagoWrapper.getId());
+                                    if (medioPagoOptional.isPresent()) {
+                                        MedioPago medioPago = medioPagoOptional.get();
                                         ventaMedioPago.setMedioPago(medioPago);
-                                        paymentMethods.add(new String[]{medioPago.getNombre(), String.valueOf(ventaMedioPagoWrapper.getPagoRecibido())});
                                     }
                                     ventaMedioPago.setPagoRecibido(ventaMedioPagoWrapper.getPagoRecibido());
                                     ventaMedioPagoRepository.save(ventaMedioPago);
                                 }
                             }
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    }
+
+                        //Agregar medio de pago al ticket
+                        List<String[]> paymentMetho = new ArrayList<>();
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        try {
+                            List<Venta_MedioPagoWrapper> mediosPago = objectMapper.readValue(objetoMap.get("mediosPago"), new TypeReference<List<Venta_MedioPagoWrapper>>() {
+                            });
+
+                            if (!mediosPago.isEmpty()) {
+                                for (Venta_MedioPagoWrapper ventaMedioPagoWrapper : mediosPago) {
+                                    Optional<MedioPago> medioPagoOptional = medioPagoRepository.findById(ventaMedioPagoWrapper.getId());
+                                    if (medioPagoOptional.isPresent()) {
+                                        MedioPago medioPago = medioPagoOptional.get();
+                                        paymentMetho.add(new String[]{medioPago.getNombre(), String.valueOf(ventaMedioPagoWrapper.getPagoRecibido())});
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         //Imprimir información
                         List<DetalleOrdenMenu> detalleOrdenMenus= detalleOrdenMenuRepository.getAllByOrden(orden);
                         List<DetalleOrden_ProductoNormal>detalleOrdenProductoNormals= detalleOrdenProductoNormalRepository.getAllByOrden(orden);
@@ -808,7 +836,7 @@ public class ComanderoServiceImpl implements IComanderoService {
 
                         if(!detalleOrdenMenus.isEmpty()){
                             for (DetalleOrdenMenu detalleOrdenMenu: detalleOrdenMenus) {
-                                if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado") ||detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")){
+                                if(detalleOrdenMenu.getEstado().equalsIgnoreCase("terminado") ||detalleOrdenMenu.getEstado().equalsIgnoreCase("Entregado")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En espera")||detalleOrdenMenu.getEstado().equalsIgnoreCase("En preparacion")){
                                     DetalleOrdenProductoDTO detalleOrdenProductoDTO= new DetalleOrdenProductoDTO();
                                     detalleOrdenProductoDTO.setIdDetalleOrden(detalleOrdenMenu.getId());
                                     detalleOrdenProductoDTO.setIdProducto(detalleOrdenMenu.getMenu().getId());
@@ -823,11 +851,13 @@ public class ComanderoServiceImpl implements IComanderoService {
                                     String[] info={String.valueOf(detalleOrdenMenu.getCantidad()),detalleOrdenMenu.getMenu().getNombre(),String.valueOf(detalleOrdenMenu.getTotal())};
                                     products.add(info);
                                     contador++;
+                                    detalleOrdenMenu.setEstado("Terminado");
+                                    detalleOrdenMenuRepository.save(detalleOrdenMenu);
                                 }
                             }
                         }
 
-
+/*
 
                         if(!detalleOrdenProductoNormals.isEmpty()){
                             for (DetalleOrden_ProductoNormal detalleOrdenProductoNormal:detalleOrdenProductoNormals) {
@@ -846,33 +876,35 @@ public class ComanderoServiceImpl implements IComanderoService {
                                 products.add(info);
                                 contador++;
                             }
-                        }
+                        }*/
 
 
                         Impresora impresora1= orden.getCaja().getImpresora();
 
                         TicketOrden ticket = new TicketOrden(String.valueOf(orden.getFolio()), String.valueOf(orden.getCaja().getNombre()), usuario.getNombre(), orden.getNombreCliente(), products,
                                 "$"+objetoMap.get("subTotal"), objetoMap.get("descuento"), String.valueOf(contador), objetoMap.get("totalPagar"), objetoMap.get("recibido"), objetoMap.get("cambio"),
-                                paymentMethods
+                                paymentMetho
                         );
                         String ticketContent = ticket.getContentTicket().toString();
                         HttpResponse<String> response=null;
 
-                        Impresora impresoraOptional1= orden.getCaja().getImpresora();
                         Map<String, String> printRequest = new HashMap<>();
                         printRequest.put("ticketContent", ticketContent);
 
-                            printRequest.put("nombreIm",impresoraOptional1.getNombre());
-                            //if(cocinaOptional.get().getImpresora().getDireccionIp()!=null||cocinaOptional.get().getImpresora().getDireccionIp().length()!=0 ){
-                            //  printRequest.put("printerIp",cocinaOptional.get().getImpresora().getDireccionIp());
-                            //}
-
-
 
 
 
                         printRequest.put("ticketContent", ticketContent);
-                        printRequest.put("printerIp", impresora1.getDireccionIp());
+
+                        if (!impresora1.getDireccionIp().isEmpty()){
+                            printRequest.put("printerIp", impresora1.getDireccionIp());
+                        }
+
+                        if(!impresora1.getNombre().isEmpty()){
+                            printRequest.put("nombreIm", impresora1.getNombre());
+                        }
+
+
 
                         String printRequestJson = new ObjectMapper().writeValueAsString(printRequest);
 
@@ -891,27 +923,10 @@ public class ComanderoServiceImpl implements IComanderoService {
                             return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
                         //}
                         /* else {
-                            Optional<Impresora> impresoraOptional = impresoraRepository.getImpresoraByPorDefectoTrue();
-                            if (impresoraOptional.isPresent()) {
-                                Impresora impresora= impresoraOptional.get();
-                                Map<String, String> printRequest1 = new HashMap<>();
-                                printRequest.put("ticketContent", ticketContent);
-                                printRequest.put("printerIp", impresora.getDireccionIp());
 
-                                String printRequestJson1 = new ObjectMapper().writeValueAsString(printRequest1);
-
-                                // Enviar solicitud al servidor de impresión local
-                                HttpClient client1 = HttpClient.newHttpClient();
-                                HttpRequest request1 = HttpRequest.newBuilder()
-                                        .uri(URI.create("https://67b5-2806-10ae-10-4b65-889c-99b4-a753-8fbc.ngrok-free.app/print"))
-                                        .POST(HttpRequest.BodyPublishers.ofString(printRequestJson1, StandardCharsets.UTF_8))
-                                        .header("Content-Type", "application/json")
-                                        .build();
-
-                                HttpResponse<String> response1 = client1.send(request1, HttpResponse.BodyHandlers.ofString());
-
+                                return Utils.getResponseEntity("Error al imprimir: ",HttpStatus.INTERNAL_SERVER_ERROR);
                             }
-                            return Utils.getResponseEntity("Error al imprimir: ",HttpStatus.INTERNAL_SERVER_ERROR);
+
                         }*/
 
 
@@ -1331,6 +1346,33 @@ public class ComanderoServiceImpl implements IComanderoService {
         }catch (Exception e){
             e.printStackTrace();
         }
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cerrarCuenta(Integer id) {
+        try {
+            Optional<Venta> ventaOptional=ventaRepository.findByOrden_Id(id);
+            if(ventaOptional.isPresent()){
+                Venta venta=ventaOptional.get();
+
+                venta.setEstado("Terminado");
+                Orden orden=venta.getOrden();
+                orden.setEstado("Terminada");
+                Mesa mesa=orden.getMesa();
+                mesa.setEstado("Disponible");
+                ventaRepository.save(venta);
+                ordenRepository.save(orden);
+                mesaRepository.save(mesa);
+
+                return Utils.getResponseEntity("Cuenta cerrada correctamente.",HttpStatus.OK);
+            }
+
+            return Utils.getResponseEntity("La orden no fue encontrada",HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
