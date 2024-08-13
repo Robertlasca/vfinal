@@ -627,7 +627,6 @@ public class ComanderoServiceImpl implements IComanderoService {
             if(optionalOrden.isPresent() ) {
                 double total = 0;
                 Orden orden = optionalOrden.get();
-                if(!orden.getEstado().equalsIgnoreCase("Proceso de pago") && !orden.getEstado().equalsIgnoreCase("Terminada")){
 
                 List<DetalleOrdenMenu> detalleOrdenMenus = detalleOrdenMenuRepository.getAllByOrden(orden);
                 //List<DetalleOrden_ProductoNormal> detalleOrdenProductoNormals = detalleOrdenProductoNormalRepository.getAllByOrden(orden);
@@ -673,8 +672,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                 comandaDTO.setDetalleOrdenProductoDTOS(detalleOrdenProductoDTOS);
                 comandaDTO.setTotal(total);
                 return new ResponseEntity<ComandaDTO>(comandaDTO, HttpStatus.OK);
-            }
-                return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.BAD_REQUEST);
+
 
             }
             return new ResponseEntity<ComandaDTO>(new ComandaDTO(),HttpStatus.BAD_REQUEST);
