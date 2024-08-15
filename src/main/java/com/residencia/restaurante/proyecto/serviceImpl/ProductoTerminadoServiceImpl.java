@@ -591,6 +591,38 @@ if(productoTerminado.isVisibilidad()){
         }
         return new ResponseEntity<Integer>(0,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+//Nuevo
+    @Override
+    public ResponseEntity<List<IngredienteProductoTerminado>> obtenerMateriaXAlmacenId(Integer id) {
+        try {
+            // Obtener listas de inventario para cada almacén
+            List<Inventario> inventarioAlmacen = inventarioRepository.getAllByAlmacen_Id(id);
+            List<IngredienteProductoTerminado> ingredienteProductoTerminados=new ArrayList<>();
+            if(!inventarioAlmacen.isEmpty()){
+                for (Inventario inventario:inventarioAlmacen
+                     ) {
+
+                    MateriaPrima materiaPrima= inventario.getMateriaPrima();
+                    IngredienteProductoTerminado ingredienteProductoTerminado= new IngredienteProductoTerminado();
+                    //Se debe calcular el costo de produccion por gramo
+                    double precio= materiaPrima.getCostoUnitario();
+
+                    ingredienteProductoTerminado.setId(inventario.getId());
+                    ingredienteProductoTerminado.setNombre(materiaPrima.getNombre());
+                    ingredienteProductoTerminado.setUnidadMedida(materiaPrima.getUnidadMedida());
+                    ingredienteProductoTerminado.setCostoProduccion(calcularCostoProduccion(precio));
+                    ingredienteProductoTerminados.add(ingredienteProductoTerminado);
+
+
+                }
+                return new ResponseEntity<List<IngredienteProductoTerminado>>(ingredienteProductoTerminados,HttpStatus.OK);
+            }
+            return new ResponseEntity<List<IngredienteProductoTerminado>>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<IngredienteProductoTerminado>>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     private ProductoTerminado actualizarDatos(ProductoTerminado productoTerminado, String nombre, double stockMax, double stockMin, String descripcion, int idCategoria, MultipartFile file) throws IOException {
         productoTerminado.setNombre(nombre);

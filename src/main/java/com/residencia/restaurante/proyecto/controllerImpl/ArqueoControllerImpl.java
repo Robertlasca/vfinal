@@ -2,6 +2,7 @@ package com.residencia.restaurante.proyecto.controllerImpl;
 
 import com.residencia.restaurante.proyecto.constantes.Constantes;
 import com.residencia.restaurante.proyecto.controller.IArqueoController;
+import com.residencia.restaurante.proyecto.dto.ArqueoDTO;
 import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.entity.Arqueo;
 import com.residencia.restaurante.proyecto.service.IArqueoService;
@@ -92,7 +93,7 @@ public class ArqueoControllerImpl implements IArqueoController {
      * @return ResponseEntity con la lista de arqueos asociados al empleado y el estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Arqueo>> obtenerArqueosXEmpleado(Integer id) {
+    public ResponseEntity<List<ArqueoDTO>> obtenerArqueosXEmpleado(Integer id) {
         try {
             return arqueoService.obtenerArqueoXEmpleado(id);
         } catch (Exception e) {
@@ -145,6 +146,11 @@ public class ArqueoControllerImpl implements IArqueoController {
             e.printStackTrace();
         }
         return new ResponseEntity<List<OrdenDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Arqueo> obtenerArqueo(Integer id) {
+        return null;
     }
 
 

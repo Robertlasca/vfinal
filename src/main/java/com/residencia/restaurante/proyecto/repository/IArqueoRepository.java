@@ -42,4 +42,5 @@ public interface IArqueoRepository extends JpaRepository<Arqueo,Integer> {
     boolean existsByEstadoArqueoIsTrueAndCajaImpresoraId(Integer impresoraId);
 
 
+    List<Arqueo> findArqueoByUsuarioId(Integer id);
 }

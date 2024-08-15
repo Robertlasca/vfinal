@@ -17,6 +17,7 @@ com\residencia\restaurante\proyecto\dto\RecetaDTO.class
 com\residencia\restaurante\proyecto\repository\IImpresoraRepository.class
 com\residencia\restaurante\proyecto\serviceImpl\RecetaProductoTerminadoServiceImpl.class
 com\residencia\restaurante\proyecto\service\IMesaService.class
+com\residencia\restaurante\proyecto\serviceImpl\ComanderoServiceImpl$4.class
 com\residencia\restaurante\proyecto\serviceImpl\ProductoTerminadoServiceImpl$1.class
 com\residencia\restaurante\proyecto\dto\OrdenDTO.class
 com\residencia\restaurante\proyecto\service\IMovimientoCajaService.class
@@ -65,6 +66,7 @@ com\residencia\restaurante\proyecto\serviceImpl\ReceptorServiceImpl.class
 com\residencia\restaurante\proyecto\entity\MedioPago.class
 com\residencia\restaurante\proyecto\controllerImpl\MedioPagoControllerImpl.class
 com\residencia\restaurante\proyecto\dto\AlmacenDTO.class
+com\residencia\restaurante\proyecto\dto\ArqueoSaldosDTO.class
 com\residencia\restaurante\proyecto\service\ICocinaService.class
 com\residencia\restaurante\proyecto\controller\ICategoriaController.class
 com\residencia\restaurante\proyecto\controller\ICocinaController.class
@@ -117,6 +119,7 @@ com\residencia\restaurante\proyecto\entity\DetalleOrdenMenu.class
 com\residencia\restaurante\proyecto\dto\ProductoTerminadoDto.class
 com\residencia\restaurante\proyecto\controller\IArqueoSaldosController.class
 com\residencia\restaurante\proyecto\dto\ProductoDto.class
+com\residencia\restaurante\proyecto\dto\ArqueoDTO.class
 com\residencia\restaurante\proyecto\dto\InventarioDTO.class
 com\residencia\restaurante\proyecto\repository\IInventarioRepository.class
 com\residencia\restaurante\proyecto\controllerImpl\MateriaPrimaControllerImpl.class
@@ -209,6 +212,7 @@ com\residencia\restaurante\proyecto\serviceImpl\UsuarioParametrosServiceImpl.cla
 com\residencia\restaurante\security\repository\IUsuarioRepository.class
 com\residencia\restaurante\proyecto\entity\ArqueoSaldos.class
 com\residencia\restaurante\proyecto\repository\IProductoNormalRepository.class
+com\residencia\restaurante\proyecto\dto\VentaMedioPagoDTO.class
 com\residencia\restaurante\security\model\ConfirmationToken.class
 com\residencia\restaurante\proyecto\entity\Arqueo.class
 com\residencia\restaurante\proyecto\service\IDatosReporteService.class

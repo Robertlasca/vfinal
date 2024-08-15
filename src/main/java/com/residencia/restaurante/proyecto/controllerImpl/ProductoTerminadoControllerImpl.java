@@ -172,4 +172,15 @@ private IProductoTerminadoService productoTerminadoService;
         }
         return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<IngredienteProductoTerminado>> obtenerMateriaXAlmacenId(Integer id) {
+
+        try {
+            return productoTerminadoService.obtenerMateriaXAlmacenId(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

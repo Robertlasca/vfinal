@@ -42,4 +42,6 @@ public interface IComanderoService {
     ResponseEntity<String> cambiarPlatilloEntregado(Integer id);
 
     ResponseEntity<String> cerrarCuenta(Integer id);
+
+    ResponseEntity<String> cerrarCuentas(Map<String, String> objetoMap);
 }

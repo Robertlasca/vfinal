@@ -3,8 +3,7 @@ package com.residencia.restaurante.proyecto.serviceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.residencia.restaurante.proyecto.constantes.Constantes;
-import com.residencia.restaurante.proyecto.dto.DetalleOrdenProductoDTO;
-import com.residencia.restaurante.proyecto.dto.OrdenDTO;
+import com.residencia.restaurante.proyecto.dto.*;
 import com.residencia.restaurante.proyecto.entity.*;
 import com.residencia.restaurante.proyecto.repository.*;
 import com.residencia.restaurante.proyecto.service.IArqueoService;
@@ -45,6 +44,9 @@ public class ArqueoServiceImpl implements IArqueoService {
 
     @Autowired
     private IDetalleOrden_MenuRepository detalleOrdenMenuRepository;
+
+    @Autowired
+    private IMovimientoCajaRepository movimientoCajaRepository;
     @Autowired
     private IVentaRepository ventaRepository;
     @Autowired
@@ -72,6 +74,7 @@ public class ArqueoServiceImpl implements IArqueoService {
 
                         Optional<Usuario> usuarioOptional=usuarioRepository.findById(Integer.parseInt(objetoMap.get("usuario")));
                         if(!usuarioOptional.isEmpty()){
+                            System.out.println( "Entre el usuario si existe");
                             Usuario usuario=usuarioOptional.get();
                             arqueo.setUsuario(usuario);
                             arqueo.setSaldoFinal(Double.parseDouble(objetoMap.get("monto_inicial")));
@@ -193,19 +196,84 @@ public class ArqueoServiceImpl implements IArqueoService {
      * @return Lista de arqueos activos para el empleado con estado HTTP correspondiente.
      */
     @Override
-    public ResponseEntity<List<Arqueo>> obtenerArqueoXEmpleado(Integer id) {
+    public ResponseEntity<List<ArqueoDTO>> obtenerArqueoXEmpleado(Integer id) {
         try {
             Optional<Usuario> usuarioOptional=usuarioRepository.findById(id);
+            List<ArqueoDTO> arqueoDTOS= new ArrayList<>();
             if(usuarioOptional.isPresent()){
-                return new ResponseEntity<List<Arqueo>>(arqueoRepository.findArqueoByUsuarioIdAndEstadoArqueoTrue(id),HttpStatus.OK);
+                List<Arqueo> arqueoList=arqueoRepository.findArqueoByUsuarioId(id);
+
+                if(!arqueoList.isEmpty()){
+                    for (Arqueo arqueo:arqueoList) {
+                        ArqueoDTO arqueoDTO= new ArqueoDTO();
+                        arqueoDTO.setArqueo(arqueo);
+                        List<ArqueoSaldos> arqueoSaldos= arqueoSaldosRepository.findAllByArqueo_Id(arqueo.getId());
+
+
+                        if(!arqueoSaldos.isEmpty()){
+                            List<ArqueoSaldosDTO>arqueoSaldosDTOS=new ArrayList<>();
+                            for (ArqueoSaldos arqueoSaldos1:arqueoSaldos
+                            ) {
+                                ArqueoSaldosDTO arqueoSaldosDTO=new ArqueoSaldosDTO();
+                                arqueoSaldosDTO.setId(arqueoSaldos1.getMedioPago().getId());
+                                arqueoSaldosDTO.setSaldoAnotado(arqueoSaldos1.getSaldoAnotado());
+                                arqueoSaldosDTO.setMedioPago(arqueoSaldos1.getMedioPago().getNombre());
+                                arqueoSaldosDTOS.add(arqueoSaldosDTO);
+                            }
+                            arqueoDTO.setArqueoSaldosDTOS(arqueoSaldosDTOS);
+                        }
+                        if (arqueo.getSaldoFinal() == arqueo.getSaldoIngresado()) {
+                            arqueoDTO.setEstado("Coincidencia");
+                        }
+
+                        if (arqueo.getSaldoFinal() > arqueo.getSaldoIngresado()) {
+                            arqueoDTO.setEstado("Faltante: "+(arqueo.getSaldoFinal()-arqueo.getSaldoIngresado()));
+                        }
+
+                        if (arqueo.getSaldoFinal() < arqueo.getSaldoIngresado()) {
+                            arqueoDTO.setEstado("Sobrante "+(arqueo.getSaldoIngresado()-arqueo.getSaldoFinal()));
+                        }
+
+                        Double sumaRetiros = movimientoCajaRepository.sumCantidadByTipoRetiroAndArqueoId(arqueo.getId());
+                        Double sumaIngresos = movimientoCajaRepository.sumCantidadByTipoIngresoAndArqueoId(arqueo.getId());
+                        arqueoDTO.setIngresos(sumaIngresos!= null ? sumaIngresos : 0.0);
+                        arqueoDTO.setGastos(sumaRetiros != null ? sumaRetiros : 0.0);
+                        List<MedioPago> medioPagos= medioPagoRepository.findAll();
+                        List<VentaMedioPagoDTO> ventaMedioPagoDTOS= new ArrayList<>();
+                        if(!medioPagos.isEmpty()){
+                            for (MedioPago medio:medioPagos
+                                 ) {
+                                Double pago= ventaMedioPagoRepository.sumPagoRecibidoByMedioPagoIdAndArqueoId(medio.getId(),arqueo.getId());
+                                double pagos= pago!=null ? pago : 0.0;
+
+                                if(pagos>0){
+                                    VentaMedioPagoDTO ventaMedioPagoDTO= new VentaMedioPagoDTO();
+                                    ventaMedioPagoDTO.setId(medio.getId());
+                                    ventaMedioPagoDTO.setNombreMedio(medio.getNombre());
+                                    ventaMedioPagoDTO.setTotal(pagos);
+                                    ventaMedioPagoDTOS.add(ventaMedioPagoDTO);
+                                }
+
+                            }
+                            arqueoDTO.setVentaMedioPagoDTOS(ventaMedioPagoDTOS);
+                        }
+
+
+
+
+
+                        arqueoDTOS.add(arqueoDTO);
+                    }
+                }
+                return new ResponseEntity<List<ArqueoDTO>>(arqueoDTOS,HttpStatus.OK);
             }
-            return new ResponseEntity<List<Arqueo>>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<List<ArqueoDTO>>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
 
 
         }catch (Exception e){
             e.printStackTrace();
         }
-        return new ResponseEntity<List<Arqueo>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<List<ArqueoDTO>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     /**
      * Obtiene un arqueo específico por su ID.
@@ -303,8 +371,6 @@ public class ArqueoServiceImpl implements IArqueoService {
         try{
             Optional<Arqueo> arqueoOptional=arqueoRepository.findById(id);
             if(arqueoOptional.isPresent()) {
-
-
                 List<Orden> ordenList = ordenRepository.findOrdenesByCajaIdAndEstado(arqueoOptional.get().getCaja().getId(), "Proceso de pago");
                 List<OrdenDTO> ordenDTOList = new ArrayList<>();
                 if (!ordenList.isEmpty()) {

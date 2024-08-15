@@ -39,5 +39,6 @@ public class DetalleOrdenMenu {
     private String estado;
 
     private double total;
+    private boolean atendido=false;
 
 }

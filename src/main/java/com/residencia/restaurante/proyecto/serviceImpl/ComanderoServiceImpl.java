@@ -217,11 +217,11 @@ public class ComanderoServiceImpl implements IComanderoService {
 
 
 
-                           //if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
+                           if (imprimirComandas(productosPorCocina, orden.getNombreCliente(), orden.getMesa().getAreaServicio().getNombre()+orden.getMesa().getNombre(), orden.getUsuario().getNombre()) == 200) {
                                 return Utils.getResponseEntity("Impreso correctamente", HttpStatus.OK);
-                          //  } else{
-                               //return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
-                            //}
+                            } else{
+                               return Utils.getResponseEntity("Sucedio un problema al imprimir el ticket.", HttpStatus.BAD_REQUEST);
+                            }
                         }
                         return Utils.getResponseEntity(validarStock(objetoMap.get("detalleOrden")),HttpStatus.BAD_REQUEST);
 
@@ -274,7 +274,17 @@ public class ComanderoServiceImpl implements IComanderoService {
                 printRequest.put("ticketContent", ticketContent);
             System.out.println(ticketContent);
                 if(cocinaOptional.isPresent()){
-                    printRequest.put("nombreIm",cocinaOptional.get().getImpresora().getNombre());
+                    if(!cocinaOptional.get().getImpresora().getNombre().isEmpty()){
+                        printRequest.put("nombreIm",cocinaOptional.get().getImpresora().getNombre());
+                    }
+
+                    if(!cocinaOptional.get().getImpresora().getDireccionIp().isEmpty()){
+                        printRequest.put("printerIp",cocinaOptional.get().getImpresora().getDireccionIp());
+                    }
+
+
+
+
                     System.out.println(cocinaOptional.get().getImpresora().getNombre());
                     //if(cocinaOptional.get().getImpresora().getDireccionIp()!=null||cocinaOptional.get().getImpresora().getDireccionIp().length()!=0 ){
                       //  printRequest.put("printerIp",cocinaOptional.get().getImpresora().getDireccionIp());
@@ -812,6 +822,7 @@ public class ComanderoServiceImpl implements IComanderoService {
                                     products.add(info);
                                     contador++;
                                     detalleOrdenMenu.setEstado("Terminado");
+                                    detalleOrdenMenu.setAtendido(true);
                                     detalleOrdenMenuRepository.save(detalleOrdenMenu);
                                 }
                             }
@@ -1329,6 +1340,64 @@ public class ComanderoServiceImpl implements IComanderoService {
             }
 
             return Utils.getResponseEntity("La orden no fue encontrada",HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return Utils.getResponseEntity(Constantes.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<String> cerrarCuentas(Map<String, String> objetoMap) {
+        try {
+            if(objetoMap.containsKey("id")&&objetoMap.containsKey("mediosPago")&& objetoMap.containsKey("recibido") && objetoMap.containsKey("cambio")){
+               Integer id= Integer.parseInt(objetoMap.get("id"));
+                Optional<Venta> ventaOptional=ventaRepository.findVentaByOrden_Id(id);
+                if(ventaOptional.isPresent()){
+                    Venta venta=ventaOptional.get();
+                    Arqueo arqueo=venta.getArqueo();
+                    arqueo.setSaldoFinal(arqueo.getSaldoFinal()+venta.getTotalPagar());
+                    arqueoRepository.save(arqueo);
+                    venta.setCambio(Double.parseDouble(objetoMap.get("cambio")));
+                    venta.setRecibido(Double.parseDouble(objetoMap.get("recibido")));
+
+                    venta.setEstado("Terminado");
+                    Orden orden=venta.getOrden();
+                    orden.setEstado("Terminada");
+                    Mesa mesa=orden.getMesa();
+                    mesa.setEstado("Disponible");
+                    ventaRepository.save(venta);
+                    ordenRepository.save(orden);
+                    mesaRepository.save(mesa);
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    try {
+                        List<Venta_MedioPagoWrapper> mediosPago = objectMapper.readValue(objetoMap.get("mediosPago"), new TypeReference<List<Venta_MedioPagoWrapper>>() {
+                        });
+
+                        if (!mediosPago.isEmpty()) {
+                            for (Venta_MedioPagoWrapper ventaMedioPagoWrapper : mediosPago) {
+                                Venta_MedioPago ventaMedioPago = new Venta_MedioPago();
+                                ventaMedioPago.setVenta(venta);
+                                Optional<MedioPago> medioPagoOptional = medioPagoRepository.findById(ventaMedioPagoWrapper.getId());
+                                if (medioPagoOptional.isPresent()) {
+                                    MedioPago medioPago = medioPagoOptional.get();
+                                    ventaMedioPago.setMedioPago(medioPago);
+                                }
+                                ventaMedioPago.setPagoRecibido(ventaMedioPagoWrapper.getPagoRecibido());
+                                ventaMedioPagoRepository.save(ventaMedioPago);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return Utils.getResponseEntity("Cuenta cerrada correctamente.",HttpStatus.OK);
+                }
+
+                return Utils.getResponseEntity("La orden no fue encontrada",HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return Utils.getResponseEntity(Constantes.INVALID_DATA,HttpStatus.BAD_REQUEST);
+
         }catch (Exception e){
             e.printStackTrace();
         }

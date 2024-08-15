@@ -71,7 +71,8 @@ public interface IProductoTerminadoController {
     @PostMapping(path = "/cambiarEstado")
     ResponseEntity<String> cambiarEstado(@RequestBody(required = true) Map<String, String> objetoMap);
 
-
+    @GetMapping(path = "/obtenerMateriaXAlmacen/{id}")
+    ResponseEntity<List<IngredienteProductoTerminado>> obtenerMateriaXAlmacenId(@PathVariable Integer id);
 
 
 

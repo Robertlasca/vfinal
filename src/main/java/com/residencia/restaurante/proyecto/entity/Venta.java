@@ -50,5 +50,9 @@ public class Venta {
     @JoinColumn(nullable = true,name = "usuario_id")
     private Usuario usuario;
 
+    private double cambio=0;
+
+    private double recibido=0;
+
 
 }

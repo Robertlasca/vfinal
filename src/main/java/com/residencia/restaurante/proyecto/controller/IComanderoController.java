@@ -48,8 +48,11 @@ public interface IComanderoController {
     @PostMapping(path = "/imprimirCuenta")
     ResponseEntity<String> imprimirTicketFinal(@RequestBody(required = true) Map<String, String> objetoMap);
 
-    @PostMapping(path = "/cerrarCuenta")
+    @PostMapping(path = "/cerrarCuentas")
     ResponseEntity<String> cerrarCuenta(@PathVariable Integer id);
+
+    @PostMapping(path = "/cerrarCuenta")
+    ResponseEntity<String> cerrarCuentas(@RequestBody(required = true) Map<String, String> objetoMap);
 
     @GetMapping(path = "/validarStock")
     ResponseEntity<String> validarStocks(@RequestBody(required = true)String productos);

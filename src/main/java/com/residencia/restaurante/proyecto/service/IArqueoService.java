@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.service;
 
+import com.residencia.restaurante.proyecto.dto.ArqueoDTO;
 import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.entity.Arqueo;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public interface IArqueoService {
      * @param id El ID del empleado.
      * @return ResponseEntity con la lista de arqueos realizados por el empleado.
      */
-    ResponseEntity<List<Arqueo>> obtenerArqueoXEmpleado(@PathVariable Integer id);
+    ResponseEntity<List<ArqueoDTO>> obtenerArqueoXEmpleado(@PathVariable Integer id);
 
     /**
      * Obtiene un arqueo específico por su ID.

@@ -20,16 +20,20 @@ public class PrintServer {
         try {
             String ticketContent = printRequest.get("ticketContent");
             System.out.println(ticketContent+"Contenido");
-            if(printRequest.containsKey("printerIp")){
-                String printerIp = printRequest.get("printerIp");
-                if(printTicketByIp(ticketContent,printerIp, 9100)){
+
+            if(printRequest.containsKey("nombreIm")){
+                System.out.println("aqui estoy ");
+                String nombre = printRequest.get("nombreIm");
+                if(printTicketByName(ticketContent,nombre)){
+                    System.out.println("Entre");
                     return new ResponseEntity<>("Impreso correctamente", HttpStatus.OK);
                 }
             }
 
-            if(printRequest.containsKey("nombreIm")){
-                String nombre = printRequest.get("nombreIm");
-                if(printTicketByName(ticketContent,nombre)){
+            if(printRequest.containsKey("printerIp")){
+                String printerIp = printRequest.get("printerIp");
+                if(printTicketByIp(ticketContent,printerIp, 9100)){
+                    System.out.println("Si se imprimio");
                     return new ResponseEntity<>("Impreso correctamente", HttpStatus.OK);
                 }
             }
@@ -43,40 +47,46 @@ public class PrintServer {
     }
 
     private boolean printTicketByIp(String ticketContent, String printerIp, int printerPort) {
+        System.out.println("Ahora estoy aqui");
         try (Socket socket = new Socket(printerIp, printerPort)) {
             OutputStream out = socket.getOutputStream();
             out.write(ticketContent.getBytes());
             out.flush();
-
+            System.out.println("Entre");
             // Aquí enviamos el comando de corte automático
             String cutCommand = "\n" + (char)29 + (char)86 + (char)66 + (char)0;
             out.write(cutCommand.getBytes());
             out.flush();
 
-            out.close();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            // Opcional: Puedes registrar el error en un log en lugar de imprimirlo
+            // Logger.getLogger(TuClase.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println("Retorne false ");
             return false;
         }
     }
+
 
     private boolean printTicketByName(String ticketContent, String printerName) {
         try {
             PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
             PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, pras);
-
+            System.out.println("Entre1");
             PrintService selectedService = null;
             for (PrintService printService : printServices) {
                 if (printService.getName().equalsIgnoreCase(printerName)) {
+                    System.out.println("Entre2");
                     selectedService = printService;
+                    System.out.println("Sigooo");
                     break;
                 }
             }
-
-            if (selectedService == null) {
-                throw new Exception("No se encontró la impresora con nombre: " + printerName);
+            if (selectedService==null){
+                return false;
             }
+
+            System.out.println("pase");
 
             // Comando de corte automático (puede variar según el modelo de la impresora)
             String cutCommand = "\n" + (char)29 + (char)86 + (char)66 + (char)0;
@@ -90,7 +100,7 @@ public class PrintServer {
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Entre al catch");
             return false;
         }
     }

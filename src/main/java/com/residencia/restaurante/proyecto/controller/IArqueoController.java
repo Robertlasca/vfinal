@@ -1,5 +1,6 @@
 package com.residencia.restaurante.proyecto.controller;
 
+import com.residencia.restaurante.proyecto.dto.ArqueoDTO;
 import com.residencia.restaurante.proyecto.dto.OrdenDTO;
 import com.residencia.restaurante.proyecto.entity.Arqueo;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,7 @@ public interface IArqueoController {
      * @return ResponseEntity con la lista de arqueos del empleado y el estado HTTP.
      */
     @GetMapping(path = "/obtenerArqueosEmpleado/{id}")
-    ResponseEntity<List<Arqueo>> obtenerArqueosXEmpleado(@PathVariable Integer id);
+    ResponseEntity<List<ArqueoDTO>> obtenerArqueosXEmpleado(@PathVariable Integer id);
     /**
      * Obtiene los detalles de un arqueo específico por su ID.
      *
@@ -69,6 +70,9 @@ public interface IArqueoController {
 
     @GetMapping(path = "/obtenerOrdenesTerminadasXIdArqueo/{id}")
     ResponseEntity<List<OrdenDTO>> obtenerOrdenesEnTerminadas(@PathVariable Integer id);
+
+    @GetMapping(path = "/obtenerArqueoId/{id}")
+    ResponseEntity<Arqueo> obtenerArqueo(@PathVariable Integer id);
 
 
 

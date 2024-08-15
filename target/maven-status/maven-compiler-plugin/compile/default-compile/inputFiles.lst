@@ -33,6 +33,7 @@ D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\securi
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\DetalleOrdenMenu.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\EstacionDTO.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\ArqueoServiceImpl.java
+D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\VentaMedioPagoDTO.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\security\utils\TicketComanda.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\ICategoriaMateriaPrimaController.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\ArqueoSaldos.java
@@ -78,6 +79,7 @@ D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyec
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\CategoriaMateriaPrimaControllerImpl.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\serviceImpl\DatosReporteServiceImpl.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IUtensilioController.java
+D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\ArqueoDTO.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IDatosReporteController.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\Utensilio.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\ReceptorControllerImpl.java
@@ -162,6 +164,7 @@ D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyec
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\entity\Categoria.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IRecetaMenuController.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controller\IVentasController.java
+D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\ArqueoSaldosDTO.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\dto\ProductoDto.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\service\IMenuService.java
 D:\SistemaWeb-Backend-cajabranch\src\main\java\com\residencia\restaurante\proyecto\controllerImpl\UtensilioControllerImpl.java

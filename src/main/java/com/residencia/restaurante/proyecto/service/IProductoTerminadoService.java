@@ -52,4 +52,6 @@ public interface IProductoTerminadoService {
     ResponseEntity<List<ProductoTerminadoDto>> obtenerTodosPorCategoria(Integer id);
 
     ResponseEntity<Integer> obtenerTotalProductos();
+
+    ResponseEntity<List<IngredienteProductoTerminado>> obtenerMateriaXAlmacenId(Integer id);
 }

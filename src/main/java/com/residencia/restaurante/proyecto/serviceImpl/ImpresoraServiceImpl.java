@@ -230,15 +230,18 @@ public class ImpresoraServiceImpl implements IImpresoraService {
 
         if(esAgregado){
             Optional<Impresora> optionalImpresora=iImpresoraRepository.findById(Integer.parseInt(objetoMap.get("id")));
+            if (optionalImpresora.isPresent()) {
+                impresora=optionalImpresora.get();
 
-            impresora.setId(Integer.parseInt(objetoMap.get("id")));
-            optionalImpresora.ifPresent(value -> impresora.setEstado(value.isEstado()));
+
+            }
 
         }else {
             impresora.setEstado(true);
         }
         impresora.setNombre(objetoMap.get("nombre"));
         if(objetoMap.containsKey("direccionIP")){
+            System.out.println("no entre ");
             impresora.setDireccionIp(objetoMap.get("direccionIP"));
         }
 /*
